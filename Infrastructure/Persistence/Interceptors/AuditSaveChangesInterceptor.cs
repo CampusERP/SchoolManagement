@@ -6,10 +6,7 @@ using Domain.Common;
 namespace Infrastructure.Persistence.Interceptors;
 
 /// <summary>
-/// Populates CreatedAtUtc/CreatedBy/ModifiedAtUtc/ModifiedBy automatically
-/// on every AuditableEntity, and converts a hard Remove() into a soft
-/// delete (IsDeleted = true) instead of letting EF Core emit a DELETE.
-/// Register via optionsBuilder.AddInterceptors(...) on ApplicationDbContext.
+/// An interceptor that automatically updates audit fields (CreatedAt, CreatedBy, ModifiedAt, ModifiedBy, DeletedAt, DeletedBy) for entities that implement the AuditableEntity base class.
 /// </summary>
 public class AuditSaveChangesInterceptor : SaveChangesInterceptor
 {

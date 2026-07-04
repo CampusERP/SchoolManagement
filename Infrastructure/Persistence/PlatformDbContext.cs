@@ -7,8 +7,7 @@ using Infrastructure.Identity;
 namespace Infrastructure.Persistence;
 
 /// <summary>
-/// NO global query filter here — this context is used only by Super Admin
-/// Holds: Identity tables, School, UserSchoolMembership, RefreshToken.
+/// Represents the database context for the platform, including Identity and tenancy-related entities.
 /// </summary>
 public class PlatformDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
 {

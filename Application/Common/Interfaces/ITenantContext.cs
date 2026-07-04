@@ -1,10 +1,7 @@
 namespace Application.Common.Interfaces;
 
 /// <summary>
-/// The single most important interface in the codebase. Implemented in
-/// Infrastructure by reading JWT claims off the current HTTP request.
-/// ApplicationDbContext's global query filter depends on this for every
-/// tenant-scoped table.
+/// Represents the context of the current tenant (school) in a multi-tenant application.
 /// </summary>
 public interface ITenantContext
 {

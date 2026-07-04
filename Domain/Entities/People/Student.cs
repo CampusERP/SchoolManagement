@@ -3,10 +3,7 @@ using Domain.Common;
 namespace Domain.Entities.People;
 
 /// <summary>
-/// A learner's profile (identity + biography). Everything academic-year
-/// specific (class placement, grades) lives in StudentEnrollment, not here.
-/// ApplicationUserId is nullable — younger students may have no login of
-/// their own, only parent access via StudentGuardian.
+/// Represents a student entity in the school management system.
 /// </summary>
 public class Student : TenantEntity, IAggregateRoot
 {

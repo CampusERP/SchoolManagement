@@ -4,8 +4,7 @@ using Domain.Enums;
 namespace Domain.Entities.Enrollment;
 
 /// <summary>
-/// A recurring weekly timetable slot. Child of the TeachingAssignment
-/// aggregate — created only via TeachingAssignment.AddSchedule.
+/// Represents a class schedule for a teaching assignment, including the assigned room, day of the week, and start/end times.
 /// </summary>
 public class ClassSchedule : AuditableEntity
 {

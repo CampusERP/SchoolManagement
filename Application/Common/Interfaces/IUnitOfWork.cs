@@ -1,9 +1,7 @@
 namespace Application.Common.Interfaces;
 
 /// <summary>
-/// Thin abstraction over DbContext.SaveChangesAsync so Application handlers
-/// don't depend on EF Core directly.
-/// it's just a wrapper, not a custom transaction manager.
+/// Represents a unit of work that encapsulates a set of operations to be performed as a single transaction.
 /// </summary>
 public interface IUnitOfWork
 {

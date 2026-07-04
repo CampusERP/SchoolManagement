@@ -4,8 +4,7 @@ using Domain.Exceptions;
 namespace Domain.Entities.Tenancy;
 
 /// <summary>
-/// Persisted refresh token for JWT rotation/revocation.
-/// Lives in PlatformDbContext.
+/// Represents a refresh token used for authentication and authorization purposes.
 /// </summary>
 public class RefreshToken : AuditableEntity, IAggregateRoot
 {

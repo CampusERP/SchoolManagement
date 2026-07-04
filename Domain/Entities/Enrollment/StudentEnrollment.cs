@@ -5,12 +5,7 @@ using Domain.Exceptions;
 namespace Domain.Entities.Enrollment;
 
 /// <summary>
-/// A student's placement in a ClassRoom for an AcademicYear. This is its
-/// own aggregate root — deliberately NOT a child collection hanging off
-/// Student — because its lifecycle (enroll, transfer, withdraw) is
-/// independent of the student's identity. Attendance, grades, and exam
-/// results should all key off StudentEnrollmentId, not raw StudentId, so
-/// transfers/withdrawals don't corrupt historical records.
+/// Represents the enrollment of a student in a specific classroom for a given academic year.
 /// </summary>
 public class StudentEnrollment : TenantEntity, IAggregateRoot
 {

@@ -5,8 +5,7 @@ using Domain.Exceptions;
 namespace Domain.Entities.Academics;
 
 /// <summary>
-/// Aggregate root owning Term. Invariant: only one AcademicYear per school
-/// can be IsCurrent
+/// Represents an academic year within a school, including its name, start and end dates, status, and associated terms.
 /// </summary>
 public class AcademicYear : TenantEntity, IAggregateRoot
 {

@@ -4,9 +4,7 @@ using Application.Common.Interfaces;
 namespace Infrastructure.Identity;
 
 /// <summary>
-/// Reads the active tenant off the current HTTP request's JWT claims.
-/// "school_id" claim is absent for platform admin tokens — that's the
-/// signal IsPlatformAdmin uses, backed up by an explicit "is_platform_admin"
+/// Represents the context of the current tenant (school) in a multi-tenant application.
 /// </summary>
 public class TenantContext : ITenantContext
 {

@@ -3,9 +3,7 @@ using Domain.Common;
 namespace Domain.Entities.Tenancy;
 
 /// <summary>
-/// The tenant itself. Root of all tenant data.
-/// it has no SchoolId because it IS the
-/// tenant key everything else hangs off.
+/// Represents a school entity in the system, which serves as an aggregate root for related entities such as campuses.
 /// </summary>
 public class School : AuditableEntity, IAggregateRoot
 {

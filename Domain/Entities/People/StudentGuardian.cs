@@ -4,12 +4,7 @@ using Domain.Enums;
 namespace Domain.Entities.People;
 
 /// <summary>
-/// Join entity replacing
-/// Supports divorced parents, step-parents, shared custody, and per-parent
-/// visibility flags (e.g., one parent can see grades but not billing).
-/// Not an aggregate root on its own — created/modified through Student or
-/// Parent application services
-/// carries real attributes beyond a plain FK pair.
+/// Represents the relationship between a student and their guardian (parent).
 /// </summary>
 public class StudentGuardian : TenantEntity
 {

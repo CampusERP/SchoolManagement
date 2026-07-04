@@ -3,8 +3,7 @@ using Domain.Common;
 namespace Domain.Entities.Academics;
 
 /// <summary>
-/// Child of the AcademicYear aggregate. Created only via
-/// AcademicYear.AddTerm — never constructed directly by Application code.
+/// Represents an academic term within a specific academic year.
 /// </summary>
 public class Term : AuditableEntity
 {

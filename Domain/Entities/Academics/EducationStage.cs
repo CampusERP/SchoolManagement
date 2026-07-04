@@ -3,9 +3,7 @@ using Domain.Common;
 namespace Domain.Entities.Academics;
 
 /// <summary>
-/// Global lookup, NOT tenant-scoped (no SchoolId) — deliberately shared
-/// across all schools so cross-school reporting/analytics stays possible.
-/// Seeded once (Primary / Middle / Secondary), not created by schools.
+/// Represents an education stage in the academic system, such as primary, secondary, or tertiary education.
 /// </summary>
 public class EducationStage : Entity
 {

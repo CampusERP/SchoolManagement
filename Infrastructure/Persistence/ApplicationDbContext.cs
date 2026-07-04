@@ -7,11 +7,7 @@ using Domain.Entities.People;
 namespace Infrastructure.Persistence;
 
 /// <summary>
-/// Holds every tenant-scoped entity. Applies two global query filters to
-/// every TenantEntity: (1) SchoolId == current tenant (or bypass for
-/// platform admins), and (2) IsDeleted == false. This pair of filters is
-/// what makes the shared-database multi-tenancy model safe — do not
-/// bypass it with raw SQL
+/// Represents the application's database context, providing access to the database and managing entity sets for various domain entities.
 /// </summary>
 public class ApplicationDbContext : DbContext
 {

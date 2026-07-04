@@ -3,11 +3,7 @@ using Domain.Common;
 namespace Domain.Entities.Tenancy;
 
 /// <summary>
-/// Links an ApplicationUser to a School. A user can have zero, one, or
-/// many memberships (multi-school teachers, Super Admins with none).
-/// This is what makes the JWT's school_id claim possible at login —
-/// the user picks (or the system infers) which membership is active.
-/// Lives in PlatformDbContext alongside Identity tables.
+/// Represents the membership of a user in a school, indicating whether the membership is active or inactive.
 /// </summary>
 public class UserSchoolMembership : AuditableEntity, IAggregateRoot
 {

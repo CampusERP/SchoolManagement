@@ -3,9 +3,7 @@ using Domain.Common;
 namespace Domain.Entities.Academics;
 
 /// <summary>
-/// A section/cohort, e.g. "Grade 5 - A". Deliberately scoped to a single
-/// AcademicYear so rolling into a new year creates a
-/// new ClassRoom row rather than mutating history.
+/// Represents a classroom within a school, associated with a specific grade level and academic year.
 /// </summary>
 public class ClassRoom : TenantEntity, IAggregateRoot
 {

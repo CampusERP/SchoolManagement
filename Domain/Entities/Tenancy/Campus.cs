@@ -3,8 +3,7 @@ using Domain.Common;
 namespace Domain.Entities.Tenancy;
 
 /// <summary>
-/// A physical campus/location belonging to a School. Child of the School
-/// aggregate — created only through School.AddCampus, never directly.
+/// Represents a campus entity within a school, containing information about the campus's name and address.
 /// </summary>
 public class Campus : AuditableEntity
 {

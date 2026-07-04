@@ -5,10 +5,7 @@ using Domain.Exceptions;
 namespace Domain.Entities.Enrollment;
 
 /// <summary>
-/// Teacher assigned to teach a Subject in a ClassRoom for a Term. Owns
-/// ClassSchedule entries — clash detection (no double-booking the same
-/// teacher in the same time slot) belongs here, not in Application code,
-/// so the rule is enforced no matter which entry point calls it.
+/// Represents the assignment of a teacher to a subject and class for a specific term, along with the associated class schedules.
 /// </summary>
 public class TeachingAssignment : TenantEntity, IAggregateRoot
 {

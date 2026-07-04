@@ -3,8 +3,7 @@ using Domain.Common;
 namespace Domain.Entities.Academics;
 
 /// <summary>
-/// Physical room/location. Without this, ClassSchedule clash detection
-/// ("two classes booked in the same room") is impossible.
+/// Represents a room within a school, which can be used for classes or other activities.
 /// </summary>
 public class Room : TenantEntity, IAggregateRoot
 {
