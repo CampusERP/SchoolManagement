@@ -3,9 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Application.Common.Interfaces;
+using Application.Common.Interfaces.Repositories;
 using Infrastructure.Identity;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Interceptors;
+using Infrastructure.Persistence.Repositories;
 
 namespace Infrastructure;
 
@@ -38,6 +40,18 @@ public static class DependencyInjection
 
         services.AddScoped<IUnitOfWork>(sp =>
             new UnitOfWork(sp.GetRequiredService<ApplicationDbContext>()));
+
+        // Repositories
+        services.AddScoped<IStudentRepository, StudentRepository>();
+        services.AddScoped<ITeacherRepository, TeacherRepository>();
+        services.AddScoped<IParentRepository, ParentRepository>();
+        services.AddScoped<IStudentGuardianRepository, StudentGuardianRepository>();
+        services.AddScoped<IAcademicYearRepository, AcademicYearRepository>();
+        services.AddScoped<IClassRoomRepository, ClassRoomRepository>();
+        services.AddScoped<IGradeLevelRepository, GradeLevelRepository>();
+        services.AddScoped<IRoomRepository, RoomRepository>();
+        services.AddScoped<IStudentEnrollmentRepository, StudentEnrollmentRepository>();
+        services.AddScoped<ITeachingAssignmentRepository, TeachingAssignmentRepository>();
 
         services
             .AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
