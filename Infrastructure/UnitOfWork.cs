@@ -1,17 +1,18 @@
 using Application.Common.Interfaces;
-using Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure;
 
-public class UnitOfWork : IUnitOfWork
+public class UnitOfWork<TContext> : IUnitOfWork
+    where TContext : DbContext
 {
-    private readonly ApplicationDbContext _context;
+    private readonly TContext _context;
 
-    public UnitOfWork(ApplicationDbContext context)
+    public UnitOfWork(TContext context)
     {
         _context = context;
     }
 
-    public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default) =>
-        _context.SaveChangesAsync(cancellationToken);
+    public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        => _context.SaveChangesAsync(cancellationToken);
 }
