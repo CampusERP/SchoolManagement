@@ -24,9 +24,6 @@
     <Folder Include="Features\Academics\CreateTerm\" />
     <Folder Include="Features\Enrollment\Commands\EnrollStudent\" />
     <Folder Include="Features\Enrollment\Commands\AssignTeacher\" />
-    <Folder Include="Features\Identity\Login\" />
-    <Folder Include="Features\Identity\Register\" />
-    <Folder Include="Features\Identity\RefreshToken\" />
     <Folder Include="Features\People\Commands\CreateStudent\" />
     <Folder Include="Features\People\Commands\CreateParent\" />
     <Folder Include="Features\People\Commands\CreateTeacher\" />

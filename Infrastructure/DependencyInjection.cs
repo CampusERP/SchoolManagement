@@ -38,8 +38,8 @@ public static class DependencyInjection
             options.AddInterceptors(sp.GetRequiredService<AuditSaveChangesInterceptor>());
         });
 
-        services.AddScoped<IUnitOfWork>(sp =>
-            new UnitOfWork(sp.GetRequiredService<ApplicationDbContext>()));
+        services.AddScoped<IUnitOfWork, UnitOfWork<ApplicationDbContext>>();
+        services.AddScoped<IUnitOfWork, UnitOfWork<PlatformDbContext>>();
 
         // Repositories
         services.AddScoped<IStudentRepository, StudentRepository>();
