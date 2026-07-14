@@ -3,11 +3,11 @@ using Infrastructure.Persistence;
 
 namespace Infrastructure;
 
-public class UnitOfWork : IUnitOfWork
+public class PlatformUnitOfWork : IPlatformUnitOfWork
 {
-    private readonly ApplicationDbContext _context;
+    private readonly PlatformDbContext _context;
 
-    public UnitOfWork(ApplicationDbContext context)
+    public PlatformUnitOfWork(PlatformDbContext context)
     {
         _context = context;
     }

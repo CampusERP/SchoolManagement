@@ -6,20 +6,12 @@ public class CreateStudentCommandValidator : AbstractValidator<CreateStudentComm
 {
     public CreateStudentCommandValidator()
     {
-        RuleFor(x => x.StudentCode)
-            .NotEmpty().WithMessage("Student code is required.")
-            .MaximumLength(50);
-
-        RuleFor(x => x.FirstName)
-            .NotEmpty().WithMessage("First name is required.")
-            .MaximumLength(100);
-
-        RuleFor(x => x.LastName)
-            .NotEmpty().WithMessage("Last name is required.")
-            .MaximumLength(100);
-
-        RuleFor(x => x.DateOfBirth)
-            .NotEmpty().WithMessage("Date of birth is required.")
-            .LessThan(DateTime.UtcNow).WithMessage("Date of birth must be in the past.");
+        RuleFor(x => x.SchoolId).NotEmpty();
+        RuleFor(x => x.StudentCode).NotEmpty().MaximumLength(50);
+        RuleFor(x => x.FirstName).NotEmpty().MaximumLength(100);
+        RuleFor(x => x.LastName).NotEmpty().MaximumLength(100);
+        RuleFor(x => x.DateOfBirth).NotEmpty().LessThan(DateTime.Today)
+            .WithMessage("Date of birth must be in the past.");
+        When(x => x.Email != null, () => RuleFor(x => x.Email).EmailAddress());
     }
 }

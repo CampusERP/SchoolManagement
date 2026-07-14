@@ -1,8 +1,11 @@
 using Application.Common.Behaviors;
+using Application.Common.Interfaces;
 
 namespace Application.Features.People.Commands.CreateParent;
 
 public record CreateParentCommand(
-    Guid ApplicationUserId,
+    Guid SchoolId,
     string FirstName,
-    string LastName) : ICommand<Guid>, IBaseCommand;
+    string LastName,
+    string Email,
+    string Password) : ICommand<Guid>, IBaseCommand, ITenantScopedRequest;

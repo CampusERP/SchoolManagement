@@ -6,13 +6,8 @@ public class LinkStudentGuardianCommandValidator : AbstractValidator<LinkStudent
 {
     public LinkStudentGuardianCommandValidator()
     {
-        RuleFor(x => x.StudentId)
-            .NotEmpty().WithMessage("Student ID is required.");
-
-        RuleFor(x => x.ParentId)
-            .NotEmpty().WithMessage("Parent ID is required.");
-
-        RuleFor(x => x.RelationshipType)
-            .IsInEnum().WithMessage("Valid relationship type is required.");
+        RuleFor(x => x.SchoolId).NotEmpty();
+        RuleFor(x => x.StudentId).NotEmpty();
+        RuleFor(x => x.ParentId).NotEmpty();
     }
 }

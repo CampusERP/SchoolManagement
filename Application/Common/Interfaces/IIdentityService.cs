@@ -9,4 +9,5 @@ public interface IIdentityService
     Task DeleteUserAsync(Guid userId, CancellationToken ct);
     Task<SignInAttempt> ValidateCredentialsAsync(string email, string password, CancellationToken ct);
     Task<IReadOnlyList<string>> GetRolesAsync(Guid userId, CancellationToken ct);
+    Task<AuthenticatedUser?> GetByIdAsync(Guid userId, CancellationToken ct);
 }

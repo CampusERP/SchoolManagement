@@ -6,14 +6,9 @@ public class CreateGradeLevelCommandValidator : AbstractValidator<CreateGradeLev
 {
     public CreateGradeLevelCommandValidator()
     {
-        RuleFor(x => x.EducationStageId)
-            .NotEmpty().WithMessage("EducationStage ID is required.");
-
-        RuleFor(x => x.Name)
-            .NotEmpty().WithMessage("Name is required.")
-            .MaximumLength(100);
-
-        RuleFor(x => x.Sequence)
-            .GreaterThan(0).WithMessage("Sequence must be greater than zero.");
+        RuleFor(x => x.SchoolId).NotEmpty();
+        RuleFor(x => x.EducationStageId).NotEmpty();
+        RuleFor(x => x.Name).NotEmpty().MaximumLength(100);
+        RuleFor(x => x.Sequence).GreaterThan(0);
     }
 }
