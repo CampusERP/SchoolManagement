@@ -19,7 +19,6 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(
         this IServiceCollection services, IConfiguration configuration)
     {
-
         var platformConnection = configuration.GetConnectionString("PlatformDb")
             ?? throw new InvalidOperationException("Connection string 'PlatformDb' not found.");
 
