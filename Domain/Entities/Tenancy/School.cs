@@ -33,6 +33,13 @@ public class School : AuditableEntity, IAggregateRoot
         return new School(Guid.NewGuid(), name, subdomainCode.ToLowerInvariant());
     }
 
+    public void UpdateInfo(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("School name is required.", nameof(name));
+        Name = name;
+    }
+
     public void AddCampus(string name, string address)
     {
         _campuses.Add(Campus.Create(Id, name, address));

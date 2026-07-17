@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Domain.Entities.Academics;
 using Infrastructure.Identity;
@@ -20,12 +21,13 @@ public static class DataSeeder
             var appDb = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
+            var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
 
             await platformDb.Database.MigrateAsync();
             await appDb.Database.MigrateAsync();
 
             await SeedRolesAsync(roleManager, logger);
-            await SeedPlatformAdminAsync(userManager, logger);
+            await SeedPlatformAdminAsync(userManager, configuration, logger);
             await SeedEducationStagesAsync(appDb, logger);
             await SeedSubjectsAsync(appDb, logger);
         }
@@ -50,9 +52,19 @@ public static class DataSeeder
         }
     }
 
-    private static async Task SeedPlatformAdminAsync(UserManager<ApplicationUser> userManager, ILogger logger)
+    private static async Task SeedPlatformAdminAsync(
+        UserManager<ApplicationUser> userManager,
+        IConfiguration configuration,
+        ILogger logger)
     {
-        const string adminEmail = "admin@platform.com";
+        var adminEmail = configuration["Seed:PlatformAdmin:Email"];
+        var adminPassword = configuration["Seed:PlatformAdmin:Password"];
+
+        if (string.IsNullOrWhiteSpace(adminEmail) || string.IsNullOrWhiteSpace(adminPassword))
+        {
+            logger.LogWarning("Platform admin seeding skipped because Seed:PlatformAdmin credentials are not configured.");
+            return;
+        }
 
         if (await userManager.FindByEmailAsync(adminEmail) is not null) return;
 
@@ -65,7 +77,7 @@ public static class DataSeeder
             IsPlatformAdmin = true
         };
 
-        var result = await userManager.CreateAsync(admin, "Admin@123456!");
+        var result = await userManager.CreateAsync(admin, adminPassword);
         if (result.Succeeded)
         {
             await userManager.AddToRoleAsync(admin, "SuperAdmin");

@@ -35,5 +35,20 @@ public class Student : TenantEntity, IAggregateRoot
         return new Student(Guid.NewGuid(), schoolId, studentCode, firstName, lastName, dateOfBirth);
     }
 
+    public void Update(string studentCode, string firstName, string lastName, DateTime dateOfBirth)
+    {
+        if (string.IsNullOrWhiteSpace(studentCode))
+            throw new ArgumentException("Student code is required.", nameof(studentCode));
+        if (string.IsNullOrWhiteSpace(firstName) || string.IsNullOrWhiteSpace(lastName))
+            throw new ArgumentException("First and last name are required.");
+        if (dateOfBirth.Date >= DateTime.UtcNow.Date)
+            throw new ArgumentException("Date of birth must be in the past.", nameof(dateOfBirth));
+
+        StudentCode = studentCode;
+        FirstName = firstName;
+        LastName = lastName;
+        DateOfBirth = dateOfBirth;
+    }
+
     public void LinkLogin(Guid applicationUserId) => ApplicationUserId = applicationUserId;
 }

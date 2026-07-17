@@ -18,6 +18,14 @@ public class GradeLevel : TenantEntity, IAggregateRoot
         Sequence = sequence;
     }
 
+    public void Update(string name, int sequence)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Name is required.", nameof(name));
+        Name = name;
+        Sequence = sequence;
+    }
+
     public static GradeLevel Create(Guid schoolId, Guid educationStageId, string name, int sequence)
     {
         if (string.IsNullOrWhiteSpace(name))

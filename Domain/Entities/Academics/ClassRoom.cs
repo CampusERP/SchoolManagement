@@ -21,6 +21,13 @@ public class ClassRoom : TenantEntity, IAggregateRoot
         Name = name;
     }
 
+    public void Update(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Name is required.", nameof(name));
+        Name = name;
+    }
+
     public static ClassRoom Create(Guid schoolId, Guid gradeLevelId, Guid academicYearId, string name)
     {
         if (string.IsNullOrWhiteSpace(name))

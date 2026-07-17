@@ -42,8 +42,26 @@ builder.Services.AddSwaggerGen(options =>
         });
 });
 
+var frontendOrigins = builder.Configuration
+    .GetSection("Cors:AllowedOrigins")
+    .Get<string[]>()
+    ?.Where(origin =>
+        Uri.TryCreate(origin, UriKind.Absolute, out var uri) &&
+        (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps))
+    .Distinct(StringComparer.OrdinalIgnoreCase)
+    .ToArray() ?? [];
+
 builder.Services.AddCors(options =>
-    options.AddPolicy("Dev", p => p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
+{
+    options.AddPolicy("Development", policy =>
+        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+
+    options.AddPolicy("Frontend", policy =>
+    {
+        if (frontendOrigins.Length > 0)
+            policy.WithOrigins(frontendOrigins).AllowAnyHeader().AllowAnyMethod();
+    });
+});
 
 var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>()
     ?? throw new InvalidOperationException("Jwt settings not configured.");
@@ -54,6 +72,7 @@ if (string.IsNullOrWhiteSpace(jwtSettings.Secret) || Encoding.UTF8.GetByteCount(
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        options.MapInboundClaims = false;
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -67,7 +86,32 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-builder.Services.AddAuthorization();
+var permissionPolicies = new[]
+{
+    "AcademicYear.Read", "AcademicYear.Create", "AcademicYear.Update",
+    "ClassRoom.Read", "ClassRoom.Create", "ClassRoom.Update",
+    "GradeLevel.Read", "GradeLevel.Update", "Room.Read", "Room.Update",
+    "School.Read", "School.Dashboard", "School.Create", "School.Update",
+    "Platform.Analytics", "Student.Read", "Student.Create", "Student.Update",
+    "Teacher.Read", "Teacher.Create", "Teacher.Update",
+    "Parent.Read", "Parent.Create", "Parent.Update",
+    "Profile.Read", "Children.Read", "MyClasses.Read",
+    "Enrollment.Create", "Schedule.Create"
+};
+
+builder.Services.AddAuthorization(options =>
+{
+    foreach (var policyName in permissionPolicies)
+    {
+        var permission = policyName == "Platform.Analytics"
+            ? "platform.analytics"
+            : policyName.Replace(".", string.Empty).ToLowerInvariant();
+
+        options.AddPolicy(policyName, policy => policy.RequireAssertion(context =>
+            context.User.HasClaim("is_platform_admin", "true") ||
+            context.User.HasClaim("permission", permission)));
+    }
+});
 
 var app = builder.Build();
 
@@ -79,10 +123,10 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "School Management v1"));
-    app.UseCors("Dev");
 }
 
 app.UseHttpsRedirection();
+app.UseCors(app.Environment.IsDevelopment() ? "Development" : "Frontend");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

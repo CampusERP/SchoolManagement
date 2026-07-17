@@ -1,5 +1,6 @@
 using Application.Common.Interfaces;
 using Application.Common.Interfaces.Repositories;
+using Application.Common.Interfaces.Services;
 using Application.Common.Models;
 using Application.Common.Services;
 using Infrastructure.Authentication;
@@ -7,6 +8,7 @@ using Infrastructure.Identity;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Interceptors;
 using Infrastructure.Persistence.Repositories;
+using Infrastructure.Persistence.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -64,6 +66,13 @@ public static class DependencyInjection
         services.AddScoped<IUserSchoolMembershipRepository, UserSchoolMembershipRepository>();
         services.AddScoped<ISchoolAdminProfileRepository, SchoolAdminProfileRepository>();
         services.AddScoped<ISchoolRepository, SchoolRepository>();
+
+        // Read Services
+        services.AddScoped<IStudentReadService, StudentReadService>();
+        services.AddScoped<ITeacherReadService, TeacherReadService>();
+        services.AddScoped<IParentReadService, ParentReadService>();
+        services.AddScoped<ISchoolReadService, SchoolReadService>();
+        services.AddScoped<IAcademicReadService, AcademicReadService>();
 
         services
             .AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>

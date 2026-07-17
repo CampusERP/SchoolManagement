@@ -19,13 +19,21 @@ public class StudentRepository : IStudentRepository
     public async Task<Student?> GetByIdAsync(Guid id, CancellationToken ct = default) =>
         await _context.Students.FirstOrDefaultAsync(s => s.Id == id, ct);
 
-    public async Task<bool> ExistsAsync(Guid schoolId, string studentCode, CancellationToken ct = default) =>
-        await _context.Students.AnyAsync(s => s.SchoolId == schoolId && s.StudentCode == studentCode, ct);
+    public async Task<bool> ExistsAsync(
+        Guid schoolId,
+        string studentCode,
+        Guid? excludingStudentId = null,
+        CancellationToken ct = default) =>
+        await _context.Students.AnyAsync(
+            s => s.SchoolId == schoolId
+                && s.StudentCode == studentCode
+                && (excludingStudentId == null || s.Id != excludingStudentId),
+            ct);
 
     public async Task AddAsync(Student student, CancellationToken ct = default) =>
         await _context.Students.AddAsync(student, ct);
 
-    public async Task<PagedResult<GetStudentsDto>> GetStudentsAsync(
+    public async Task<PagedResult<StudentListDto>> GetStudentsAsync(
         Guid schoolId,
         Guid? academicYearId,
         PaginationParams pagination,
@@ -53,7 +61,7 @@ public class StudentRepository : IStudentRepository
             })
             .ToListAsync(ct);
 
-        var items = itemsQuery.Select(x => new GetStudentsDto(
+        var items = itemsQuery.Select(x => new StudentListDto(
             x.Student.Id,
             x.Student.StudentCode,
             x.Student.FirstName,
@@ -63,6 +71,6 @@ public class StudentRepository : IStudentRepository
             x.Enrollment?.Status.ToString() ?? string.Empty
         )).ToList();
 
-        return new PagedResult<GetStudentsDto>(items, totalCount, pagination.Page, pagination.PageSize);
+        return new PagedResult<StudentListDto>(items, totalCount, pagination.Page, pagination.PageSize);
     }
 }

@@ -7,10 +7,14 @@ namespace Application.Common.Interfaces.Repositories;
 public interface IStudentRepository
 {
     Task<Student?> GetByIdAsync(Guid id, CancellationToken ct = default);
-    Task<bool> ExistsAsync(Guid schoolId, string studentCode, CancellationToken ct = default);
+    Task<bool> ExistsAsync(
+        Guid schoolId,
+        string studentCode,
+        Guid? excludingStudentId = null,
+        CancellationToken ct = default);
     Task AddAsync(Student student, CancellationToken ct = default);
 
-    Task<PagedResult<GetStudentsDto>> GetStudentsAsync(
+    Task<PagedResult<StudentListDto>> GetStudentsAsync(
         Guid schoolId,
         Guid? academicYearId,
         PaginationParams pagination,

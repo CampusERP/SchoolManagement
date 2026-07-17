@@ -25,4 +25,13 @@ public class Parent : TenantEntity, IAggregateRoot
 
         return new Parent(Guid.NewGuid(), schoolId, applicationUserId, firstName, lastName);
     }
+
+    public void Update(string firstName, string lastName)
+    {
+        if (string.IsNullOrWhiteSpace(firstName) || string.IsNullOrWhiteSpace(lastName))
+            throw new ArgumentException("First and last name are required.");
+
+        FirstName = firstName;
+        LastName = lastName;
+    }
 }

@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Http;
-using Application.Common.Interfaces;
+using Application.Common.Interfaces.Services;
 
 namespace Infrastructure.Identity;
 
@@ -26,7 +26,7 @@ public class CurrentUserService : ICurrentUserService
 
     public IReadOnlyCollection<string> Permissions =>
         _httpContextAccessor.HttpContext?.User?
-            .FindAll("permissions")
+            .FindAll("permission")
             .Select(c => c.Value)
             .ToList() ?? new List<string>();
 }
