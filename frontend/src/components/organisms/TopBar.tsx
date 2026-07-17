@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Menu, Sun, Moon, Search } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useThemeStore } from "@/store/themeStore";
 import { useUiStore } from "@/store/uiStore";
 import { useAuthStore } from "@/store/authStore";
@@ -28,8 +28,14 @@ export default function TopBar() {
   const user = useAuthStore((s) => s.user);
   const clearAuth = useAuthStore((s) => s.clearAuth);
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [searchValue] = useState("");
+
+  const handleLogout = useCallback(() => {
+    clearAuth();
+    navigate("/auth/login", { replace: true });
+  }, [clearAuth, navigate]);
 
   const handleMenuClick = () => {
     if (window.innerWidth < 768) {
@@ -87,7 +93,7 @@ export default function TopBar() {
               email: user.email,
               role: user.role,
             }}
-            onLogout={clearAuth}
+            onLogout={handleLogout}
           />
         )}
       </div>
