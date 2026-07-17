@@ -1,13 +1,18 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Application.Common.Interfaces;
 using Application.Common.Interfaces.Repositories;
+using Application.Common.Interfaces.Services;
+using Application.Common.Models;
+using Application.Common.Services;
+using Infrastructure.Authentication;
 using Infrastructure.Identity;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Interceptors;
 using Infrastructure.Persistence.Repositories;
+using Infrastructure.Persistence.Services;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure;
 
@@ -16,21 +21,24 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(
         this IServiceCollection services, IConfiguration configuration)
     {
-
         var platformConnection = configuration.GetConnectionString("PlatformDb")
             ?? throw new InvalidOperationException("Connection string 'PlatformDb' not found.");
 
         var appConnection = configuration.GetConnectionString("AppDb")
             ?? throw new InvalidOperationException("Connection string 'AppDb' not found.");
 
+        services.Configure<JwtSettings>(configuration.GetSection("Jwt"));
         services.AddHttpContextAccessor();
 
         services.AddScoped<ITenantContext, TenantContext>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<AuditSaveChangesInterceptor>();
 
-        services.AddDbContext<PlatformDbContext>(options =>
-            options.UseSqlServer(platformConnection));
+        services.AddDbContext<PlatformDbContext>((sp, options) =>
+        {
+            options.UseSqlServer(platformConnection);
+            options.AddInterceptors(sp.GetRequiredService<AuditSaveChangesInterceptor>());
+        });
 
         services.AddDbContext<ApplicationDbContext>((sp, options) =>
         {
@@ -38,8 +46,11 @@ public static class DependencyInjection
             options.AddInterceptors(sp.GetRequiredService<AuditSaveChangesInterceptor>());
         });
 
-        services.AddScoped<IUnitOfWork, UnitOfWork<ApplicationDbContext>>();
-        services.AddScoped<IUnitOfWork, UnitOfWork<PlatformDbContext>>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IPlatformUnitOfWork, PlatformUnitOfWork>();
+        services.AddScoped<IIdentityService, IdentityService>();
+        services.AddScoped<IJwtTokenService, JwtTokenService>();
+        services.AddScoped<IPermissionProvider, PermissionProvider>();
 
         // Repositories
         services.AddScoped<IStudentRepository, StudentRepository>();
@@ -52,6 +63,16 @@ public static class DependencyInjection
         services.AddScoped<IRoomRepository, RoomRepository>();
         services.AddScoped<IStudentEnrollmentRepository, StudentEnrollmentRepository>();
         services.AddScoped<ITeachingAssignmentRepository, TeachingAssignmentRepository>();
+        services.AddScoped<IUserSchoolMembershipRepository, UserSchoolMembershipRepository>();
+        services.AddScoped<ISchoolAdminProfileRepository, SchoolAdminProfileRepository>();
+        services.AddScoped<ISchoolRepository, SchoolRepository>();
+
+        // Read Services
+        services.AddScoped<IStudentReadService, StudentReadService>();
+        services.AddScoped<ITeacherReadService, TeacherReadService>();
+        services.AddScoped<IParentReadService, ParentReadService>();
+        services.AddScoped<ISchoolReadService, SchoolReadService>();
+        services.AddScoped<IAcademicReadService, AcademicReadService>();
 
         services
             .AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>

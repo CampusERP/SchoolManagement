@@ -18,6 +18,16 @@ public class Room : TenantEntity, IAggregateRoot
         Capacity = capacity;
     }
 
+    public void Update(string name, int capacity)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Name is required.", nameof(name));
+        if (capacity <= 0)
+            throw new ArgumentException("Capacity must be positive.", nameof(capacity));
+        Name = name;
+        Capacity = capacity;
+    }
+
     public static Room Create(Guid schoolId, string name, int capacity)
     {
         if (string.IsNullOrWhiteSpace(name))

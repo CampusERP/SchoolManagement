@@ -6,14 +6,9 @@ public class CreateClassRoomCommandValidator : AbstractValidator<CreateClassRoom
 {
     public CreateClassRoomCommandValidator()
     {
-        RuleFor(x => x.GradeLevelId)
-            .NotEmpty().WithMessage("GradeLevel ID is required.");
-
-        RuleFor(x => x.AcademicYearId)
-            .NotEmpty().WithMessage("AcademicYear ID is required.");
-
-        RuleFor(x => x.Name)
-            .NotEmpty().WithMessage("Name is required.")
-            .MaximumLength(100);
+        RuleFor(x => x.SchoolId).NotEmpty();
+        RuleFor(x => x.GradeLevelId).NotEmpty();
+        RuleFor(x => x.AcademicYearId).NotEmpty();
+        RuleFor(x => x.Name).NotEmpty().MaximumLength(100);
     }
 }

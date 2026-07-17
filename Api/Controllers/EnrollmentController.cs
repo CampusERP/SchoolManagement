@@ -2,35 +2,26 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Application.Features.Enrollment.Commands.EnrollStudent;
 using Application.Features.Enrollment.Commands.AssignTeacher;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Api.Controllers;
 
-[ApiController]
-[Route("api/[controller]")]
-public class EnrollmentController : ControllerBase
+[Authorize]
+public class EnrollmentController : ApiControllerBase
 {
     private readonly IMediator _mediator;
 
-    public EnrollmentController(IMediator mediator)
-    {
-        _mediator = mediator;
-    }
+    public EnrollmentController(IMediator mediator) => _mediator = mediator;
 
     [HttpPost("students")]
-    public async Task<IActionResult> EnrollStudent(EnrollStudentCommand command, CancellationToken ct)
-    {
-        var result = await _mediator.Send(command, ct);
-        return result.IsSuccess
-            ? CreatedAtAction(nameof(EnrollStudent), new { id = result.Value }, result.Value)
-            : BadRequest(result.Error);
-    }
+    [Authorize(Policy = "Enrollment.Create")]
+    public async Task<IActionResult> EnrollStudent(
+        [FromBody] EnrollStudentCommand command, CancellationToken ct) =>
+        Created(await _mediator.Send(command, ct));
 
-    [HttpPost("teaching-assignments")]
-    public async Task<IActionResult> AssignTeacher(AssignTeacherCommand command, CancellationToken ct)
-    {
-        var result = await _mediator.Send(command, ct);
-        return result.IsSuccess
-            ? CreatedAtAction(nameof(AssignTeacher), new { id = result.Value }, result.Value)
-            : BadRequest(result.Error);
-    }
+    [HttpPost("teachers")]
+    [Authorize(Policy = "Schedule.Create")]
+    public async Task<IActionResult> AssignTeacher(
+        [FromBody] AssignTeacherCommand command, CancellationToken ct) =>
+        Created(await _mediator.Send(command, ct));
 }

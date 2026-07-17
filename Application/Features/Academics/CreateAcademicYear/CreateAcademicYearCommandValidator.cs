@@ -6,15 +6,10 @@ public class CreateAcademicYearCommandValidator : AbstractValidator<CreateAcadem
 {
     public CreateAcademicYearCommandValidator()
     {
-        RuleFor(x => x.Name)
-            .NotEmpty().WithMessage("Name is required.")
-            .MaximumLength(200);
-
-        RuleFor(x => x.StartDate)
-            .NotEmpty().WithMessage("Start date is required.");
-
-        RuleFor(x => x.EndDate)
-            .NotEmpty().WithMessage("End date is required.")
-            .GreaterThan(x => x.StartDate).WithMessage("End date must be after the start date.");
+        RuleFor(x => x.SchoolId).NotEmpty();
+        RuleFor(x => x.Name).NotEmpty().MaximumLength(50);
+        RuleFor(x => x.StartDate).NotEmpty();
+        RuleFor(x => x.EndDate).NotEmpty().GreaterThan(x => x.StartDate)
+            .WithMessage("End date must be after the start date.");
     }
 }

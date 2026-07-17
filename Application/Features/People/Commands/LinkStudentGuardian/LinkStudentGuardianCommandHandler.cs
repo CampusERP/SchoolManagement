@@ -1,8 +1,6 @@
 using MediatR;
-using Application.Common.Interfaces;
 using Application.Common.Models;
 using Application.Common.Interfaces.Repositories;
-using Application.Common.Exceptions;
 using Domain.Entities.People;
 
 namespace Application.Features.People.Commands.LinkStudentGuardian;
@@ -12,25 +10,19 @@ public class LinkStudentGuardianCommandHandler : IRequestHandler<LinkStudentGuar
     private readonly IStudentRepository _students;
     private readonly IParentRepository _parents;
     private readonly IStudentGuardianRepository _guardians;
-    private readonly ITenantContext _tenant;
 
     public LinkStudentGuardianCommandHandler(
         IStudentRepository students,
         IParentRepository parents,
-        IStudentGuardianRepository guardians,
-        ITenantContext tenant)
+        IStudentGuardianRepository guardians)
     {
         _students = students;
         _parents = parents;
         _guardians = guardians;
-        _tenant = tenant;
     }
 
     public async Task<Result<Guid>> Handle(LinkStudentGuardianCommand request, CancellationToken ct)
     {
-        var schoolId = _tenant.SchoolId
-            ?? throw new UnauthorizedAccessException("No school context found.");
-
         var student = await _students.GetByIdAsync(request.StudentId, ct);
         if (student is null)
             return Result.Failure<Guid>($"Student with ID '{request.StudentId}' was not found.");
@@ -39,8 +31,12 @@ public class LinkStudentGuardianCommandHandler : IRequestHandler<LinkStudentGuar
         if (parent is null)
             return Result.Failure<Guid>($"Parent with ID '{request.ParentId}' was not found.");
 
+        var exists = await _guardians.ExistsAsync(request.StudentId, request.ParentId, ct);
+        if (exists)
+            return Result.Failure<Guid>($"Guardian with ID '{request.ParentId}' is already linked to student with ID '{request.StudentId}'.");
+
         var guardian = StudentGuardian.Create(
-            schoolId,
+            request.SchoolId,
             request.StudentId,
             request.ParentId,
             request.RelationshipType,

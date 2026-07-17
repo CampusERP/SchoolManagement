@@ -32,6 +32,19 @@ public class Teacher : TenantEntity, IAggregateRoot
         return new Teacher(Guid.NewGuid(), schoolId, applicationUserId, employeeCode, firstName, lastName);
     }
 
+    public void Update(string employeeCode, string firstName, string lastName, EmploymentStatus employmentStatus)
+    {
+        if (string.IsNullOrWhiteSpace(employeeCode))
+            throw new ArgumentException("Employee code is required.", nameof(employeeCode));
+        if (string.IsNullOrWhiteSpace(firstName) || string.IsNullOrWhiteSpace(lastName))
+            throw new ArgumentException("First and last name are required.");
+
+        EmployeeCode = employeeCode;
+        FirstName = firstName;
+        LastName = lastName;
+        EmploymentStatus = employmentStatus;
+    }
+
     public void SetOnLeave() => EmploymentStatus = EmploymentStatus.OnLeave;
     public void Terminate() => EmploymentStatus = EmploymentStatus.Terminated;
     public void Reactivate() => EmploymentStatus = EmploymentStatus.Active;

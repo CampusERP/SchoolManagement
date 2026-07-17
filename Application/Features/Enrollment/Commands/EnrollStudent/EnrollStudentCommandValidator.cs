@@ -6,13 +6,9 @@ public class EnrollStudentCommandValidator : AbstractValidator<EnrollStudentComm
 {
     public EnrollStudentCommandValidator()
     {
-        RuleFor(x => x.StudentId)
-            .NotEmpty().WithMessage("Student ID is required.");
-
-        RuleFor(x => x.ClassRoomId)
-            .NotEmpty().WithMessage("ClassRoom ID is required.");
-
-        RuleFor(x => x.AcademicYearId)
-            .NotEmpty().WithMessage("AcademicYear ID is required.");
+        RuleFor(x => x.SchoolId).NotEmpty();
+        RuleFor(x => x.StudentId).NotEmpty();
+        RuleFor(x => x.ClassRoomId).NotEmpty();
+        RuleFor(x => x.AcademicYearId).NotEmpty();
     }
 }

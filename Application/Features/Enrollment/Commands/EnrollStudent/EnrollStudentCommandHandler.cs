@@ -1,5 +1,4 @@
 using MediatR;
-using Application.Common.Interfaces;
 using Application.Common.Models;
 using Application.Common.Interfaces.Repositories;
 using Domain.Entities.Enrollment;
@@ -12,27 +11,21 @@ public class EnrollStudentCommandHandler : IRequestHandler<EnrollStudentCommand,
     private readonly IStudentRepository _students;
     private readonly IClassRoomRepository _classRooms;
     private readonly IAcademicYearRepository _academicYears;
-    private readonly ITenantContext _tenant;
 
     public EnrollStudentCommandHandler(
         IStudentEnrollmentRepository enrollments,
         IStudentRepository students,
         IClassRoomRepository classRooms,
-        IAcademicYearRepository academicYears,
-        ITenantContext tenant)
+        IAcademicYearRepository academicYears)
     {
         _enrollments = enrollments;
         _students = students;
         _classRooms = classRooms;
         _academicYears = academicYears;
-        _tenant = tenant;
     }
 
     public async Task<Result<Guid>> Handle(EnrollStudentCommand request, CancellationToken ct)
     {
-        var schoolId = _tenant.SchoolId
-            ?? throw new UnauthorizedAccessException("No school context found.");
-
         var student = await _students.GetByIdAsync(request.StudentId, ct);
         if (student is null)
             return Result.Failure<Guid>($"Student with ID '{request.StudentId}' was not found.");
@@ -45,13 +38,17 @@ public class EnrollStudentCommandHandler : IRequestHandler<EnrollStudentCommand,
         if (academicYear is null)
             return Result.Failure<Guid>($"AcademicYear with ID '{request.AcademicYearId}' was not found.");
 
-        var alreadyEnrolled = await _enrollments.ExistsAsync(schoolId, request.StudentId, request.AcademicYearId, ct);
+        if (academicYear.Status == Domain.Enums.AcademicYearStatus.Closed ||
+            academicYear.Status == Domain.Enums.AcademicYearStatus.Archived)
+            return Result.Failure<Guid>("Cannot enroll a student into a closed or archived academic year.");
+
+        var alreadyEnrolled = await _enrollments.ExistsAsync(request.SchoolId, request.StudentId, request.AcademicYearId, ct);
         if (alreadyEnrolled)
             return Result.Failure<Guid>("Student is already enrolled in this academic year.");
 
-        var enrollment = StudentEnrollment.Create(schoolId, request.StudentId, request.ClassRoomId, request.AcademicYearId);
+        var enrollment = StudentEnrollment.Create(request.SchoolId, request.StudentId, request.ClassRoomId, request.AcademicYearId);
+        
         await _enrollments.AddAsync(enrollment, ct);
-
         return Result.Success(enrollment.Id);
     }
 }

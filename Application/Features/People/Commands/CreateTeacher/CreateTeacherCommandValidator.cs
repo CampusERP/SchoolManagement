@@ -6,19 +6,11 @@ public class CreateTeacherCommandValidator : AbstractValidator<CreateTeacherComm
 {
     public CreateTeacherCommandValidator()
     {
-        RuleFor(x => x.ApplicationUserId)
-            .NotEmpty().WithMessage("Application user ID is required.");
-
-        RuleFor(x => x.EmployeeCode)
-            .NotEmpty().WithMessage("Employee code is required.")
-            .MaximumLength(50);
-
-        RuleFor(x => x.FirstName)
-            .NotEmpty().WithMessage("First name is required.")
-            .MaximumLength(100);
-
-        RuleFor(x => x.LastName)
-            .NotEmpty().WithMessage("Last name is required.")
-            .MaximumLength(100);
+        RuleFor(x => x.SchoolId).NotEmpty();
+        RuleFor(x => x.EmployeeCode).NotEmpty().MaximumLength(50);
+        RuleFor(x => x.FirstName).NotEmpty().MaximumLength(100);
+        RuleFor(x => x.LastName).NotEmpty().MaximumLength(100);
+        RuleFor(x => x.Email).NotEmpty().EmailAddress();
+        RuleFor(x => x.Password).NotEmpty().MinimumLength(8);
     }
 }

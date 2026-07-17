@@ -54,6 +54,17 @@ public class AcademicYear : TenantEntity, IAggregateRoot
         return term;
     }
 
+    public void Update(string name, DateTime startDate, DateTime endDate)
+    {
+        if (Status == AcademicYearStatus.Closed || Status == AcademicYearStatus.Archived)
+            throw new DomainException("Cannot update a closed or archived academic year.");
+        if (endDate <= startDate)
+            throw new DomainException("Academic year end date must be after the start date.");
+        Name = name;
+        StartDate = startDate;
+        EndDate = endDate;
+    }
+
     public void Activate()
     {
         IsCurrent = true;

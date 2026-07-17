@@ -1,14 +1,13 @@
 using Application.Common.Interfaces;
-using Microsoft.EntityFrameworkCore;
+using Infrastructure.Persistence;
 
 namespace Infrastructure;
 
-public class UnitOfWork<TContext> : IUnitOfWork
-    where TContext : DbContext
+public class UnitOfWork : IUnitOfWork
 {
-    private readonly TContext _context;
+    private readonly ApplicationDbContext _context;
 
-    public UnitOfWork(TContext context)
+    public UnitOfWork(ApplicationDbContext context)
     {
         _context = context;
     }

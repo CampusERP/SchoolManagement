@@ -1,30 +1,55 @@
 using MediatR;
-using Application.Common.Interfaces;
 using Application.Common.Models;
 using Application.Common.Interfaces.Repositories;
 using Domain.Entities.People;
+using Domain.Entities.Tenancy;
+using Application.Common.Interfaces.Services;
 
 namespace Application.Features.People.Commands.CreateParent;
 
 public class CreateParentCommandHandler : IRequestHandler<CreateParentCommand, Result<Guid>>
 {
     private readonly IParentRepository _parents;
-    private readonly ITenantContext _tenant;
+    private readonly IIdentityService _identityService;
+    private readonly IUserSchoolMembershipRepository _memberships;
 
-    public CreateParentCommandHandler(IParentRepository parents, ITenantContext tenant)
+    public CreateParentCommandHandler(
+        IParentRepository parents,
+        IIdentityService identityService,
+        IUserSchoolMembershipRepository memberships)
     {
         _parents = parents;
-        _tenant = tenant;
+        _identityService = identityService;
+        _memberships = memberships;
     }
 
     public async Task<Result<Guid>> Handle(CreateParentCommand request, CancellationToken ct)
     {
-        var schoolId = _tenant.SchoolId
-            ?? throw new UnauthorizedAccessException("No school context found.");
+        var applicationUser = await _identityService.CreateUserAsync(request.Email, request.Password, ct);
+        if (!applicationUser.IsSuccess)
+            return Result.Failure<Guid>(applicationUser.Error ?? "Failed to create application user.");
 
-        var parent = Parent.Create(schoolId, request.ApplicationUserId, request.FirstName, request.LastName);
-        await _parents.AddAsync(parent, ct);
+        var userId = applicationUser.Value;
 
-        return Result.Success(parent.Id);
+        try
+        {
+            var roleResult = await _identityService.AddToRoleAsync(userId, "Parent", ct);
+
+            if (!roleResult.IsSuccess)
+            {
+                await _identityService.DeleteUserAsync(userId, ct);
+                return Result.Failure<Guid>(roleResult.Error!);
+            }
+
+            var parent = Parent.Create(request.SchoolId, userId, request.FirstName, request.LastName);
+            await _memberships.AddAsync(UserSchoolMembership.Create(userId, request.SchoolId), ct);
+            await _parents.AddAsync(parent, ct);
+            return Result.Success(parent.Id);
+        }
+        catch
+        {
+            await _identityService.DeleteUserAsync(userId, ct);
+            throw;
+        }
     }
 }

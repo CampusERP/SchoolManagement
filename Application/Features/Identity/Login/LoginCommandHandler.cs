@@ -1,5 +1,6 @@
 ﻿using Application.Common.Interfaces;
 using Application.Common.Interfaces.Repositories;
+using Application.Common.Interfaces.Services;
 using Application.Common.Models;
 using MediatR;
 
@@ -10,15 +11,18 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<LoginRes
     private readonly IIdentityService _identityService;
     private readonly IUserSchoolMembershipRepository _memberships;
     private readonly IJwtTokenService _jwtService;
+    private readonly IPermissionProvider _permissions;
 
     public LoginCommandHandler(
             IIdentityService identityService,
             IUserSchoolMembershipRepository memberships,
-            IJwtTokenService jwtService)
+            IJwtTokenService jwtService,
+            IPermissionProvider permissions)
     {
         _identityService = identityService;
         _memberships = memberships;
         _jwtService = jwtService;
+        _permissions = permissions;
     }
 
     public async Task<Result<LoginResponse>> Handle(LoginCommand request, CancellationToken ct)
@@ -42,7 +46,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<LoginRes
         if (user.IsPlatformAdmin)
         {
             role = "SuperAdmin";
-            permissions = new() { "school.create", "school.manage", "subscription.manage" };
+            permissions = _permissions.GetPlatformAdminPermissions();
         }
         else
         {
@@ -60,7 +64,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<LoginRes
             var roles = await _identityService.GetRolesAsync(user.Id, ct);
             role = roles.FirstOrDefault() ?? "Unknown";
 
-            permissions = GetDefaultPermissionsForRole(role);
+            permissions = _permissions.GetPermissionsForRole(role);
         }
 
         var tokens = await _jwtService.IssueTokensAsync(
@@ -75,30 +79,4 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<LoginRes
             schoolId,
             role));
     }
-
-    private static List<string> GetDefaultPermissionsForRole(string role) => role switch
-    {
-        "SchoolAdmin" => new()
-        {
-            "school.read", "teacher.create", "teacher.read",
-            "student.create", "student.read", "enrollment.create",
-            "classroom.create", "academicyear.create", "schedule.create",
-            "attendance.read", "report.read"
-        },
-        "Teacher" => new()
-        {
-            "attendance.record", "grade.enter", "assignment.create",
-            "classroom.read", "schedule.read"
-        },
-        "Student" => new()
-        {
-            "grade.read.own", "attendance.read.own",
-            "schedule.read", "assignment.read"
-        },
-        "Parent" => new()
-        {
-            "grade.read.child", "attendance.read.child", "notification.read"
-        },
-        _ => new()
-    };
 }

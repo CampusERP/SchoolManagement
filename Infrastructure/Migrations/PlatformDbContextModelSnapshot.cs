@@ -120,6 +120,9 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
+                    b.Property<Guid?>("SchoolId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Token")
                         .IsRequired()
                         .HasMaxLength(256)

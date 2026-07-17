@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using Application.Common.Interfaces;
 using Domain.Common;
+using Application.Common.Interfaces.Services;
 
 namespace Infrastructure.Persistence.Interceptors;
 

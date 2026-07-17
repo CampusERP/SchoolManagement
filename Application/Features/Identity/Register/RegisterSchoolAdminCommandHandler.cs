@@ -1,6 +1,6 @@
 ﻿using Application.Common.Exceptions;
-using Application.Common.Interfaces;
 using Application.Common.Interfaces.Repositories;
+using Application.Common.Interfaces.Services;
 using Application.Common.Models;
 using Domain.Entities.People;
 using Domain.Entities.Tenancy;
@@ -43,7 +43,10 @@ public class RegisterSchoolAdminCommandHandler : IRequestHandler<RegisterSchoolA
         {
             var roleResult = await _identityService.AddToRoleAsync(userId, "SchoolAdmin", ct);
             if (!roleResult.IsSuccess)
+            {
+                await _identityService.DeleteUserAsync(userId, ct);
                 return Result.Failure<Guid>(roleResult.Error!);
+            }
 
             var membership = UserSchoolMembership.Create(userId, request.SchoolId);
             await _userSchoolMembership.AddAsync(membership, ct);

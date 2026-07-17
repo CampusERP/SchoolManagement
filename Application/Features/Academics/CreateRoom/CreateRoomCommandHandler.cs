@@ -1,5 +1,4 @@
 using MediatR;
-using Application.Common.Interfaces;
 using Application.Common.Models;
 using Application.Common.Interfaces.Repositories;
 using Domain.Entities.Academics;
@@ -9,24 +8,19 @@ namespace Application.Features.Academics.CreateRoom;
 public class CreateRoomCommandHandler : IRequestHandler<CreateRoomCommand, Result<Guid>>
 {
     private readonly IRoomRepository _rooms;
-    private readonly ITenantContext _tenant;
 
-    public CreateRoomCommandHandler(IRoomRepository rooms, ITenantContext tenant)
+    public CreateRoomCommandHandler(IRoomRepository rooms)
     {
         _rooms = rooms;
-        _tenant = tenant;
     }
 
     public async Task<Result<Guid>> Handle(CreateRoomCommand request, CancellationToken ct)
     {
-        var schoolId = _tenant.SchoolId
-            ?? throw new UnauthorizedAccessException("No school context found.");
-
-        var exists = await _rooms.ExistsAsync(schoolId, request.Name, ct);
+        var exists = await _rooms.ExistsAsync(request.SchoolId, request.Name, ct);
         if (exists)
             return Result.Failure<Guid>($"A room with name '{request.Name}' already exists in this school.");
 
-        var room = Room.Create(schoolId, request.Name, request.Capacity);
+        var room = Room.Create(request.SchoolId, request.Name, request.Capacity);
         await _rooms.AddAsync(room, ct);
 
         return Result.Success(room.Id);
