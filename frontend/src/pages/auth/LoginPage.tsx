@@ -42,9 +42,11 @@ export default function LoginPage() {
       } else {
         navigate("/auth/login");
       }
-    } catch (err) {
+    } catch (err: any) {
       const message =
-        err instanceof Error ? err.message : "Login failed. Please try again.";
+        err?.response?.data?.error ||
+        err?.response?.data?.message ||
+        (err instanceof Error ? err.message : "Login failed. Please try again.");
       toast.error(message);
     } finally {
       setLoading(false);
@@ -90,11 +92,17 @@ export default function LoginPage() {
           validateStatus={errors.password ? "error" : ""}
           help={errors.password?.message}
         >
-          <Input.Password
-            prefix={<Lock className="h-4 w-4 text-[var(--color-text-muted)]" />}
-            placeholder="Enter your password"
-            size="large"
-            {...register("password")}
+          <Controller
+            name="password"
+            control={control}
+            render={({ field }) => (
+              <Input.Password
+                {...field}
+                prefix={<Lock className="h-4 w-4 text-[var(--color-text-muted)]" />}
+                placeholder="Enter your password"
+                size="large"
+              />
+            )}
           />
         </Form.Item>
 

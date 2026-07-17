@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import InfoCard from "@/components/molecules/InfoCard";
 
 interface AttendanceData {
   present: number;
@@ -19,19 +20,6 @@ const categories = [
   { key: "excused", label: "Excused", color: "bg-sky-500" },
 ] as const;
 
-function InfoCard({ children, className }: { children: React.ReactNode; className?: string }) {
-  return (
-    <div
-      className={cn(
-        "rounded-[var(--card-radius)] border border-[var(--color-border)] bg-[var(--color-surface-card)] p-5 shadow-[var(--shadow-card)]",
-        className
-      )}
-    >
-      {children}
-    </div>
-  );
-}
-
 export default function AttendanceSummary({
   data,
   className,
@@ -39,11 +27,7 @@ export default function AttendanceSummary({
   const total = data.present + data.absent + data.late + data.excused;
 
   return (
-    <InfoCard className={className}>
-      <h3 className="mb-4 text-base font-semibold text-[var(--color-text-primary)]">
-        Attendance Summary
-      </h3>
-
+    <InfoCard title="Attendance Summary" className={className}>
       <div className="mb-4 text-center">
         <span className="text-3xl font-bold text-[var(--color-text-primary)]">{total}</span>
         <span className="ml-1 text-sm text-[var(--color-text-muted)]">total records</span>

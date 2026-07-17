@@ -2,7 +2,7 @@ import { type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 interface InfoCardProps {
-  title: string;
+  title?: string;
   children: ReactNode;
   className?: string;
   extra?: ReactNode;
@@ -21,12 +21,14 @@ export default function InfoCard({
         className
       )}
     >
-      <div className="flex items-center justify-between border-b border-[var(--color-border)] px-5 py-4">
-        <h3 className="text-base font-semibold text-[var(--color-text-primary)]">
-          {title}
-        </h3>
-        {extra && <div>{extra}</div>}
-      </div>
+      {title && (
+        <div className="flex items-center justify-between border-b border-[var(--color-border)] px-5 py-4">
+          <h3 className="text-base font-semibold text-[var(--color-text-primary)]">
+            {title}
+          </h3>
+          {extra && <div>{extra}</div>}
+        </div>
+      )}
       <div className="p-5">{children}</div>
     </div>
   );

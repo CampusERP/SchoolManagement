@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import dayjs from "dayjs";
+import InfoCard from "@/components/molecules/InfoCard";
 
 interface LessonItem {
   id: string;
@@ -22,29 +23,12 @@ const statusStyles: Record<string, { dot: string; text: string; bg: string }> = 
   upcoming: { dot: "bg-[var(--color-text-muted)]", text: "text-[var(--color-text-secondary)]", bg: "bg-[var(--color-surface)]" },
 };
 
-function InfoCard({ children, className }: { children: React.ReactNode; className?: string }) {
-  return (
-    <div
-      className={cn(
-        "rounded-[var(--card-radius)] border border-[var(--color-border)] bg-[var(--color-surface-card)] p-5 shadow-[var(--shadow-card)]",
-        className
-      )}
-    >
-      {children}
-    </div>
-  );
-}
-
 export default function UpcomingLessons({
   items,
   className,
 }: UpcomingLessonsProps) {
   return (
-    <InfoCard className={className}>
-      <h3 className="mb-4 text-base font-semibold text-[var(--color-text-primary)]">
-        Upcoming Lessons
-      </h3>
-
+    <InfoCard title="Upcoming Lessons" className={className}>
       {items.length === 0 ? (
         <p className="text-sm text-[var(--color-text-muted)]">No lessons scheduled</p>
       ) : (

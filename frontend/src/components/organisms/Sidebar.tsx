@@ -148,7 +148,11 @@ function SidebarContent({ collapsed }: { collapsed: boolean }) {
                 {(!group.label || collapsed || openGroups[groupIndex]) && (
                   <div className="space-y-0.5">
                     {group.items.map((item) => {
-                      const isActive = location.pathname === item.path;
+                      const isActive =
+                        item.path === "/"
+                          ? location.pathname === "/"
+                          : location.pathname === item.path ||
+                            location.pathname.startsWith(item.path + "/");
                       return (
                         <Link
                           key={item.path}

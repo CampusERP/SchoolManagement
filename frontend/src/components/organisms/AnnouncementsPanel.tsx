@@ -1,5 +1,5 @@
-import { cn } from "@/lib/utils";
 import dayjs from "dayjs";
+import InfoCard from "@/components/molecules/InfoCard";
 
 interface Announcement {
   id: string;
@@ -14,29 +14,12 @@ interface AnnouncementsPanelProps {
   className?: string;
 }
 
-function InfoCard({ children, className }: { children: React.ReactNode; className?: string }) {
-  return (
-    <div
-      className={cn(
-        "rounded-[var(--card-radius)] border border-[var(--color-border)] bg-[var(--color-surface-card)] p-5 shadow-[var(--shadow-card)]",
-        className
-      )}
-    >
-      {children}
-    </div>
-  );
-}
-
 export default function AnnouncementsPanel({
   announcements,
   className,
 }: AnnouncementsPanelProps) {
   return (
-    <InfoCard className={className}>
-      <h3 className="mb-4 text-base font-semibold text-[var(--color-text-primary)]">
-        Announcements
-      </h3>
-
+    <InfoCard title="Announcements" className={className}>
       {announcements.length === 0 ? (
         <p className="text-sm text-[var(--color-text-muted)]">No announcements</p>
       ) : (
