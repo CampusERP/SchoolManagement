@@ -1,0 +1,92 @@
+import { cn } from "@/lib/utils";
+import dayjs from "dayjs";
+
+interface LessonItem {
+  id: string;
+  className: string;
+  subject: string;
+  startTime: string;
+  endTime: string;
+  room: string;
+  status: string;
+}
+
+interface UpcomingLessonsProps {
+  items: LessonItem[];
+  className?: string;
+}
+
+const statusStyles: Record<string, { dot: string; text: string; bg: string }> = {
+  completed: { dot: "bg-gray-400", text: "text-[var(--color-text-muted)]", bg: "bg-gray-50" },
+  in_progress: { dot: "bg-[var(--color-primary)]", text: "text-[var(--color-primary)]", bg: "bg-[var(--color-primary-light)]" },
+  upcoming: { dot: "bg-[var(--color-text-muted)]", text: "text-[var(--color-text-secondary)]", bg: "bg-[var(--color-surface)]" },
+};
+
+function InfoCard({ children, className }: { children: React.ReactNode; className?: string }) {
+  return (
+    <div
+      className={cn(
+        "rounded-[var(--card-radius)] border border-[var(--color-border)] bg-[var(--color-surface-card)] p-5 shadow-[var(--shadow-card)]",
+        className
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+
+export default function UpcomingLessons({
+  items,
+  className,
+}: UpcomingLessonsProps) {
+  return (
+    <InfoCard className={className}>
+      <h3 className="mb-4 text-base font-semibold text-[var(--color-text-primary)]">
+        Upcoming Lessons
+      </h3>
+
+      {items.length === 0 ? (
+        <p className="text-sm text-[var(--color-text-muted)]">No lessons scheduled</p>
+      ) : (
+        <div className="space-y-3">
+          {items.map((item) => {
+            const style = statusStyles[item.status] ?? statusStyles.upcoming;
+            return (
+              <div
+                key={item.id}
+                className={cn(
+                  "flex items-center gap-4 rounded-[var(--border-radius)] border border-[var(--color-border)] p-3",
+                  style.bg
+                )}
+              >
+                <div className="flex flex-col items-center text-xs text-[var(--color-text-secondary)]">
+                  <span className="font-medium">
+                    {dayjs(item.startTime).format("HH:mm")}
+                  </span>
+                  <span className="text-[var(--color-text-muted)]">
+                    {dayjs(item.endTime).format("HH:mm")}
+                  </span>
+                </div>
+
+                <div className={cn("h-8 w-0.5 shrink-0 rounded-full", style.dot)} />
+
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-[var(--color-text-primary)]">
+                    {item.className}
+                  </p>
+                  <p className="text-xs text-[var(--color-text-secondary)]">
+                    {item.subject} · {item.room}
+                  </p>
+                </div>
+
+                <span className={cn("text-xs font-medium capitalize", style.text)}>
+                  {item.status.replace("_", " ")}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </InfoCard>
+  );
+}
