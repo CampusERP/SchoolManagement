@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useAuthStore } from "@/store/authStore";
 import { DashboardApi } from "./api";
 
 export const usePlatformDashboard = () =>
@@ -7,11 +8,14 @@ export const usePlatformDashboard = () =>
     queryFn: DashboardApi.getPlatformDashboard,
   });
 
-export const useSchoolDashboard = () =>
-  useQuery({
-    queryKey: ["dashboard", "school"],
-    queryFn: DashboardApi.getSchoolDashboard,
+export const useSchoolDashboard = () => {
+  const schoolId = useAuthStore((s) => s.user?.schoolId);
+  return useQuery({
+    queryKey: ["dashboard", "school", schoolId],
+    queryFn: () => schoolId ? DashboardApi.getSchoolDashboard(schoolId) : null,
+    enabled: !!schoolId,
   });
+};
 
 export const useTeacherDashboard = () =>
   useQuery({

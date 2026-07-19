@@ -26,7 +26,7 @@ public class UpdateStudentCommandHandler : IRequestHandler<UpdateStudentCommand,
 
         try
         {
-            student.Update(request.StudentCode, request.FirstName, request.LastName, request.DateOfBirth);
+            student.Update(request.StudentCode, request.FirstName, request.LastName, request.DateOfBirth, request.NationalId);
         }
         catch (ArgumentException ex)
         {

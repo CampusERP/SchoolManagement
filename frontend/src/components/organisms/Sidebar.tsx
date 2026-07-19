@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -9,7 +9,8 @@ import {
   GraduationCap,
   ClipboardList,
   ChevronDown,
-  Menu,
+  Layers,
+  FileSpreadsheet,
 } from "lucide-react";
 import * as Separator from "@radix-ui/react-separator";
 import * as ScrollArea from "@radix-ui/react-scroll-area";
@@ -21,6 +22,7 @@ interface NavItem {
   label: string;
   path: string;
   icon: React.ReactNode;
+  permission?: string;
 }
 
 interface NavGroup {
@@ -39,6 +41,33 @@ function getNavigationForRole(
           items: [
             { label: "Analytics", path: "/platform", icon: <LayoutDashboard className="h-5 w-5" /> },
             { label: "Schools", path: "/platform/schools", icon: <Building2 className="h-5 w-5" /> },
+            { label: "Import Guide", path: "/platform/import-guide", icon: <FileSpreadsheet className="h-5 w-5" /> },
+          ],
+        },
+        {
+          label: "Academics",
+          defaultOpen: false,
+          items: [
+            { label: "Academic Years", path: "/academics/years", icon: <BookOpen className="h-5 w-5" /> },
+            { label: "Classrooms", path: "/academics/classrooms", icon: <ClipboardList className="h-5 w-5" /> },
+            { label: "Grade Levels", path: "/academics/grade-levels", icon: <GraduationCap className="h-5 w-5" /> },
+            { label: "Education Stages", path: "/academics/education-stages", icon: <Layers className="h-5 w-5" /> },
+            { label: "Rooms", path: "/academics/rooms", icon: <Building2 className="h-5 w-5" /> },
+          ],
+        },
+        {
+          label: "People",
+          defaultOpen: false,
+          items: [
+            { label: "Students", path: "/people/students", icon: <Users className="h-5 w-5" /> },
+            { label: "Teachers", path: "/people/teachers", icon: <UserPlus className="h-5 w-5" /> },
+            { label: "Parents", path: "/people/parents", icon: <Users className="h-5 w-5" /> },
+            { label: "Import Guide", path: "/people/import-guide", icon: <FileSpreadsheet className="h-5 w-5" /> },
+          ],
+        },
+        {
+          items: [
+            { label: "Enrollment", path: "/enrollment", icon: <ClipboardList className="h-5 w-5" /> },
           ],
         },
       ];
@@ -46,31 +75,32 @@ function getNavigationForRole(
       return [
         {
           items: [
-            { label: "Dashboard", path: "/school", icon: <LayoutDashboard className="h-5 w-5" /> },
+            { label: "Dashboard", path: "/school", icon: <LayoutDashboard className="h-5 w-5" />, permission: "school.dashboard" },
           ],
         },
         {
           label: "Academics",
           defaultOpen: true,
           items: [
-            { label: "Academic Years", path: "/academics/years", icon: <BookOpen className="h-5 w-5" /> },
-            { label: "Classrooms", path: "/academics/classrooms", icon: <ClipboardList className="h-5 w-5" /> },
-            { label: "Grade Levels", path: "/academics/grade-levels", icon: <GraduationCap className="h-5 w-5" /> },
-            { label: "Rooms", path: "/academics/rooms", icon: <Building2 className="h-5 w-5" /> },
+            { label: "Academic Years", path: "/academics/years", icon: <BookOpen className="h-5 w-5" />, permission: "academicyear.read" },
+            { label: "Classrooms", path: "/academics/classrooms", icon: <ClipboardList className="h-5 w-5" />, permission: "classroom.read" },
+            { label: "Grade Levels", path: "/academics/grade-levels", icon: <GraduationCap className="h-5 w-5" />, permission: "gradelevel.read" },
+            { label: "Education Stages", path: "/academics/education-stages", icon: <Layers className="h-5 w-5" />, permission: "educationstage.read" },
+            { label: "Rooms", path: "/academics/rooms", icon: <Building2 className="h-5 w-5" />, permission: "room.read" },
           ],
         },
         {
           label: "People",
           defaultOpen: true,
           items: [
-            { label: "Students", path: "/people/students", icon: <Users className="h-5 w-5" /> },
-            { label: "Teachers", path: "/people/teachers", icon: <UserPlus className="h-5 w-5" /> },
-            { label: "Parents", path: "/people/parents", icon: <Users className="h-5 w-5" /> },
+            { label: "Students", path: "/people/students", icon: <Users className="h-5 w-5" />, permission: "student.read" },
+            { label: "Teachers", path: "/people/teachers", icon: <UserPlus className="h-5 w-5" />, permission: "teacher.read" },
+            { label: "Parents", path: "/people/parents", icon: <Users className="h-5 w-5" />, permission: "parent.read" },
           ],
         },
         {
           items: [
-            { label: "Enrollment", path: "/enrollment", icon: <ClipboardList className="h-5 w-5" /> },
+            { label: "Enrollment", path: "/enrollment", icon: <ClipboardList className="h-5 w-5" />, permission: "enrollment.create" },
           ],
         },
       ];
@@ -90,9 +120,21 @@ function getNavigationForRole(
 function SidebarContent({ collapsed }: { collapsed: boolean }) {
   const location = useLocation();
   const user = useAuthStore((s) => s.user);
+  const hasPermission = useAuthStore((s) => s.hasPermission);
   const [openGroups, setOpenGroups] = useState<Record<number, boolean>>({});
 
-  const navigation = getNavigationForRole(user?.role);
+  const navigation = useMemo(() => {
+    const base = getNavigationForRole(user?.role);
+    if (user?.role !== "school_admin") return base;
+    return base
+      .map((group) => ({
+        ...group,
+        items: group.items.filter(
+          (item) => !item.permission || hasPermission(item.permission)
+        ),
+      }))
+      .filter((group) => group.items.length > 0);
+  }, [user?.role, hasPermission]);
 
   useEffect(() => {
     const initial: Record<number, boolean> = {};
@@ -123,7 +165,7 @@ function SidebarContent({ collapsed }: { collapsed: boolean }) {
 
       <ScrollArea.Root className="flex-1 overflow-hidden">
         <ScrollArea.Viewport className="h-full w-full">
-          <nav className="px-3 py-4 space-y-1">
+          <nav className="px-3 py-4 space-y-2">
             {navigation.map((group, groupIndex) => (
               <div key={groupIndex}>
                 {group.label && !collapsed && (

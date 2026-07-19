@@ -18,10 +18,10 @@ interface TimelinePanelProps {
 }
 
 const typeColors: Record<string, string> = {
-  school_created: "bg-emerald-500",
+  school_created: "bg-[var(--color-success)]",
   admin_registered: "bg-[var(--color-primary)]",
-  subscription_changed: "bg-amber-500",
-  student_enrolled: "bg-sky-500",
+  subscription_changed: "bg-[var(--color-warning)]",
+  student_enrolled: "bg-[var(--color-info)]",
 };
 
 export default function TimelinePanel({
@@ -37,7 +37,7 @@ export default function TimelinePanel({
       {activities.length === 0 ? (
         <p className="text-sm text-[var(--color-text-muted)]">No recent activity</p>
       ) : (
-        <div className="relative ml-3 space-y-4">
+        <div className="relative space-y-4">
           <div className="absolute left-0 top-1 bottom-1 w-px bg-[var(--color-border)]" />
 
           {activities.map((activity) => (

@@ -3,12 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Form, Input, Button } from "antd";
+import { Form } from "antd";
 import { Mail, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/authStore";
 import { AuthApi } from "@/features/auth/api";
 import { ROLE_HOME } from "@/lib/constants";
+import Button from "@/components/atoms/Button";
+import { Input, InputPassword } from "@/components/atoms/Input";
 
 const loginSchema = z.object({
   email: z.string().min(1, "Email is required").email("Invalid email address"),
@@ -35,18 +37,15 @@ export default function LoginPage() {
     try {
       const response = await AuthApi.login(data);
       setAuth(response);
-      toast.success("Welcome back!");
       const role = useAuthStore.getState().user?.role;
-      if (role) {
-        navigate(ROLE_HOME[role]);
-      } else {
-        navigate("/auth/login");
-      }
-    } catch (err: any) {
+      toast.success("Welcome back!");
+      navigate(role ? ROLE_HOME[role] : "/auth/login");
+    } catch (err: unknown) {
       const message =
-        err?.response?.data?.error ||
-        err?.response?.data?.message ||
-        (err instanceof Error ? err.message : "Login failed. Please try again.");
+        err && typeof err === "object" && "response" in err
+          ? ((err as { response?: { data?: { error?: string; message?: string } } }).response?.data?.error ||
+             (err as { response?: { data?: { message?: string } } }).response?.data?.message)
+          : err instanceof Error ? err.message : "Login failed. Please try again.";
       toast.error(message);
     } finally {
       setLoading(false);
@@ -96,7 +95,7 @@ export default function LoginPage() {
             name="password"
             control={control}
             render={({ field }) => (
-              <Input.Password
+              <InputPassword
                 {...field}
                 prefix={<Lock className="h-4 w-4 text-[var(--color-text-muted)]" />}
                 placeholder="Enter your password"
@@ -108,7 +107,7 @@ export default function LoginPage() {
 
         <Form.Item>
           <Button
-            type="primary"
+            variant="primary"
             htmlType="submit"
             size="large"
             loading={loading}

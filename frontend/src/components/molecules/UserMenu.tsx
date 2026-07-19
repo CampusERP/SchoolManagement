@@ -7,7 +7,6 @@ import {
   DropdownMenuLabel,
 } from "@radix-ui/react-dropdown-menu";
 import { LogOut, User } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 interface UserMenuProps {
   user: {
@@ -58,7 +57,6 @@ export default function UserMenu({ user, onLogout }: UserMenuProps) {
         <DropdownMenuSeparator className="my-1 h-px bg-[var(--color-border)]" />
 
         <DropdownMenuItem
-          onClick={() => {}}
           className="flex cursor-pointer items-center gap-2 rounded-[6px] px-2.5 py-2 text-sm text-[var(--color-text-secondary)] outline-none hover:bg-[var(--color-border)]/50 hover:text-[var(--color-text-primary)]"
         >
           <User className="h-4 w-4" />

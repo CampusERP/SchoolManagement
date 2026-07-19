@@ -21,7 +21,7 @@ export default function AppLayout() {
       >
         <TopBar />
 
-        <main className="flex-1 overflow-y-auto p-[var(--content-padding)]">
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-[var(--content-padding)]">
           <Outlet />
         </main>
       </div>

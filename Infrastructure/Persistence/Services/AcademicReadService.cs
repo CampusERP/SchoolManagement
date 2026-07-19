@@ -30,10 +30,12 @@ public class AcademicReadService : IAcademicReadService
     public async Task<List<GradeLevelDto>> GetGradeLevelsAsync(CancellationToken ct = default)
     {
         return await (from g in _db.GradeLevels.AsNoTracking()
+                      join s in _db.EducationStages.AsNoTracking()
+                          on g.EducationStageId equals s.Id
                       orderby g.Sequence
                       select new GradeLevelDto(
                           g.Id, g.Name, g.Sequence,
-                          g.EducationStageId.ToString(), // Or map to string
+                          g.EducationStageId, s.Name,
                           _db.ClassRooms.Count(c => c.GradeLevelId == g.Id)))
                      .ToListAsync(ct);
     }

@@ -41,34 +41,38 @@ export default function SchoolDashboardPage() {
     );
   }
 
+  const { present, absent, late, excused } = data.attendanceSummary;
+  const attendanceTotal = present + absent + late + excused;
+  const attendancePct = attendanceTotal > 0 ? Math.round((present / attendanceTotal) * 100) : 0;
+
   const statCards = [
     { title: "Students", value: data.totalStudents, icon: <Users className="h-5 w-5" /> },
     { title: "Teachers", value: data.totalTeachers, icon: <GraduationCap className="h-5 w-5" /> },
     { title: "Parents", value: data.totalParents, icon: <Heart className="h-5 w-5" /> },
-    { title: "Classes", value: data.totalClasses, icon: <BookOpen className="h-5 w-5" /> },
-    { title: "Today's Attendance", value: `${data.todayAttendance}%`, icon: <ClipboardCheck className="h-5 w-5" /> },
-    { title: "Pending Enrollments", value: data.pendingEnrollments, icon: <Users className="h-5 w-5" /> },
+    { title: "Classrooms", value: data.totalClassRooms, icon: <BookOpen className="h-5 w-5" /> },
+    { title: "Today's Attendance", value: `${attendancePct}%`, icon: <ClipboardCheck className="h-5 w-5" /> },
+    { title: "Pending Enrollments", value: data.activeEnrollments, icon: <Users className="h-5 w-5" /> },
   ];
 
   return (
     <DashboardTemplate title="School Dashboard" subtitle="Overview of your school's performance">
       <AnalyticsCardsGrid cards={statCards} />
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         <QuickActionCard
           icon={<UserPlus className="h-6 w-6" />}
           label="Add Student"
-          onClick={() => navigate("/people/students/new")}
+          onClick={() => navigate("/people/students")}
         />
         <QuickActionCard
           icon={<UserCog className="h-6 w-6" />}
           label="Add Teacher"
-          onClick={() => navigate("/people/teachers/new")}
+          onClick={() => navigate("/people/teachers")}
         />
         <QuickActionCard
           icon={<LayoutGrid className="h-6 w-6" />}
           label="Create Classroom"
-          onClick={() => navigate("/academics/classrooms/new")}
+          onClick={() => navigate("/academics/classrooms")}
         />
       </div>
 
@@ -79,7 +83,7 @@ export default function SchoolDashboardPage() {
         <div className="space-y-6">
           <AnnouncementsPanel announcements={data.announcements} />
 
-          <div className="rounded-[var(--card-radius)] bg-[var(--color-surface-card)] p-5 shadow-[var(--shadow-card)]">
+          <div className="rounded-[var(--card-radius)] bg-[var(--color-surface-card)] p-6 shadow-[var(--shadow-card)]">
             <div className="mb-4 flex items-center gap-2">
               <CalendarDays className="h-5 w-5 text-[var(--color-primary)]" />
               <h3 className="text-sm font-semibold text-[var(--color-text-primary)]">

@@ -22,8 +22,9 @@ public class CreateTermCommandHandler : IRequestHandler<CreateTermCommand, Resul
 
         try
         {
-            var term = academicYear.AddTerm(request.Name, request.Sequence, request.StartDate, request.EndDate);
-            return Result.Success(term.Id);
+            academicYear.AddTerm(request.Name, request.Sequence, request.StartDate, request.EndDate);
+            var termId = await _academicYears.AddTermAsync(academicYear, ct);
+            return Result.Success(termId);
         }
         catch (Domain.Exceptions.DomainException ex)
         {

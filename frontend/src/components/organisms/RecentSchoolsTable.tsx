@@ -4,20 +4,10 @@ import dayjs from "dayjs";
 import { Eye } from "lucide-react";
 import StatusBadge from "@/components/molecules/StatusBadge";
 import SearchInput from "@/components/molecules/SearchInput";
-
-interface SchoolRecord {
-  id: string;
-  name: string;
-  ownerName: string;
-  totalStudents: number;
-  totalTeachers: number;
-  subscriptionStatus: string;
-  createdAt: string;
-  status: string;
-}
+import type { School } from "@/types/dashboard.types";
 
 interface RecentSchoolsTableProps {
-  data: SchoolRecord[];
+  data: School[];
   loading?: boolean;
   onSearch?: (value: string) => void;
 }
@@ -34,7 +24,7 @@ export default function RecentSchoolsTable({
     onSearch?.(value);
   };
 
-  const columns: TableProps<SchoolRecord>["columns"] = [
+  const columns: TableProps<School>["columns"] = [
     {
       title: "School",
       dataIndex: "name",
@@ -44,9 +34,9 @@ export default function RecentSchoolsTable({
       ),
     },
     {
-      title: "Owner",
-      dataIndex: "ownerName",
-      key: "ownerName",
+      title: "Subdomain",
+      dataIndex: "subdomainCode",
+      key: "subdomainCode",
     },
     {
       title: "Students",
@@ -59,12 +49,6 @@ export default function RecentSchoolsTable({
       dataIndex: "totalTeachers",
       key: "totalTeachers",
       align: "center",
-    },
-    {
-      title: "Subscription",
-      dataIndex: "subscriptionStatus",
-      key: "subscriptionStatus",
-      render: (status: string) => <StatusBadge status={status} />,
     },
     {
       title: "Status",
@@ -84,7 +68,7 @@ export default function RecentSchoolsTable({
       align: "center",
       width: 60,
       render: () => (
-        <button className="flex h-8 w-8 items-center justify-center rounded-[var(--border-radius)] text-[var(--color-text-muted)] hover:bg-[var(--color-surface)] hover:text-[var(--color-primary)] transition-colors">
+        <button className="flex h-8 w-8 items-center justify-center rounded-[var(--border-radius)] text-[var(--color-text-muted)] hover:bg-[var(--color-surface)] hover:text-[var(--color-primary)] transition-colors" disabled>
           <Eye className="h-4 w-4" />
         </button>
       ),
@@ -96,7 +80,7 @@ export default function RecentSchoolsTable({
       {onSearch && (
         <SearchInput placeholder="Search schools..." value={searchValue} onChange={handleSearchChange} />
       )}
-      <Table<SchoolRecord>
+      <Table<School>
         columns={columns}
         dataSource={data}
         rowKey="id"

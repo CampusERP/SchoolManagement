@@ -26,12 +26,16 @@
   --sidebar-width: 260px;
   --sidebar-collapsed-w: 64px;
   --topbar-height: 64px;
-  --content-padding: 24px;
+  --content-padding: 32px;
   --card-radius: 12px;
   --border-radius: 8px;
 
   --shadow-card: 0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.06);
   --shadow-elevated: 0 4px 6px -1px rgb(0 0 0 / 0.08);
+
+  --spacing-content-sm: 16px;
+  --spacing-content-md: 24px;
+  --spacing-content-lg: 32px;
 }
 
 [data-theme="dark"] {
@@ -41,12 +45,6 @@
   --color-text-primary: #F1F5F9;
   --color-text-secondary: #94A3B8;
   --color-text-muted: #64748B;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
 }
 
 html, body, #root {

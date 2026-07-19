@@ -16,6 +16,14 @@ public class EducationStage : Entity
         Name = name;
     }
 
+    public void Update(string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Name is required.", nameof(name));
+
+        Name = name;
+    }
+
     public static EducationStage Create(string name)
     {
         if (string.IsNullOrWhiteSpace(name))

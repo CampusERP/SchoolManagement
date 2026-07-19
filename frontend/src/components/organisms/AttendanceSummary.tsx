@@ -14,10 +14,10 @@ interface AttendanceSummaryProps {
 }
 
 const categories = [
-  { key: "present", label: "Present", color: "bg-emerald-500" },
-  { key: "absent", label: "Absent", color: "bg-red-500" },
-  { key: "late", label: "Late", color: "bg-amber-500" },
-  { key: "excused", label: "Excused", color: "bg-sky-500" },
+  { key: "present", label: "Present", color: "bg-[var(--color-success)]" },
+  { key: "absent", label: "Absent", color: "bg-[var(--color-danger)]" },
+  { key: "late", label: "Late", color: "bg-[var(--color-warning)]" },
+  { key: "excused", label: "Excused", color: "bg-[var(--color-info)]" },
 ] as const;
 
 export default function AttendanceSummary({

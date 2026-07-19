@@ -20,7 +20,7 @@ export default function StatCard({
   return (
     <div
       className={cn(
-        "flex items-center gap-4 bg-[var(--color-surface-card)] rounded-[var(--card-radius)] shadow-[var(--shadow-card)] p-5",
+        "flex items-center gap-4 bg-[var(--color-surface-card)] rounded-[var(--card-radius)] shadow-[var(--shadow-card)] p-6",
         className
       )}
     >
