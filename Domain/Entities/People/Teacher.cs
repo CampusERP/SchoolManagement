@@ -45,6 +45,8 @@ public class Teacher : TenantEntity, IAggregateRoot
         EmploymentStatus = employmentStatus;
     }
 
+    public void LinkLogin(Guid applicationUserId) => ApplicationUserId = applicationUserId;
+
     public void SetOnLeave() => EmploymentStatus = EmploymentStatus.OnLeave;
     public void Terminate() => EmploymentStatus = EmploymentStatus.Terminated;
     public void Reactivate() => EmploymentStatus = EmploymentStatus.Active;

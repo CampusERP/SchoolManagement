@@ -1,12 +1,3 @@
-using Application.Features.Academics.CreateAcademicYear;
-using Application.Features.Academics.CreateClassRoom;
-using Application.Features.Academics.CreateGradeLevel;
-using Application.Features.Academics.CreateRoom;
-using Application.Features.Academics.CreateTerm;
-using Application.Features.Academics.UpdateAcademicYear;
-using Application.Features.Academics.UpdateClassRoom;
-using Application.Features.Academics.UpdateGradeLevel;
-using Application.Features.Academics.UpdateRoom;
 using Application.Features.Academics.Queries.GetAcademicYears;
 using Application.Features.Academics.Queries.GetClassRooms;
 using Application.Features.Academics.Queries.GetGradeLevels;
@@ -14,6 +5,16 @@ using Application.Features.Academics.Queries.GetRooms;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Application.Features.Academics.Commands.CreateClassRoom;
+using Application.Features.Academics.Commands.CreateRoom;
+using Application.Features.Academics.Commands.CreateTerm;
+using Application.Features.Academics.Commands.CreateGradeLevel;
+using Application.Features.Academics.Commands.CreateAcademicYear;
+using Application.Features.Academics.Commands.UpdateClassRoom;
+using Application.Features.Academics.Commands.UpdateRoom;
+using Application.Features.Academics.Commands.UpdateGradeLevel;
+using Application.Features.Academics.Commands.UpdateAcademicYear;
+using Application.Features.Academics.Commands.CloseAcademicYear;
 
 namespace Api.Controllers;
 
@@ -43,6 +44,12 @@ public class AcademicsController : ApiControllerBase
         Guid academicYearId,
         [FromBody] UpdateAcademicYearCommand command, CancellationToken ct) =>
         FromResult(await _mediator.Send(command with { AcademicYearId = academicYearId }, ct));
+
+    [HttpPost("academic-years/{academicYearId:guid}/close")]
+    [Authorize(Policy = "AcademicYear.Update")]
+    public async Task<IActionResult> CloseAcademicYear(
+        Guid academicYearId, [FromQuery] Guid schoolId, CancellationToken ct) =>
+        FromResult(await _mediator.Send(new CloseAcademicYearCommand(schoolId, academicYearId), ct));
 
     [HttpPost("academic-years/{academicYearId:guid}/terms")]
     [Authorize(Policy = "AcademicYear.Create")]
@@ -84,7 +91,7 @@ public class AcademicsController : ApiControllerBase
         FromResult(await _mediator.Send(new GetGradeLevelsQuery(schoolId), ct));
 
     [HttpPost("grade-levels")]
-    [Authorize(Policy = "AcademicYear.Create")]
+    [Authorize(Policy = "GradeLevel.Create")]
     public async Task<IActionResult> CreateGradeLevel(
         [FromBody] CreateGradeLevelCommand command, CancellationToken ct) =>
         Created(await _mediator.Send(command, ct));
@@ -105,7 +112,7 @@ public class AcademicsController : ApiControllerBase
         FromResult(await _mediator.Send(new GetRoomsQuery(schoolId), ct));
 
     [HttpPost("rooms")]
-    [Authorize(Policy = "ClassRoom.Create")]
+    [Authorize(Policy = "Room.Create")]
     public async Task<IActionResult> CreateRoom(
         [FromBody] CreateRoomCommand command, CancellationToken ct) =>
         Created(await _mediator.Send(command, ct));

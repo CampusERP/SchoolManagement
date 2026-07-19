@@ -9,7 +9,6 @@
   <ItemGroup>
     <Folder Include="Entities\Academics\" />
     <Folder Include="Entities\Enrollment\" />
-    <Folder Include="Entities\" />
     <Folder Include="Entities\People\" />
     <Folder Include="Entities\Tenancy\" />
     <Folder Include="Exceptions\" />

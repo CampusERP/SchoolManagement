@@ -1,39 +1,43 @@
 ﻿using Application.Common.Exceptions;
+using Application.Common.Interfaces;
 using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Services;
+using Application.Common.Messages;
 using Application.Common.Models;
-using Domain.Entities.People;
 using Domain.Entities.Tenancy;
 using MediatR;
 
-
 namespace Application.Features.Identity.Register;
 
-public class RegisterSchoolAdminCommandHandler : IRequestHandler<RegisterSchoolAdminCommand, Result<Guid>>
+public class RegisterSchoolAdminCommandHandler
+    : IRequestHandler<RegisterSchoolAdminCommand, Result<Guid>>
 {
-    private readonly IIdentityService _identityService;
+    private readonly IIdentityService _identity;
     private readonly ISchoolRepository _schools;
-    private readonly IUserSchoolMembershipRepository _userSchoolMembership;
-    private readonly ISchoolAdminProfileRepository _schoolAdminProfile;
+    private readonly IUserSchoolMembershipRepository _memberships;
+    private readonly IOutboxService _outbox;
 
-    public RegisterSchoolAdminCommandHandler(IIdentityService identityService,
-        ISchoolRepository schoolRepository,
-        IUserSchoolMembershipRepository userSchoolMembershipRepository,
-        ISchoolAdminProfileRepository schoolAdminProfileRepository)
+    public RegisterSchoolAdminCommandHandler(
+        IIdentityService identity,
+        ISchoolRepository schools,
+        IUserSchoolMembershipRepository memberships,
+        IOutboxService outbox)
     {
-        _identityService = identityService;
-        _schools = schoolRepository;
-        _userSchoolMembership = userSchoolMembershipRepository;
-        _schoolAdminProfile = schoolAdminProfileRepository;
+        _identity = identity;
+        _schools = schools;
+        _memberships = memberships;
+        _outbox = outbox;
     }
 
-    public async Task<Result<Guid>> Handle(RegisterSchoolAdminCommand request, CancellationToken ct)
+    public async Task<Result<Guid>> Handle(
+        RegisterSchoolAdminCommand request, CancellationToken ct)
     {
         var school = await _schools.GetByIdAsync(request.SchoolId, ct);
         if (school is null)
             throw new NotFoundException(nameof(School), request.SchoolId);
 
-        var createResult = await _identityService.CreateUserAsync(request.Email, request.Password, ct);
+        var createResult = await _identity.CreateUserAsync(
+            request.Email, request.Password, ct);
         if (!createResult.IsSuccess)
             return Result.Failure<Guid>(createResult.Error!);
 
@@ -41,25 +45,21 @@ public class RegisterSchoolAdminCommandHandler : IRequestHandler<RegisterSchoolA
 
         try
         {
-            var roleResult = await _identityService.AddToRoleAsync(userId, "SchoolAdmin", ct);
+            var roleResult = await _identity.AddToRoleAsync(userId, "SchoolAdmin", ct);
             if (!roleResult.IsSuccess)
-            {
-                await _identityService.DeleteUserAsync(userId, ct);
                 return Result.Failure<Guid>(roleResult.Error!);
-            }
 
-            var membership = UserSchoolMembership.Create(userId, request.SchoolId);
-            await _userSchoolMembership.AddAsync(membership, ct);
+            var membership = UserSchoolMembership.Create(userId, request.SchoolId, "SchoolAdmin");
+            await _memberships.AddAsync(membership, ct);
 
-            var profile = SchoolAdminProfile.Create(
-                request.SchoolId, userId, request.FirstName, request.LastName);
-            await _schoolAdminProfile.AddAsync(profile, ct);
+            _outbox.Publish(new CreateSchoolAdminProfileMessage(
+                userId, request.SchoolId, request.FirstName, request.LastName));
 
             return Result.Success(userId);
         }
         catch
         {
-            await _identityService.DeleteUserAsync(userId, ct);
+            await _identity.DeleteUserAsync(userId, ct);
             throw;
         }
     }

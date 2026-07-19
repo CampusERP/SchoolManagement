@@ -96,7 +96,11 @@ var permissionPolicies = new[]
     "Teacher.Read", "Teacher.Create", "Teacher.Update",
     "Parent.Read", "Parent.Create", "Parent.Update",
     "Profile.Read", "Children.Read", "MyClasses.Read",
-    "Enrollment.Create", "Schedule.Create"
+    "Enrollment.Create", "Schedule.Create",
+    "School.Manage", "Assignment.Create", "Assignment.Submit", "Assignment.Read", "Assignment.ReadOwn",
+    "Attendance.Record", "Attendance.ReadOwn", "Attendance.ReadChild", "Schedule.Read", "Grade.Enter",
+    "Billing.Read", "Billing.Manage", "Exam.Read", "Exam.Create", "Exam.Manage",
+    "Notification.Read", "Notification.Send"
 };
 
 builder.Services.AddAuthorization(options =>
@@ -119,11 +123,12 @@ await DataSeeder.SeedAsync(app.Services);
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "School Management v1"));
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "School Management v1");
+});
 
 app.UseHttpsRedirection();
 app.UseCors(app.Environment.IsDevelopment() ? "Development" : "Frontend");

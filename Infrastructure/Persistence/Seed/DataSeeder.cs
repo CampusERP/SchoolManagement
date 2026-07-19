@@ -1,12 +1,13 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Domain.Entities.Academics;
+using Domain.Entities.Billing;
 using Domain.Entities.People;
 using Domain.Entities.Tenancy;
 using Infrastructure.Identity;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Persistence.Seed;
 
@@ -31,6 +32,7 @@ public static class DataSeeder
             await SeedRolesAsync(roleManager, logger);
             await SeedDemoAccountsAsync(platformDb, appDb, userManager, configuration, logger);
             await SeedEducationStagesAsync(appDb, logger);
+            await SeedSubscriptionPlansAsync(platformDb, logger);
             await SeedSubjectsAsync(appDb, logger);
         }
         catch (Exception ex)
@@ -91,7 +93,7 @@ public static class DataSeeder
                 .AnyAsync(m => m.ApplicationUserId == user!.Id && m.SchoolId == school.Id);
 
             if (!hasMembership)
-                platformDb.UserSchoolMemberships.Add(UserSchoolMembership.Create(user!.Id, school.Id));
+                platformDb.UserSchoolMemberships.Add(UserSchoolMembership.Create(user!.Id, school.Id, "SuperAdmin"));
         }
 
         if (schoolAdmin is not null && !await appDb.SchoolAdminProfiles.IgnoreQueryFilters()
@@ -198,9 +200,46 @@ public static class DataSeeder
         logger.LogInformation("Seeded {Count} education stages.", stages.Length);
     }
 
-    private static async Task SeedSubjectsAsync(ApplicationDbContext db, ILogger logger)
+    private static async Task SeedSubjectsAsync(
+        ApplicationDbContext db, ILogger logger)
     {
-        logger.LogDebug("Subject seeding deferred to Phase 2.");
-        await Task.CompletedTask;
+        if (await db.Subjects.AnyAsync()) return;
+
+        db.Subjects.AddRange(
+            Subject.Create("MATH", "Mathematics"),
+            Subject.Create("ENG", "English Language"),
+            Subject.Create("SCI", "Science"),
+            Subject.Create("HIST", "History"),
+            Subject.Create("GEO", "Geography"),
+            Subject.Create("ART", "Art"),
+            Subject.Create("PE", "Physical Education"),
+            Subject.Create("COMP", "Computer Science"),
+            Subject.Create("RELI", "Religious Studies"),
+            Subject.Create("MUSIC", "Music"),
+            Subject.Create("ARAB", "Arabic Language"),
+            Subject.Create("FREN", "French Language"),
+            Subject.Create("BIO", "Biology"),
+            Subject.Create("CHEM", "Chemistry"),
+            Subject.Create("PHYS", "Physics"));
+
+        await db.SaveChangesAsync();
+        logger.LogInformation("Seeded subjects.");
+    }
+
+    private static async Task SeedSubscriptionPlansAsync(
+        PlatformDbContext db, ILogger logger)
+    {
+        if (await db.SubscriptionPlans.AnyAsync()) return;
+
+        db.SubscriptionPlans.AddRange(
+            SubscriptionPlan.Create("Free", 0, 100, 10,
+                parentPortal: false, examModule: false, analytics: false),
+            SubscriptionPlan.Create("Standard", 49, 500, 50,
+                parentPortal: true, examModule: true, analytics: false),
+            SubscriptionPlan.Create("Premium", 99, 2000, 200,
+                parentPortal: true, examModule: true, analytics: true));
+
+        await db.SaveChangesAsync();
+        logger.LogInformation("Seeded subscription plans.");
     }
 }

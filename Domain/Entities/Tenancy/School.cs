@@ -10,6 +10,9 @@ public class School : AuditableEntity, IAggregateRoot
     public string Name { get; private set; } = default!;
     public string SubdomainCode { get; private set; } = default!;
     public string Status { get; private set; } = "Active";
+    public string? Address { get; private set; }
+    public string? Phone { get; private set; }
+    public string? Email { get; private set; }
 
     private readonly List<Campus> _campuses = new();
     public IReadOnlyCollection<Campus> Campuses => _campuses.AsReadOnly();
@@ -33,16 +36,21 @@ public class School : AuditableEntity, IAggregateRoot
         return new School(Guid.NewGuid(), name, subdomainCode.ToLowerInvariant());
     }
 
-    public void UpdateInfo(string name)
+    public void Update(string name, string? address, string? phone, string? email)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("School name is required.", nameof(name));
+            throw new ArgumentException("Name is required.");
         Name = name;
+        Address = address;
+        Phone = phone;
+        Email = email;
     }
 
-    public void AddCampus(string name, string address)
+    public Campus AddCampus(string name, string address)
     {
-        _campuses.Add(Campus.Create(Id, name, address));
+        var campus = Campus.Create(Id, name, address);
+        _campuses.Add(campus);
+        return campus;
     }
 
     public void Suspend() => Status = "Suspended";

@@ -17,11 +17,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Academics\CreateAcademicYear\" />
-    <Folder Include="Features\Academics\CreateClassRoom\" />
-    <Folder Include="Features\Academics\CreateGradeLevel\" />
-    <Folder Include="Features\Academics\CreateRoom\" />
-    <Folder Include="Features\Academics\CreateTerm\" />
+    <Folder Include="Features\Academics\Commands\CreateAcademicYear\" />
+    <Folder Include="Features\Academics\Commands\CreateClassRoom\" />
+    <Folder Include="Features\Academics\Commands\CreateGradeLevel\" />
+    <Folder Include="Features\Academics\Commands\CreateRoom\" />
+    <Folder Include="Features\Academics\Commands\CreateTerm\" />
     <Folder Include="Features\Enrollment\Commands\EnrollStudent\" />
     <Folder Include="Features\People\Commands\CreateStudent\" />
     <Folder Include="Features\People\Commands\CreateParent\" />

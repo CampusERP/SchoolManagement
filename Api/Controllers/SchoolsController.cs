@@ -1,5 +1,7 @@
 using Application.Features.Schools.Commands.CreateSchool;
 using Application.Features.Schools.Commands.UpdateSchool;
+using Application.Features.Schools.Commands.AddCampus;
+using Application.Features.Schools.Commands.SchoolActivation;
 using Application.Features.Schools.Queries.GetAllSchools;
 using Application.Features.Schools.Queries.GetPlatformAnalytics;
 using Application.Features.Schools.Queries.GetSchoolById;
@@ -57,4 +59,20 @@ public class SchoolsController : ApiControllerBase
         Guid schoolId,
         [FromBody] UpdateSchoolCommand command, CancellationToken ct) =>
         FromResult(await _mediator.Send(command with { SchoolId = schoolId }, ct));
+
+    [HttpPost("{schoolId:guid}/campuses")]
+    [Authorize(Policy = "School.Update")]
+    public async Task<IActionResult> AddCampus(
+        Guid schoolId, [FromBody] AddCampusCommand command, CancellationToken ct) =>
+        Created(await _mediator.Send(command with { SchoolId = schoolId }, ct));
+
+    [HttpPost("{schoolId:guid}/suspend")]
+    [Authorize(Policy = "School.Update")]
+    public async Task<IActionResult> SuspendSchool(Guid schoolId, CancellationToken ct) =>
+        FromResult(await _mediator.Send(new SuspendSchoolCommand(schoolId), ct));
+
+    [HttpPost("{schoolId:guid}/reactivate")]
+    [Authorize(Policy = "School.Update")]
+    public async Task<IActionResult> ReactivateSchool(Guid schoolId, CancellationToken ct) =>
+        FromResult(await _mediator.Send(new ReactivateSchoolCommand(schoolId), ct));
 }

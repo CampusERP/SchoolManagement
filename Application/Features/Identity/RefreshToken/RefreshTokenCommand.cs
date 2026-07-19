@@ -3,4 +3,4 @@ using MediatR;
 
 namespace Application.Features.Identity.RefreshToken;
 
-public record RefreshTokenCommand(string Token) : IRequest<Result<RefreshTokenResponse>>;
+public record RefreshTokenCommand(string Token) : ICommand<RefreshTokenResponse>;
