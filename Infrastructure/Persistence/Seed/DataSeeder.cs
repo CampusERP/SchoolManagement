@@ -2,6 +2,12 @@ using Domain.Entities.Academics;
 using Domain.Entities.Billing;
 using Domain.Entities.People;
 using Domain.Entities.Tenancy;
+using Domain.Entities.Enrollment;
+using Domain.Entities.Assignments;
+using Domain.Entities.Attendance;
+using Domain.Entities.Exams;
+using Domain.Entities.Notifications;
+using Domain.Enums;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -33,7 +39,9 @@ public static class DataSeeder
             await SeedDemoAccountsAsync(platformDb, appDb, userManager, configuration, logger);
             await SeedEducationStagesAsync(appDb, logger);
             await SeedSubscriptionPlansAsync(platformDb, logger);
+            await SeedDemoBillingAsync(platformDb, logger);
             await SeedSubjectsAsync(appDb, logger);
+            await SeedDemoSchoolDataAsync(platformDb, appDb, logger);
         }
         catch (Exception ex)
         {
@@ -241,5 +249,114 @@ public static class DataSeeder
 
         await db.SaveChangesAsync();
         logger.LogInformation("Seeded subscription plans.");
+    }
+
+    private static async Task SeedDemoBillingAsync(PlatformDbContext db, ILogger logger)
+    {
+        var school = await db.Schools.FirstOrDefaultAsync(s => s.SubdomainCode == "demo-school");
+        var plan = await db.SubscriptionPlans.FirstOrDefaultAsync(p => p.Name == "Standard");
+        if (school is null || plan is null) return;
+
+        var subscription = await db.Subscriptions.FirstOrDefaultAsync(s => s.SchoolId == school.Id);
+        if (subscription is null)
+        {
+            subscription = Subscription.Create(school.Id, plan.Id, DateTime.UtcNow.AddMonths(-1), DateTime.UtcNow.AddYears(1));
+            subscription.GenerateInvoice(49m, DateTime.UtcNow.AddDays(14));
+            db.Subscriptions.Add(subscription);
+            await db.SaveChangesAsync();
+            logger.LogInformation("Seeded demo subscription and invoice.");
+        }
+    }
+
+    /// <summary>Creates the minimum connected academic graph needed by the demo accounts and portals.</summary>
+    private static async Task SeedDemoSchoolDataAsync(
+        PlatformDbContext platformDb, ApplicationDbContext db, ILogger logger)
+    {
+        var school = await platformDb.Schools.FirstOrDefaultAsync(s => s.SubdomainCode == "demo-school");
+        if (school is null) return;
+
+        var stage = await db.EducationStages.FirstAsync(s => s.Name == "Secondary");
+        var year = await db.AcademicYears.IgnoreQueryFilters()
+            .FirstOrDefaultAsync(y => y.SchoolId == school.Id && y.IsCurrent);
+        if (year is null)
+        {
+            year = AcademicYear.Create(school.Id, "2026/2027", new DateTime(2026, 9, 1), new DateTime(2027, 6, 30));
+            year.Activate();
+            year.AddTerm("Term 1", 1, new DateTime(2026, 9, 1), new DateTime(2027, 1, 31));
+            year.AddTerm("Term 2", 2, new DateTime(2027, 2, 1), new DateTime(2027, 6, 30));
+            db.AcademicYears.Add(year);
+            await db.SaveChangesAsync();
+        }
+
+        var grade = await db.GradeLevels.IgnoreQueryFilters().FirstOrDefaultAsync(g => g.SchoolId == school.Id && g.Name == "Grade 10");
+        if (grade is null) { grade = GradeLevel.Create(school.Id, stage.Id, "Grade 10", 10); db.GradeLevels.Add(grade); await db.SaveChangesAsync(); }
+        var room = await db.Rooms.IgnoreQueryFilters().FirstOrDefaultAsync(r => r.SchoolId == school.Id && r.Name == "Room 101");
+        if (room is null) { room = Room.Create(school.Id, "Room 101", 35); db.Rooms.Add(room); await db.SaveChangesAsync(); }
+        var classroom = await db.ClassRooms.IgnoreQueryFilters().FirstOrDefaultAsync(c => c.SchoolId == school.Id && c.Name == "Grade 10-A");
+        if (classroom is null) { classroom = ClassRoom.Create(school.Id, grade.Id, year.Id, "Grade 10-A"); db.ClassRooms.Add(classroom); await db.SaveChangesAsync(); }
+
+        var student = await db.Students.IgnoreQueryFilters().FirstOrDefaultAsync(s => s.SchoolId == school.Id && s.StudentCode == "DEMO-STUDENT");
+        var parent = await db.Parents.IgnoreQueryFilters().FirstOrDefaultAsync(p => p.SchoolId == school.Id);
+        var teacher = await db.Teachers.IgnoreQueryFilters().FirstOrDefaultAsync(t => t.SchoolId == school.Id && t.EmployeeCode == "DEMO-TEACHER");
+        if (student is null || parent is null || teacher is null) return;
+
+        var enrollment = await db.StudentEnrollments.IgnoreQueryFilters().FirstOrDefaultAsync(e => e.StudentId == student.Id && e.AcademicYearId == year.Id);
+        if (enrollment is null) { enrollment = StudentEnrollment.Create(school.Id, student.Id, classroom.Id, year.Id); db.StudentEnrollments.Add(enrollment); await db.SaveChangesAsync(); }
+        if (!await db.StudentGuardians.IgnoreQueryFilters().AnyAsync(g => g.StudentId == student.Id && g.ParentId == parent.Id))
+        { db.StudentGuardians.Add(StudentGuardian.Create(school.Id, student.Id, parent.Id, GuardianRelationshipType.Father, true, true, true)); await db.SaveChangesAsync(); }
+
+        var term = await db.Terms.IgnoreQueryFilters().FirstAsync(t => t.AcademicYearId == year.Id && t.Sequence == 1);
+        var math = await db.Subjects.FirstAsync(s => s.Code == "MATH");
+        if (!await db.TeachingAssignments.IgnoreQueryFilters().AnyAsync(a => a.TeacherId == teacher.Id && a.SubjectId == math.Id && a.ClassRoomId == classroom.Id && a.TermId == term.Id))
+        {
+            var assignment = TeachingAssignment.Create(school.Id, teacher.Id, math.Id, classroom.Id, term.Id);
+            assignment.AddSchedule(room.Id, DayOfWeekEnum.Monday, new TimeSpan(8, 0, 0), new TimeSpan(9, 0, 0));
+            assignment.AddSchedule(room.Id, DayOfWeekEnum.Wednesday, new TimeSpan(8, 0, 0), new TimeSpan(9, 0, 0));
+            db.TeachingAssignments.Add(assignment);
+            await db.SaveChangesAsync();
+        }
+
+        var teaching = await db.TeachingAssignments.IgnoreQueryFilters().FirstAsync(a => a.TeacherId == teacher.Id && a.SubjectId == math.Id && a.ClassRoomId == classroom.Id && a.TermId == term.Id);
+        if (!await db.Assignments.IgnoreQueryFilters().AnyAsync(a => a.TeachingAssignmentId == teaching.Id))
+        {
+            var homework = Assignment.Create(school.Id, teaching.Id, "Algebra practice", "Complete questions 1–10 before the next lesson.", DateTime.UtcNow.AddDays(5), 20);
+            db.Assignments.Add(homework);
+        }
+
+        var schedule = await db.ClassSchedules.FirstAsync(s => s.TeachingAssignmentId == teaching.Id);
+        if (!await db.AttendanceSessions.IgnoreQueryFilters().AnyAsync(s => s.ClassScheduleId == schedule.Id))
+        {
+            var session = AttendanceSession.Open(school.Id, schedule.Id, DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-2)));
+            session.RecordStudent(enrollment.Id, AttendanceStatus.Present);
+            session.Lock();
+            db.AttendanceSessions.Add(session);
+        }
+
+        if (!await db.Exams.IgnoreQueryFilters().AnyAsync(e => e.SubjectId == math.Id && e.TermId == term.Id))
+        {
+            var exam = Exam.Create(school.Id, math.Id, term.Id, "Mathematics Midterm", 100);
+            var examSchedule = exam.AddSchedule(classroom.Id, room.Id, DateTime.UtcNow.AddDays(-10));
+            exam.RecordResult(examSchedule.Id, enrollment.Id, 88);
+            exam.Lock();
+            db.Exams.Add(exam);
+
+            var card = ReportCard.Generate(school.Id, enrollment.Id, term.Id, 88, "B+", teacher.ApplicationUserId,
+                [(math.Id, math.Name, 88m, 100m, "B+")]);
+            card.Lock();
+            db.ReportCards.Add(card);
+        }
+
+        if (!await db.NotificationBatches.IgnoreQueryFilters().AnyAsync(b => b.SchoolId == school.Id && b.Subject == "Welcome to the demo portal"))
+        {
+            var batch = NotificationBatch.Create(school.Id, null, teacher.ApplicationUserId,
+                "Welcome to the demo portal", "Your timetable, attendance, assignments, and grades are ready to view.", NotificationChannel.InApp, "Demo users");
+            batch.AddRecipient(student.ApplicationUserId!.Value).MarkDelivered();
+            batch.AddRecipient(parent.ApplicationUserId).MarkDelivered();
+            db.NotificationBatches.Add(batch);
+        }
+
+        await db.SaveChangesAsync();
+
+        logger.LogInformation("Seeded connected demo school data for the student and parent portals.");
     }
 }

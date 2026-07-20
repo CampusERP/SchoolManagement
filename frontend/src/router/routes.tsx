@@ -5,6 +5,8 @@ import ProtectedRoute from "@/router/guards";
 import RequirePermission from "@/router/RequirePermission";
 import AppLayout from "@/layouts/AppLayout";
 import AuthLayout from "@/layouts/AuthLayout";
+import PortalLayout from "@/layouts/PortalLayout";
+import { ParentChildrenPage, ParentDashboardPage, ParentResourcePage, StudentDashboardPage, StudentResourcePage } from "@/pages/portal/PortalPages";
 
 const LoginPage = lazy(() => import("@/pages/auth/LoginPage"));
 const PlatformDashboardPage = lazy(() => import("@/pages/platform/PlatformDashboardPage"));
@@ -142,7 +144,7 @@ export const routes: RouteObject[] = [
     element: <ProtectedRoute requiredRole="student" />,
     children: [
       {
-        element: <AppLayout />,
+        element: <PortalLayout />,
         children: [
           { index: true, element: <PlaceholderPage title="Student Dashboard" description="Your classes, grades, and schedule — coming soon" /> },
           { path: "classes", element: <PlaceholderPage title="My Classes" description="Enrolled classes — coming soon" /> },
@@ -159,7 +161,7 @@ export const routes: RouteObject[] = [
     element: <ProtectedRoute requiredRole="parent" />,
     children: [
       {
-        element: <AppLayout />,
+        element: <PortalLayout />,
         children: [
           { index: true, element: <PlaceholderPage title="Parent Dashboard" description="Your children's academic overview — coming soon" /> },
           { path: "children", element: <PlaceholderPage title="My Children" description="Children list and details — coming soon" /> },
@@ -170,5 +172,11 @@ export const routes: RouteObject[] = [
       },
     ],
   },
+  { path: "/student/assignments", element: <ProtectedRoute requiredRole="student" />, children: [{ element: <PortalLayout />, children: [{ index: true, element: <StudentResourcePage title="Assignments" resource="assignments" /> }] }] },
+  { path: "/student/notifications", element: <ProtectedRoute requiredRole="student" />, children: [{ element: <PortalLayout />, children: [{ index: true, element: <StudentResourcePage title="Notices" resource="notifications" /> }] }] },
+  { path: "/student/report-cards", element: <ProtectedRoute requiredRole="student" />, children: [{ element: <PortalLayout />, children: [{ index: true, element: <StudentResourcePage title="Report cards" resource="report-cards" /> }] }] },
+  { path: "/parent/children/:studentId", element: <ProtectedRoute requiredRole="parent" />, children: [{ element: <PortalLayout />, children: [{ index: true, element: <ParentResourcePage title="Child overview" resource="profile" /> }, { path: "attendance", element: <ParentResourcePage title="Attendance" resource="attendance" /> }, { path: "grades", element: <ParentResourcePage title="Grades" resource="grades" /> }, { path: "assignments", element: <ParentResourcePage title="Assignments" resource="assignments" /> }, { path: "report-cards", element: <ParentResourcePage title="Report cards" resource="report-cards" /> }] }] },
+  { path: "/parent/billing", element: <ProtectedRoute requiredRole="parent" />, children: [{ element: <PortalLayout />, children: [{ index: true, element: <ParentResourcePage title="Payments & fees" resource="billing" /> }] }] },
+  { path: "/parent/notifications", element: <ProtectedRoute requiredRole="parent" />, children: [{ element: <PortalLayout />, children: [{ index: true, element: <ParentResourcePage title="Notices" resource="notifications" /> }] }] },
   { path: "*", element: <Navigate to="/auth/login" replace /> },
 ];

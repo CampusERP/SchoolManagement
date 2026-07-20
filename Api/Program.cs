@@ -104,33 +104,84 @@ builder.Services
         };
     });
 
-var permissionPolicies = new[]
+// Permission strings must exactly match the claim values stored in JWT by PermissionProvider.
+// These are already lowercase with dots (e.g. "attendance.read.own") so we use them directly.
+var permissionPolicies = new Dictionary<string, string>
 {
-    "AcademicYear.Read", "AcademicYear.Create", "AcademicYear.Update",
-    "ClassRoom.Read", "ClassRoom.Create", "ClassRoom.Update",
-    "GradeLevel.Read", "GradeLevel.Create", "GradeLevel.Update", "Room.Read", "Room.Create", "Room.Update",
-    "EducationStage.Read", "EducationStage.Create", "EducationStage.Update", "EducationStage.Delete",
-    "School.Read", "School.Dashboard", "School.Create", "School.Update",
-    "Platform.Analytics", "Student.Read", "Student.Create", "Student.Update",
-    "Teacher.Read", "Teacher.Create", "Teacher.Update",
-    "Parent.Read", "Parent.Create", "Parent.Update",
-    "Profile.Read", "Children.Read", "MyClasses.Read",
-    "Enrollment.Create", "Schedule.Create",
-    "School.Manage", "Assignment.Create", "Assignment.Submit", "Assignment.Read", "Assignment.ReadOwn",
-    "Attendance.Record", "Attendance.ReadOwn", "Attendance.ReadChild", "Schedule.Read", "Grade.Enter",
-    "Billing.Read", "Billing.Manage", "Exam.Read", "Exam.Create", "Exam.Manage",
-    "Notification.Read", "Notification.Send"
+    // Academics
+    ["AcademicYear.Read"]       = "academicyear.read",
+    ["AcademicYear.Create"]     = "academicyear.create",
+    ["AcademicYear.Update"]     = "academicyear.update",
+    ["ClassRoom.Read"]          = "classroom.read",
+    ["ClassRoom.Create"]        = "classroom.create",
+    ["ClassRoom.Update"]        = "classroom.update",
+    ["GradeLevel.Read"]         = "gradelevel.read",
+    ["GradeLevel.Create"]       = "gradelevel.create",
+    ["GradeLevel.Update"]       = "gradelevel.update",
+    ["Room.Read"]               = "room.read",
+    ["Room.Create"]             = "room.create",
+    ["Room.Update"]             = "room.update",
+    ["EducationStage.Read"]     = "educationstage.read",
+    ["EducationStage.Create"]   = "educationstage.create",
+    ["EducationStage.Update"]   = "educationstage.update",
+    ["EducationStage.Delete"]   = "educationstage.delete",
+    // School / Platform
+    ["School.Read"]             = "school.read",
+    ["School.Dashboard"]        = "school.dashboard",
+    ["School.Create"]           = "school.create",
+    ["School.Update"]           = "school.update",
+    ["School.Manage"]           = "school.manage",
+    ["Platform.Analytics"]      = "platform.analytics",
+    // People
+    ["Student.Read"]            = "student.read",
+    ["Student.Create"]          = "student.create",
+    ["Student.Update"]          = "student.update",
+    ["Teacher.Read"]            = "teacher.read",
+    ["Teacher.Create"]          = "teacher.create",
+    ["Teacher.Update"]          = "teacher.update",
+    ["Parent.Read"]             = "parent.read",
+    ["Parent.Create"]           = "parent.create",
+    ["Parent.Update"]           = "parent.update",
+    // Portal / Personal
+    ["Profile.Read"]            = "profile.read",
+    ["Children.Read"]           = "children.read",
+    ["MyClasses.Read"]          = "myclasses.read",
+    // Enrollment & Schedule
+    ["Enrollment.Create"]       = "enrollment.create",
+    ["Schedule.Create"]         = "schedule.create",
+    ["Schedule.Read"]           = "schedule.read",
+    // Assignments
+    ["Assignment.Create"]       = "assignment.create",
+    ["Assignment.Read"]         = "assignment.read",
+    ["Assignment.ReadOwn"]      = "assignment.read",       // students see their own via same claim
+    ["Assignment.Submit"]       = "assignment.submit",
+    // Attendance  — NOTE: claim uses dots, not camelCase
+    ["Attendance.Record"]       = "attendance.record",
+    ["Attendance.ReadOwn"]      = "attendance.read.own",
+    ["Attendance.ReadChild"]    = "attendance.read.child",
+    // Grades
+    ["Grade.Enter"]             = "grade.enter",
+    // Billing
+    ["Billing.Read"]            = "billing.read",
+    ["Billing.Manage"]          = "billing.manage",
+    // Exams
+    ["Exam.Read"]               = "exam.read",
+    ["Exam.Create"]             = "exam.create",
+    ["Exam.Manage"]             = "exam.manage",
+    // Notifications
+    ["Notification.Read"]       = "notification.read",
+    ["Notification.Send"]       = "notification.send",
 };
 
 builder.Services.AddAuthorization(options =>
 {
-    foreach (var policyName in permissionPolicies)
+    foreach (var (policyName, claimValue) in permissionPolicies)
     {
-        var permission = policyName.ToLowerInvariant();
+        var claim = claimValue; // capture for closure
 
         options.AddPolicy(policyName, policy => policy.RequireAssertion(context =>
             context.User.HasClaim("is_platform_admin", "true") ||
-            context.User.HasClaim("permission", permission)));
+            context.User.HasClaim("permission", claim)));
     }
 });
 

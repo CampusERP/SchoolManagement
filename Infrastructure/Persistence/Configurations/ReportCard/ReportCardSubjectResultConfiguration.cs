@@ -14,5 +14,7 @@ public class ReportCardSubjectResultConfiguration : IEntityTypeConfiguration<Rep
         builder.Property(r => r.MaxScore).HasPrecision(6, 2);
         builder.Property(r => r.Grade).IsRequired().HasMaxLength(5);
         builder.HasIndex(r => r.ReportCardId);
+        // Configure RowVersion as a DB-generated concurrency token
+        builder.Property(r => r.RowVersion).IsRowVersion();
     }
 }
