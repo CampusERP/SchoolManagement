@@ -1,9 +1,10 @@
-using MediatR;
-using Application.Common.Models;
+using Application.Common.Interfaces;
 using Application.Common.Interfaces.Repositories;
-using Domain.Entities.People;
-using Domain.Entities.Tenancy;
 using Application.Common.Interfaces.Services;
+using Application.Common.Messages;
+using Application.Common.Models;
+using Domain.Entities.People;
+using MediatR;
 
 namespace Application.Features.People.Commands.CreateTeacher;
 
@@ -11,16 +12,16 @@ public class CreateTeacherCommandHandler : IRequestHandler<CreateTeacherCommand,
 {
     private readonly ITeacherRepository _teachers;
     private readonly IIdentityService _identityService;
-    private readonly IUserSchoolMembershipRepository _memberships;
+    private readonly IOutboxService _outbox;
 
     public CreateTeacherCommandHandler(
         ITeacherRepository teachers,
         IIdentityService identityService,
-        IUserSchoolMembershipRepository memberships)
+        IOutboxService outbox)
     {
         _teachers = teachers;
         _identityService = identityService;
-        _memberships = memberships;
+        _outbox = outbox;
     }
 
     public async Task<Result<Guid>> Handle(CreateTeacherCommand request, CancellationToken ct)
@@ -37,16 +38,16 @@ public class CreateTeacherCommandHandler : IRequestHandler<CreateTeacherCommand,
 
         try
         {
-            var roleResult = await _identityService.AddToRoleAsync(userId, "Teacher", ct);
-            if (roleResult.IsFailure)
-            {
-                await _identityService.DeleteUserAsync(userId, ct);
-                return Result.Failure<Guid>(roleResult.Error ?? "Failed to assign the Teacher role.");
-            }
+            await _identityService.AddToRoleAsync(userId, "Teacher", ct);
 
-            var teacher = Teacher.Create(request.SchoolId, userId, request.EmployeeCode, request.FirstName, request.LastName);
-            await _memberships.AddAsync(UserSchoolMembership.Create(userId, request.SchoolId), ct);
+            var teacher = Teacher.Create(
+                request.SchoolId, userId, request.EmployeeCode,
+                request.FirstName, request.LastName);
+
             await _teachers.AddAsync(teacher, ct);
+
+            _outbox.Publish(new LinkTeacherLoginMessage(teacher.Id, userId));
+
             return Result.Success(teacher.Id);
         }
         catch

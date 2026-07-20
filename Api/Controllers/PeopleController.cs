@@ -7,6 +7,8 @@ using Application.Features.People.Commands.LinkStudentGuardian;
 using Application.Features.People.Commands.UpdateStudent;
 using Application.Features.People.Commands.UpdateTeacher;
 using Application.Features.People.Commands.UpdateParent;
+using Application.Features.People.Commands.StudentActivation;
+using Application.Features.People.Commands.TerminateTeacher;
 using Microsoft.AspNetCore.Authorization;
 using Application.Features.People.Queries.GetStudents;
 using Application.Features.People.Queries.StudentDetails;
@@ -52,6 +54,12 @@ public class PeopleController : ApiControllerBase
         [FromBody] UpdateStudentCommand command, CancellationToken ct) =>
         FromResult(await _mediator.Send(command with { StudentId = studentId }, ct));
 
+    [HttpPost("students/enrollments/{enrollmentId:guid}/withdraw")]
+    [Authorize(Policy = "Student.Update")]
+    public async Task<IActionResult> WithdrawStudent(
+        Guid enrollmentId, [FromQuery] Guid schoolId, CancellationToken ct) =>
+        FromResult(await _mediator.Send(new WithdrawStudentCommand(schoolId, enrollmentId), ct));
+
     // ── Teachers ──────────────────────────────────────────────────────
 
     [HttpPost("teachers")]
@@ -77,6 +85,12 @@ public class PeopleController : ApiControllerBase
     public async Task<IActionResult> UpdateTeacher(
         Guid teacherId, [FromBody] UpdateTeacherCommand command, CancellationToken ct) =>
         FromResult(await _mediator.Send(command with { TeacherId = teacherId }, ct));
+
+    [HttpPost("teachers/{teacherId:guid}/terminate")]
+    [Authorize(Policy = "Teacher.Update")]
+    public async Task<IActionResult> TerminateTeacher(
+        Guid teacherId, [FromQuery] Guid schoolId, CancellationToken ct) =>
+        FromResult(await _mediator.Send(new TerminateTeacherCommand(schoolId, teacherId), ct));
 
     // ── Parents ───────────────────────────────────────────────────────
 

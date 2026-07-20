@@ -1,9 +1,12 @@
-using MediatR;
-using Application.Common.Models;
+using Application.Common.Interfaces;
 using Application.Common.Interfaces.Repositories;
+using Application.Common.Interfaces.Services;
+using Application.Common.Messages;
+using Application.Common.Models;
 using Domain.Entities.People;
 using Domain.Entities.Tenancy;
-using Application.Common.Interfaces.Services;
+using MediatR;
+using System.Security.Principal;
 
 namespace Application.Features.People.Commands.CreateParent;
 
@@ -11,39 +14,37 @@ public class CreateParentCommandHandler : IRequestHandler<CreateParentCommand, R
 {
     private readonly IParentRepository _parents;
     private readonly IIdentityService _identityService;
-    private readonly IUserSchoolMembershipRepository _memberships;
+    private readonly IOutboxService _outbox;
 
     public CreateParentCommandHandler(
         IParentRepository parents,
         IIdentityService identityService,
-        IUserSchoolMembershipRepository memberships)
+        IOutboxService outbox)
     {
         _parents = parents;
         _identityService = identityService;
-        _memberships = memberships;
+        _outbox = outbox;
     }
 
     public async Task<Result<Guid>> Handle(CreateParentCommand request, CancellationToken ct)
     {
-        var applicationUser = await _identityService.CreateUserAsync(request.Email, request.Password, ct);
-        if (!applicationUser.IsSuccess)
-            return Result.Failure<Guid>(applicationUser.Error ?? "Failed to create application user.");
+        var userResult = await _identityService.CreateUserAsync(request.Email, request.Password, ct);
+        if (!userResult.IsSuccess)
+            return Result.Failure<Guid>(userResult.Error!);
 
-        var userId = applicationUser.Value;
+        var userId = userResult.Value;
 
         try
         {
-            var roleResult = await _identityService.AddToRoleAsync(userId, "Parent", ct);
+            await _identityService.AddToRoleAsync(userId, "Parent", ct);
 
-            if (!roleResult.IsSuccess)
-            {
-                await _identityService.DeleteUserAsync(userId, ct);
-                return Result.Failure<Guid>(roleResult.Error!);
-            }
+            var parent = Parent.Create(request.SchoolId, userId,
+                request.FirstName, request.LastName);
 
-            var parent = Parent.Create(request.SchoolId, userId, request.FirstName, request.LastName);
-            await _memberships.AddAsync(UserSchoolMembership.Create(userId, request.SchoolId), ct);
             await _parents.AddAsync(parent, ct);
+
+            _outbox.Publish(new LinkParentLoginMessage(parent.Id, userId));
+
             return Result.Success(parent.Id);
         }
         catch

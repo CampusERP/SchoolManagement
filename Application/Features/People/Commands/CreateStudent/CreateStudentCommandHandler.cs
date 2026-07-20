@@ -1,9 +1,11 @@
-using MediatR;
-using Application.Common.Models;
+using Application.Common.Interfaces;
 using Application.Common.Interfaces.Repositories;
+using Application.Common.Interfaces.Services;
+using Application.Common.Messages;
+using Application.Common.Models;
 using Domain.Entities.People;
 using Domain.Entities.Tenancy;
-using Application.Common.Interfaces.Services;
+using MediatR;
 
 namespace Application.Features.People.Commands.CreateStudent;
 
@@ -11,16 +13,16 @@ public class CreateStudentCommandHandler : IRequestHandler<CreateStudentCommand,
 {
     private readonly IStudentRepository _students;
     private readonly IIdentityService _identityService;
-    private readonly IUserSchoolMembershipRepository _memberships;
+    private readonly IOutboxService _outbox;
 
     public CreateStudentCommandHandler(
         IStudentRepository students,
         IIdentityService identityService,
-        IUserSchoolMembershipRepository memberships)
+        IOutboxService outbox)
     {
         _students = students;
         _identityService = identityService;
-        _memberships = memberships;
+        _outbox = outbox;
     }
 
     public async Task<Result<Guid>> Handle(CreateStudentCommand request, CancellationToken ct)
@@ -30,6 +32,7 @@ public class CreateStudentCommandHandler : IRequestHandler<CreateStudentCommand,
             return Result.Failure<Guid>($"A student with code '{request.StudentCode}' already exists in this school.");
 
         var student = Student.Create(request.SchoolId, request.StudentCode, request.FirstName, request.LastName, request.DateOfBirth);
+        await _students.AddAsync(student, ct);
 
         if (!string.IsNullOrWhiteSpace(request.Email) && !string.IsNullOrWhiteSpace(request.Password))
         {
@@ -42,15 +45,9 @@ public class CreateStudentCommandHandler : IRequestHandler<CreateStudentCommand,
 
             try
             {
-                var roleResult = await _identityService.AddToRoleAsync(userId, "Student", ct);
-                if (!roleResult.IsSuccess)
-                {
-                    await _identityService.DeleteUserAsync(userId, ct);
-                    return Result.Failure<Guid>(roleResult.Error!);
-                }
-
-                await _memberships.AddAsync(UserSchoolMembership.Create(userId, request.SchoolId), ct);
-                student.LinkLogin(userId);
+                await _identityService.AddToRoleAsync(userId, "Student", ct);
+                _outbox.Publish(new LinkStudentLoginMessage(student.Id, userId));
+                return Result.Success(student.Id);
             }
             catch
             {

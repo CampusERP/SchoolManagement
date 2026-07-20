@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Application.Features.Identity.Login;
 using Application.Features.Identity.RefreshToken;
 using Application.Features.Identity.Register;
+using Application.Features.Identity.SwitchSchool;
 
 namespace Api.Controllers;
 
@@ -38,4 +39,15 @@ public class AuthController : ApiControllerBase
         var result = await _mediator.Send(command, ct);
         return Created(result);
     }
+
+    [HttpGet("memberships")]
+    [Authorize]
+    public async Task<IActionResult> GetMemberships(CancellationToken ct) =>
+        FromResult(await _mediator.Send(new GetUserMembershipsQuery(), ct));
+
+    [HttpPost("switch-school")]
+    [Authorize]
+    public async Task<IActionResult> SwitchSchool(
+        [FromBody] SwitchSchoolCommand command, CancellationToken ct) =>
+        FromResult(await _mediator.Send(command, ct));
 }

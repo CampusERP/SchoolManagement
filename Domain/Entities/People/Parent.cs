@@ -34,4 +34,6 @@ public class Parent : TenantEntity, IAggregateRoot
         FirstName = firstName;
         LastName = lastName;
     }
+
+    public void LinkLogin(Guid applicationUserId) => ApplicationUserId = applicationUserId;
 }

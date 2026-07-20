@@ -9,10 +9,9 @@ public class UserSchoolMembershipConfiguration : IEntityTypeConfiguration<UserSc
     public void Configure(EntityTypeBuilder<UserSchoolMembership> builder)
     {
         builder.ToTable("UserSchoolMemberships");
-
+        builder.Property(m => m.Role).IsRequired().HasMaxLength(50);
         builder.HasIndex(m => new { m.ApplicationUserId, m.SchoolId }).IsUnique();
         builder.HasIndex(m => m.SchoolId);
-
         builder.Property(m => m.RowVersion).IsRowVersion();
     }
 }
