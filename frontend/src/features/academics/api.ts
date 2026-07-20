@@ -15,6 +15,13 @@ import type {
   UpdateRoomCommand,
 } from "@/types/academic.types";
 
+export interface SubjectDto {
+  id: string;
+  code: string;
+  name: string;
+  description?: string;
+}
+
 export interface GetClassroomsParams {
   schoolId: string;
   academicYearId?: string;
@@ -91,4 +98,12 @@ export const AcademicsApi = {
 
   updateRoom: (id: string, data: UpdateRoomCommand) =>
     api.put(`/academics/rooms/${id}`, data).then((r) => r.data),
+
+  // ── Subjects ─────────────────────────────────────────────────────
+  getSubjects: (gradeLevelId?: string) =>
+    api
+      .get<SubjectDto[]>("/subjects", {
+        params: { gradeLevelId: gradeLevelId || undefined },
+      })
+      .then((r) => r.data),
 };

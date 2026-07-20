@@ -5,6 +5,8 @@ using Application.Features.Identity.Login;
 using Application.Features.Identity.RefreshToken;
 using Application.Features.Identity.Register;
 using Application.Features.Identity.SwitchSchool;
+using Application.Features.Identity.ForgotPassword;
+using Application.Features.Identity.ResetPassword;
 
 namespace Api.Controllers;
 
@@ -49,5 +51,26 @@ public class AuthController : ApiControllerBase
     [Authorize]
     public async Task<IActionResult> SwitchSchool(
         [FromBody] SwitchSchoolCommand command, CancellationToken ct) =>
+        FromResult(await _mediator.Send(command, ct));
+
+    /// <summary>
+    /// Request a password reset link. Always returns success to prevent email enumeration.
+    /// </summary>
+    [HttpPost("forgot-password")]
+    [AllowAnonymous]
+    public async Task<IActionResult> ForgotPassword(
+        [FromBody] ForgotPasswordCommand command, CancellationToken ct)
+    {
+        await _mediator.Send(command, ct);
+        return Ok(new { message = "If an account with that email exists, a reset link has been sent." });
+    }
+
+    /// <summary>
+    /// Reset password using the token from the email link.
+    /// </summary>
+    [HttpPost("reset-password")]
+    [AllowAnonymous]
+    public async Task<IActionResult> ResetPassword(
+        [FromBody] ResetPasswordCommand command, CancellationToken ct) =>
         FromResult(await _mediator.Send(command, ct));
 }

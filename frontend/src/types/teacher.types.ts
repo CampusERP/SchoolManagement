@@ -40,5 +40,5 @@ export interface UpdateTeacherCommand {
   employeeCode: string;
   firstName: string;
   lastName: string;
-  employmentStatus: string;
+  employmentStatus: "Active" | "OnLeave" | "Terminated";
 }

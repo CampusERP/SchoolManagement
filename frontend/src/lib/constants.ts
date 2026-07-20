@@ -4,6 +4,6 @@ export const ROLE_HOME: Record<UserRole, string> = {
   platform_admin: "/platform",
   school_admin: "/school",
   teacher: "/teacher",
-  student: "/auth/login",
-  parent: "/auth/login",
+  student: "/student",
+  parent: "/parent",
 };

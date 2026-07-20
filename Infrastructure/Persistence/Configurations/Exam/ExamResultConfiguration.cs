@@ -21,6 +21,9 @@ public class ExamResultConfigurationFixed : IEntityTypeConfiguration<ExamResult>
         // ExamScheduleId is a non-navigable FK — just an index, no nav property
         builder.HasIndex(r => r.ExamScheduleId);
 
+        // Tenant isolation index — SchoolId leads for filtered queries
+        builder.HasIndex(r => r.SchoolId);
+
         builder.Property(r => r.RowVersion).IsRowVersion();
     }
 }

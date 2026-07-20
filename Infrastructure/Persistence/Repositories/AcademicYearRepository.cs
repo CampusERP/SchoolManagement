@@ -40,4 +40,23 @@ public class AcademicYearRepository : IAcademicYearRepository
         await _context.SaveChangesAsync(ct);
         return term.Id;
     }
+
+    public async Task UpdateTermAsync(AcademicYear year, Term term, CancellationToken ct = default)
+    {
+        _context.Entry(year).State = EntityState.Unchanged;
+        _context.Entry(term).State = EntityState.Modified;
+        await _context.SaveChangesAsync(ct);
+    }
+
+    public async Task DeleteTermAsync(AcademicYear year, Term term, CancellationToken ct = default)
+    {
+        _context.Entry(year).State = EntityState.Unchanged;
+        _context.Entry(term).State = EntityState.Deleted;
+        await _context.SaveChangesAsync(ct);
+    }
+
+    public async Task SaveChangesAsync(CancellationToken ct = default)
+    {
+        await _context.SaveChangesAsync(ct);
+    }
 }

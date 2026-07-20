@@ -9,21 +9,23 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import DashboardTemplate from "@/components/templates/DashboardTemplate";
 import Button from "@/components/atoms/Button";
-import { Input } from "@/components/atoms/Input";
 import { useTeachers } from "@/features/teachers/hooks";
-import { useClassrooms, useAcademicYears } from "@/features/academics/hooks";
+import { useClassrooms, useAcademicYears, useSubjects, useRooms } from "@/features/academics/hooks";
 import { useAssignTeacher } from "@/features/enrollment/hooks";
 import { useAuthStore } from "@/store/authStore";
+import type { AssignTeacherCommand } from "@/types/enrollment.types";
 
-const DAYS_OF_WEEK = [
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-  "Sunday",
-];
+const DAY_OF_WEEK_MAP: Record<string, number> = {
+  Sunday: 0,
+  Monday: 1,
+  Tuesday: 2,
+  Wednesday: 3,
+  Thursday: 4,
+  Friday: 5,
+  Saturday: 6,
+};
+
+const DAYS_OF_WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
 const schema = z.object({
   teacherId: z.string().min(1, "Teacher is required"),
@@ -36,6 +38,7 @@ const schema = z.object({
         dayOfWeek: z.string().min(1, "Day is required"),
         startTime: z.string().min(1, "Start time is required"),
         endTime: z.string().min(1, "End time is required"),
+        roomId: z.string().min(1, "Room is required"),
       })
     )
     .min(1, "Add at least one schedule slot"),
@@ -51,6 +54,8 @@ export default function AssignTeacherPage() {
   const { data: teachers } = useTeachers({ searchTerm: teacherSearch, page: 1, pageSize: 50 });
   const { data: years } = useAcademicYears();
   const { data: classrooms } = useClassrooms({});
+  const { data: subjects } = useSubjects();
+  const { data: rooms } = useRooms();
   const assignTeacher = useAssignTeacher();
 
   const {
@@ -64,7 +69,7 @@ export default function AssignTeacherPage() {
       subjectId: "",
       classRoomId: "",
       termId: "",
-      scheduleSlots: [{ dayOfWeek: "", startTime: "", endTime: "" }],
+      scheduleSlots: [{ dayOfWeek: "", startTime: "", endTime: "", roomId: "" }],
     },
   });
 
@@ -72,7 +77,20 @@ export default function AssignTeacherPage() {
 
   const onSubmit = async (values: FormData) => {
     try {
-      await assignTeacher.mutateAsync({ schoolId, ...values });
+      const payload: AssignTeacherCommand = {
+        schoolId,
+        teacherId: values.teacherId,
+        subjectId: values.subjectId,
+        classRoomId: values.classRoomId,
+        termId: values.termId,
+        scheduleSlots: values.scheduleSlots.map((s) => ({
+          dayOfWeek: DAY_OF_WEEK_MAP[s.dayOfWeek],
+          startTime: s.startTime + ":00",
+          endTime: s.endTime + ":00",
+          roomId: s.roomId,
+        })),
+      };
+      await assignTeacher.mutateAsync(payload);
       toast.success("Teacher assigned successfully");
       navigate(`/people/teachers/${values.teacherId}`);
     } catch {
@@ -85,6 +103,8 @@ export default function AssignTeacherPage() {
     label: `${t.firstName} ${t.lastName} (${t.employeeCode})`,
   }));
   const classroomOptions = (classrooms ?? []).map((c) => ({ value: c.id, label: c.name }));
+  const subjectOptions = (subjects ?? []).map((s) => ({ value: s.id, label: `${s.code} — ${s.name}` }));
+  const roomOptions = (rooms ?? []).map((r) => ({ value: r.id, label: r.name }));
   const termOptions = (years ?? []).flatMap((y) =>
     (y.terms ?? []).map((t) => ({ value: t.id, label: `${y.name} — ${t.name}` }))
   );
@@ -115,7 +135,15 @@ export default function AssignTeacherPage() {
             <Controller
               name="subjectId"
               control={control}
-              render={({ field }) => <Input {...field} placeholder="Subject ID" size="large" />}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  showSearch
+                  placeholder="Select a subject"
+                  options={subjectOptions}
+                  size="large"
+                />
+              )}
             />
           </Form.Item>
 
@@ -149,7 +177,7 @@ export default function AssignTeacherPage() {
               variant="secondary"
               size="small"
               icon={<Plus className="h-4 w-4" />}
-              onClick={() => append({ dayOfWeek: "", startTime: "", endTime: "" })}
+              onClick={() => append({ dayOfWeek: "", startTime: "", endTime: "", roomId: "" })}
             >
               Add Slot
             </Button>
@@ -203,6 +231,20 @@ export default function AssignTeacherPage() {
                         value={field.value ? dayjs(field.value, "HH:mm") : null}
                         onChange={(t) => field.onChange(t ? t.format("HH:mm") : "")}
                         status={errors.scheduleSlots?.[index]?.endTime ? "error" : undefined}
+                      />
+                    )}
+                  />
+                </div>
+                <div className="flex-1">
+                  <Controller
+                    name={`scheduleSlots.${index}.roomId`}
+                    control={control}
+                    render={({ field }) => (
+                      <Select
+                        {...field}
+                        placeholder="Room"
+                        options={roomOptions}
+                        status={errors.scheduleSlots?.[index]?.roomId ? "error" : undefined}
                       />
                     )}
                   />

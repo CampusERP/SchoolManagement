@@ -39,7 +39,7 @@ public class AttendanceSession : TenantEntity, IAggregateRoot
         if (existing is not null)
             existing.UpdateStatus(status);
         else
-            _records.Add(AttendanceRecord.Create(Id, studentEnrollmentId, status));
+            _records.Add(AttendanceRecord.Create(SchoolId, Id, studentEnrollmentId, status));
     }
 
     public void Lock()

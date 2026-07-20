@@ -9,4 +9,7 @@ public interface IAcademicYearRepository
     Task<bool> HasCurrentAsync(Guid schoolId, CancellationToken ct = default);
     Task AddAsync(AcademicYear year, CancellationToken ct = default);
     Task<Guid> AddTermAsync(AcademicYear year, CancellationToken ct = default);
+    Task UpdateTermAsync(AcademicYear year, Term term, CancellationToken ct = default);
+    Task DeleteTermAsync(AcademicYear year, Term term, CancellationToken ct = default);
+    Task SaveChangesAsync(CancellationToken ct = default);
 }

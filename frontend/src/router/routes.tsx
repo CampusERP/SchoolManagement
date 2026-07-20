@@ -129,7 +129,43 @@ export const routes: RouteObject[] = [
         element: <AppLayout />,
         children: [
           { index: true, element: <TeacherDashboardPage /> },
-          { path: "classes", element: <PlaceholderPage title="My Classes" description="My Classes — Detailed view coming soon" /> },
+          { path: "classes", element: <PlaceholderPage title="My Classes" description="Class list with student rosters — coming soon" /> },
+          { path: "attendance", element: <PlaceholderPage title="Take Attendance" description="Record daily attendance — coming soon" /> },
+          { path: "grades", element: <PlaceholderPage title="Enter Grades" description="Grade assignments and exams — coming soon" /> },
+          { path: "schedule", element: <PlaceholderPage title="My Schedule" description="Weekly timetable — coming soon" /> },
+        ],
+      },
+    ],
+  },
+  {
+    path: "/student",
+    element: <ProtectedRoute requiredRole="student" />,
+    children: [
+      {
+        element: <AppLayout />,
+        children: [
+          { index: true, element: <PlaceholderPage title="Student Dashboard" description="Your classes, grades, and schedule — coming soon" /> },
+          { path: "classes", element: <PlaceholderPage title="My Classes" description="Enrolled classes — coming soon" /> },
+          { path: "grades", element: <PlaceholderPage title="My Grades" description="Exam results and report cards — coming soon" /> },
+          { path: "schedule", element: <PlaceholderPage title="My Schedule" description="Weekly timetable — coming soon" /> },
+          { path: "attendance", element: <PlaceholderPage title="My Attendance" description="Attendance history — coming soon" /> },
+          { path: "profile", element: <PlaceholderPage title="My Profile" description="Personal information — coming soon" /> },
+        ],
+      },
+    ],
+  },
+  {
+    path: "/parent",
+    element: <ProtectedRoute requiredRole="parent" />,
+    children: [
+      {
+        element: <AppLayout />,
+        children: [
+          { index: true, element: <PlaceholderPage title="Parent Dashboard" description="Your children's academic overview — coming soon" /> },
+          { path: "children", element: <PlaceholderPage title="My Children" description="Children list and details — coming soon" /> },
+          { path: "grades", element: <PlaceholderPage title="Children's Grades" description="Exam results and report cards — coming soon" /> },
+          { path: "attendance", element: <PlaceholderPage title="Children's Attendance" description="Attendance history — coming soon" /> },
+          { path: "profile", element: <PlaceholderPage title="My Profile" description="Personal information — coming soon" /> },
         ],
       },
     ],

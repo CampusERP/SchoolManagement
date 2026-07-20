@@ -50,7 +50,7 @@ public class Assignment : TenantEntity, IAggregateRoot
 
         var isLate = DateTime.UtcNow > DueDate;
         var status = isLate ? SubmissionStatus.Late : SubmissionStatus.Submitted;
-        var sub = AssignmentSubmission.Create(Id, studentEnrollmentId, status);
+        var sub = AssignmentSubmission.Create(SchoolId, Id, studentEnrollmentId, status);
         _submissions.Add(sub);
         return sub;
     }

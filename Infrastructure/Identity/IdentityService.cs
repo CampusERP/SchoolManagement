@@ -97,4 +97,32 @@ public class IdentityService : IIdentityService
 
         return new AuthenticatedUser(user.Id, user.Email!, user.IsPlatformAdmin);
     }
+
+    public async Task<AuthenticatedUser?> GetByEmailAsync(string email, CancellationToken ct)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user is null) return null;
+
+        return new AuthenticatedUser(user.Id, user.Email!, user.IsPlatformAdmin);
+    }
+
+    public async Task<string> GeneratePasswordResetTokenAsync(Guid userId, CancellationToken ct)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user is null) throw new InvalidOperationException("User not found.");
+
+        return await _userManager.GeneratePasswordResetTokenAsync(user);
+    }
+
+    public async Task<Result> ResetPasswordAsync(Guid userId, string token, string newPassword, CancellationToken ct)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user is null) return Result.Failure("User not found.");
+
+        var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+        if (!result.Succeeded)
+            return Result.Failure(string.Join("; ", result.Errors.Select(e => e.Description)));
+
+        return Result.Success();
+    }
 }

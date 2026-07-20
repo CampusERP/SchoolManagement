@@ -22,7 +22,7 @@ const schema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
   email: z.string().min(1, "Email is required").email("Invalid email"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -87,6 +87,17 @@ export default function TeachersPage() {
       dataIndex: "employmentStatus",
       key: "employmentStatus",
       render: (status: string) => <StatusBadge status={status} />,
+    },
+    {
+      title: "Assigned Classes",
+      dataIndex: "assignedClassesCount",
+      key: "assignedClassesCount",
+      align: "center",
+      render: (count: number) => (
+        <span className="font-mono text-sm text-[var(--color-text-secondary)]">
+          {count ?? 0}
+        </span>
+      ),
     },
     {
       title: "Actions",

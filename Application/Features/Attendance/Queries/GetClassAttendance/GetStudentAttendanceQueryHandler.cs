@@ -15,7 +15,9 @@ public class GetStudentAttendanceQueryHandler
         GetStudentAttendanceQuery request, CancellationToken ct)
     {
         var p = request.Pagination ?? new PaginationParams();
-        var result = await _readService.GetStudentAttendanceAsync(request.StudentEnrollmentId, p, ct);
+        var result = await _readService.GetStudentAttendanceAsync(
+            request.StudentEnrollmentId, request.AcademicYearId,
+            request.DateFrom, request.DateTo, request.Status, p, ct);
         return Result.Success(result);
     }
 }

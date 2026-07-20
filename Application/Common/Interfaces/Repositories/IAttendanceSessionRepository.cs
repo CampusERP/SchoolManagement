@@ -10,4 +10,6 @@ public interface IAttendanceSessionRepository
         Guid schoolId, Guid classScheduleId, DateOnly date, CancellationToken ct = default);
 
     Task AddAsync(AttendanceSession session, CancellationToken ct = default);
+
+    Task SaveChangesAsync(CancellationToken ct = default);
 }

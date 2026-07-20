@@ -11,8 +11,8 @@ public class PermissionProvider : IPermissionProvider
             "school.manage", "platform.analytics", "subscription.manage",
             "academicyear.read", "academicyear.create", "academicyear.update",
             "classroom.read", "classroom.create", "classroom.update",
-            "gradelevel.read", "gradelevel.update",
-            "room.read", "room.update",
+            "gradelevel.create", "gradelevel.read", "gradelevel.update",
+            "room.create", "room.read", "room.update",
             "teacher.create", "teacher.read", "teacher.update",
             "student.create", "student.read", "student.update",
             "parent.create", "parent.read", "parent.update",
@@ -57,9 +57,11 @@ public class PermissionProvider : IPermissionProvider
             "academicyear.read",
             "academicyear.update",
 
+            "gradelevel.create",
             "gradelevel.read",
             "gradelevel.update",
 
+            "room.create",
             "room.read",
             "room.update",
 
@@ -73,7 +75,11 @@ public class PermissionProvider : IPermissionProvider
 
             "exam.create",
 
-            "notification.send"
+            "notification.send",
+            "educationstage.read",
+            "educationstage.create",
+            "educationstage.update",
+            "educationstage.delete",
         },
 
         "Teacher" => new()

@@ -8,7 +8,7 @@ namespace Domain.Entities.Assignments;
 /// Represents a student's submission for an assignment. It tracks the submission status, grade, teacher feedback, and associated documents. This entity enforces domain rules related to submissions, such as preventing grading of unsubmitted assignments and ensuring that grades do not exceed the maximum score defined in the assignment.
 /// </summary>
 
-public class AssignmentSubmission : AuditableEntity
+public class AssignmentSubmission : TenantEntity
 {
     public Guid             AssignmentId        { get; private set; }
     public Guid             StudentEnrollmentId { get; private set; }
@@ -22,8 +22,8 @@ public class AssignmentSubmission : AuditableEntity
 
     private AssignmentSubmission() { } // EF Core
 
-    private AssignmentSubmission(Guid id, Guid assignmentId, Guid studentEnrollmentId, SubmissionStatus status)
-        : base(id)
+    private AssignmentSubmission(Guid id, Guid schoolId, Guid assignmentId, Guid studentEnrollmentId, SubmissionStatus status)
+        : base(id, schoolId)
     {
         AssignmentId        = assignmentId;
         StudentEnrollmentId = studentEnrollmentId;
@@ -31,8 +31,8 @@ public class AssignmentSubmission : AuditableEntity
         SubmittedAtUtc      = DateTime.UtcNow;
     }
 
-    internal static AssignmentSubmission Create(Guid assignmentId, Guid studentEnrollmentId, SubmissionStatus status)
-        => new(Guid.NewGuid(), assignmentId, studentEnrollmentId, status);
+    internal static AssignmentSubmission Create(Guid schoolId, Guid assignmentId, Guid studentEnrollmentId, SubmissionStatus status)
+        => new(Guid.NewGuid(), schoolId, assignmentId, studentEnrollmentId, status);
 
     public void AttachDocument(Guid documentId)
     {

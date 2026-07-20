@@ -49,13 +49,20 @@ public class TeacherReadService : ITeacherReadService
             .Select(t => new TeacherDetailDto(
                 t.Id, t.EmployeeCode, t.FirstName, t.LastName,
                 t.EmploymentStatus.ToString(),
-                _db.TeachingAssignments.Where(a => a.TeacherId == t.Id)
-                    .Join(_db.ClassRooms, a => a.ClassRoomId, c => c.Id, (a, c) => new { a, c })
-                    .Join(_db.Terms, ac => ac.a.TermId, trm => trm.Id, (ac, trm) => new TeachingAssignmentSummaryDto(
-                        ac.a.Id, ac.a.SubjectId.ToString(), ac.c.Name, trm.Name)).ToList()))
+                new List<TeachingAssignmentSummaryDto>()))
             .FirstOrDefaultAsync(ct);
 
-        return teacher;
+        if (teacher is null) return null;
+
+        var assignments = await _db.TeachingAssignments.AsNoTracking()
+            .Where(a => a.TeacherId == teacherId)
+            .Join(_db.ClassRooms, a => a.ClassRoomId, c => c.Id, (a, c) => new { a, c })
+            .Join(_db.Terms, ac => ac.a.TermId, trm => trm.Id, (ac, trm) => new { ac, trm })
+            .Join(_db.Subjects, x => x.ac.a.SubjectId, s => s.Id, (x, s) => new TeachingAssignmentSummaryDto(
+                x.ac.a.Id, s.Name, x.ac.c.Name, x.trm.Name))
+            .ToListAsync(ct);
+
+        return teacher with { Assignments = assignments };
     }
 
     public async Task<List<TeachingAssignmentSummaryDto>> GetMyClassesAsync(Guid schoolId, Guid userId, Guid termId, CancellationToken ct)
@@ -70,8 +77,9 @@ public class TeacherReadService : ITeacherReadService
         var items = await _db.TeachingAssignments.AsNoTracking()
             .Where(a => a.TeacherId == teacherId && a.TermId == termId)
             .Join(_db.ClassRooms, a => a.ClassRoomId, c => c.Id, (a, c) => new { a, c })
-            .Join(_db.Terms, ac => ac.a.TermId, trm => trm.Id, (ac, trm) => new TeachingAssignmentSummaryDto(
-                ac.a.Id, ac.a.SubjectId.ToString(), ac.c.Name, trm.Name))
+            .Join(_db.Terms, ac => ac.a.TermId, trm => trm.Id, (ac, trm) => new { ac, trm })
+            .Join(_db.Subjects, x => x.ac.a.SubjectId, s => s.Id, (x, s) => new TeachingAssignmentSummaryDto(
+                x.ac.a.Id, s.Name, x.ac.c.Name, x.trm.Name))
             .ToListAsync(ct);
 
         return items;

@@ -15,7 +15,8 @@ export interface AssignTeacherCommand {
 }
 
 export interface ScheduleSlot {
-  dayOfWeek: string;
+  dayOfWeek: number;
   startTime: string;
   endTime: string;
+  roomId: string;
 }

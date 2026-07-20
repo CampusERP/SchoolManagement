@@ -4,6 +4,7 @@ using Domain.Entities.Notifications;
 using Domain.Entities.People;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Outbox;
 
@@ -51,7 +52,11 @@ public sealed class LinkParentLoginHandler(ApplicationDbContext db) : IOutboxMes
     }
 }
 
-public sealed class DeliverNotificationBatchHandler(ApplicationDbContext db) : IOutboxMessageHandler<DeliverNotificationBatchMessage>
+public sealed class DeliverNotificationBatchHandler(
+    ApplicationDbContext db,
+    IEmailService emailService,
+    ILogger<DeliverNotificationBatchHandler> logger)
+    : IOutboxMessageHandler<DeliverNotificationBatchMessage>
 {
     public async Task HandleAsync(DeliverNotificationBatchMessage message, CancellationToken ct)
     {
@@ -59,11 +64,43 @@ public sealed class DeliverNotificationBatchHandler(ApplicationDbContext db) : I
             .SingleOrDefaultAsync(x => x.Id == message.NotificationBatchId, ct)
             ?? throw new InvalidOperationException($"Notification batch {message.NotificationBatchId} was not found.");
 
-        if (batch.Channel is not NotificationChannel.InApp)
-            throw new NotSupportedException($"{batch.Channel} notification delivery requires a channel provider.");
+        switch (batch.Channel)
+        {
+            case NotificationChannel.InApp:
+                foreach (var notification in batch.Notifications.Where(x => x.Status == NotificationStatus.Pending))
+                    notification.MarkDelivered();
+                await db.SaveChangesAsync(ct);
+                break;
 
-        foreach (var notification in batch.Notifications.Where(x => x.Status == NotificationStatus.Pending))
-            notification.MarkDelivered();
-        await db.SaveChangesAsync(ct);
+            case NotificationChannel.Email:
+                var pendingRecipients = batch.Notifications
+                    .Where(x => x.Status == NotificationStatus.Pending)
+                    .ToList();
+
+                foreach (var notification in pendingRecipients)
+                {
+                    try
+                    {
+                        await emailService.SendAsync(
+                            notification.RecipientUserId,
+                            batch.Subject,
+                            batch.Body,
+                            ct);
+                        notification.MarkDelivered();
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError(ex, "Failed to send email to user {UserId} for batch {BatchId}",
+                            notification.RecipientUserId, batch.Id);
+                        notification.MarkFailed();
+                    }
+                }
+                await db.SaveChangesAsync(ct);
+                break;
+
+            case NotificationChannel.SMS:
+            case NotificationChannel.Push:
+                throw new NotSupportedException($"{batch.Channel} notification delivery is not yet implemented.");
+        }
     }
 }

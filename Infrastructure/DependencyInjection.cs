@@ -7,6 +7,7 @@ using Application.Common.Models;
 using Application.Common.Services;
 using FluentValidation;
 using Infrastructure.Authentication;
+using Infrastructure.Email;
 using Infrastructure.Identity;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Interceptors;
@@ -117,205 +118,48 @@ public static class DependencyInjection
             .AddEntityFrameworkStores<PlatformDbContext>()
             .AddDefaultTokenProviders();
 
-        // ───────────────── JWT ──────────────────
+        // JWT configuration is in Program.cs
 
-        services.Configure<JwtSettings>(
-            config.GetSection("Jwt"));
+        services.Configure<JwtSettings>(config.GetSection("Jwt"));
 
-        var jwtSecret = config["Jwt:Secret"]
-            ?? throw new InvalidOperationException(
-                "Jwt:Secret not configured.");
+        // Authorization policies are configured in Program.cs
 
-        services
-            .AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme =
-                    JwtBearerDefaults.AuthenticationScheme;
+        // ───────────── New Repositories ──────────
 
-                options.DefaultChallengeScheme =
-                    JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters =
-                    new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-
-                        ValidIssuer = config["Jwt:Issuer"],
-                        ValidAudience = config["Jwt:Audience"],
-
-                        IssuerSigningKey =
-                            new SymmetricSecurityKey(
-                                Encoding.UTF8.GetBytes(jwtSecret)),
-
-                        ClockSkew = TimeSpan.FromSeconds(30)
-                    };
-            });
-
-        // ───────────── Authorization ─────────────
-
-        services.AddAuthorizationBuilder()
-
-            .AddPolicy("School.Create",
-                p => p.RequireClaim(
-                    "permissions", "school.create"))
-
-            .AddPolicy("School.Manage",
-                p => p.RequireClaim(
-                    "permissions", "school.manage"))
-
-            .AddPolicy("School.Read",
-                p => p.RequireClaim(
-                    "permissions", "school.read"))
-
-            .AddPolicy("Teacher.Create",
-                p => p.RequireClaim(
-                    "permissions", "teacher.create"))
-
-            .AddPolicy("Teacher.Read",
-                p => p.RequireClaim(
-                    "permissions", "teacher.read"))
-
-            .AddPolicy("Student.Create",
-                p => p.RequireClaim(
-                    "permissions", "student.create"))
-
-            .AddPolicy("Student.Read",
-                p => p.RequireClaim(
-                    "permissions", "student.read"))
-
-            .AddPolicy("Enrollment.Create",
-                p => p.RequireClaim(
-                    "permissions", "enrollment.create"))
-
-            .AddPolicy("ClassRoom.Create",
-                p => p.RequireClaim(
-                    "permissions", "classroom.create"))
-
-            .AddPolicy("AcademicYear.Create",
-                p => p.RequireClaim(
-                    "permissions", "academicyear.create"))
-
-            .AddPolicy("Schedule.Create",
-                p => p.RequireClaim(
-                    "permissions", "schedule.create"))
-
-            .AddPolicy("Attendance.Record",
-                p => p.RequireClaim(
-                    "permissions", "attendance.record"))
-
-            .AddPolicy("Grade.Enter",
-                p => p.RequireClaim(
-                    "permissions", "grade.enter"))
-
-            .AddPolicy("Assignment.Create",
-                p => p.RequireClaim(
-                    "permissions", "assignment.create"))
-
-            .AddPolicy("Exam.Create",
-                p => p.RequireClaim(
-                    "permissions", "exam.create"))
-
-            .AddPolicy("Notification.Send",
-                p => p.RequireClaim(
-                    "permissions", "notification.send"));
-
-        // ───────────── Repositories ─────────────
-
-        services.AddScoped<ISchoolRepository, SchoolRepository>();
-
-        services.AddScoped<IStudentRepository, StudentRepository>();
-        services.AddScoped<ITeacherRepository, TeacherRepository>();
-        services.AddScoped<IParentRepository, ParentRepository>();
-        services.AddScoped<IStudentGuardianRepository, StudentGuardianRepository>();
-
-        services.AddScoped<ISchoolAdminProfileRepository,
-            SchoolAdminProfileRepository>();
-
-        services.AddScoped<IUserSchoolMembershipRepository,
-            UserSchoolMembershipRepository>();
-
-        services.AddScoped<IAcademicYearRepository,
-            AcademicYearRepository>();
-
-        services.AddScoped<IGradeLevelRepository,
-            GradeLevelRepository>();
-
-        services.AddScoped<IClassRoomRepository,
-            ClassRoomRepository>();
-
-        services.AddScoped<IRoomRepository,
-            RoomRepository>();
-
-        // Deferred: these Application contracts have no Infrastructure implementation yet.
-        // services.AddScoped<ISubjectQueryRepository, SubjectQueryRepository>();
-        // services.AddScoped<ISubjectRepository, SubjectRepository>();
-        // services.AddScoped<ICurriculumSubjectRepository, CurriculumSubjectRepository>();
-        // services.AddScoped<IAttendanceSessionRepository, AttendanceSessionRepository>();
-        // services.AddScoped<IAssignmentRepository, AssignmentRepository>();
-        // services.AddScoped<IDocumentRepository, DocumentRepository>();
-        // services.AddScoped<IExamRepository, ExamRepository>();
-        // services.AddScoped<IExamResultRepository, ExamResultRepository>();
-        // services.AddScoped<IReportCardRepository, ReportCardRepository>();
-        // services.AddScoped<IDeviceTokenRepository, DeviceTokenRepository>();
-        // services.AddScoped<INotificationRepository, NotificationRepository>();
-        // services.AddScoped<INotificationBatchRepository, NotificationBatchRepository>();
-        // services.AddScoped<IOutboxRepository, OutboxRepository>();
-        // services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
-        // services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
-        // services.AddScoped<IInvoiceRepository, InvoiceRepository>();
-
-        services.AddScoped<IStudentEnrollmentRepository,
-            StudentEnrollmentRepository>();
-
-        services.AddScoped<ITeachingAssignmentRepository,
-            TeachingAssignmentRepository>();
-
-        // ───────────── Application Services ──────
-
-        services.AddScoped<IIdentityService,
-            IdentityService>();
-
-        services.AddScoped<IJwtTokenService,
-            JwtTokenService>();
-
-        services.AddScoped<IPermissionProvider,
-            PermissionProvider>();
-
-        services.AddScoped<IBlobStorageService,
-            LocalBlobStorageService>();
+        services.AddScoped<ISubjectQueryRepository, SubjectQueryRepository>();
+        services.AddScoped<IAttendanceSessionRepository, AttendanceSessionRepository>();
+        services.AddScoped<IAssignmentRepository, AssignmentRepository>();
+        services.AddScoped<IExamRepository, ExamRepository>();
+        services.AddScoped<IReportCardRepository, ReportCardRepository>();
+        services.AddScoped<IDeviceTokenRepository, DeviceTokenRepository>();
+        services.AddScoped<INotificationRepository, NotificationRepository>();
+        services.AddScoped<INotificationBatchRepository, NotificationBatchRepository>();
+        services.AddScoped<IOutboxRepository, OutboxRepository>();
+        services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
+        services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+        services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+        services.AddScoped<IPaymentRepository, PaymentRepository>();
+        services.AddScoped<ISubjectRepository, SubjectRepository>();
+        services.AddScoped<ICurriculumSubjectRepository, CurriculumSubjectRepository>();
+        services.AddScoped<IExamResultRepository, ExamResultRepository>();
+        services.AddScoped<IDocumentRepository, DocumentRepository>();
 
         // ───────────── Read Services ─────────────
 
-        services.AddScoped<IStudentReadService,
-            StudentReadService>();
+        services.AddScoped<IAssignmentReadService, AssignmentReadService>();
+        services.AddScoped<IAttendanceReadService, AttendanceReadService>();
+        services.AddScoped<IBillingReadService, BillingReadService>();
+        services.AddScoped<IExamReadService, ExamReadService>();
+        services.AddScoped<INotificationReadService, NotificationReadService>();
+        services.AddScoped<IOutboxService, OutboxService>();
+        services.AddScoped<IPortalReadService, PortalReadService>();
+        services.AddScoped<INotificationRecipientService, NotificationRecipientService>();
+        services.AddScoped<IBlobStorageService, LocalBlobStorageService>();
 
-        services.AddScoped<ITeacherReadService,
-            TeacherReadService>();
-
-        services.AddScoped<IParentReadService,
-            ParentReadService>();
-
-        services.AddScoped<ISchoolReadService,
-            SchoolReadService>();
-
-        services.AddScoped<IAcademicReadService,
-            AcademicReadService>();
-
-        // Deferred read-service implementations:
-        // services.AddScoped<IAssignmentReadService, AssignmentReadService>();
-        // services.AddScoped<IAttendanceReadService, AttendanceReadService>();
-        // services.AddScoped<IBillingReadService, BillingReadService>();
-        // services.AddScoped<IExamReadService, ExamReadService>();
-        // services.AddScoped<INotificationReadService, NotificationReadService>();
-        // services.AddScoped<INotificationRecipientService, NotificationRecipientService>();
-        // services.AddScoped<IPortalReadService, PortalReadService>();
-        // services.AddScoped<IOutboxService, OutboxService>();
-        // services.AddScoped<IEmailService, EmailService>();
+        // Email
+        var emailConfig = config.GetSection("Email").Get<EmailConfiguration>() ?? new EmailConfiguration();
+        services.AddSingleton(emailConfig);
+        services.AddScoped<IEmailService, EmailService>();
 
         services.AddScoped<IOutboxMessageHandler<CreateSchoolAdminProfileMessage>, CreateSchoolAdminProfileHandler>();
         services.AddScoped<IOutboxMessageHandler<LinkStudentLoginMessage>, LinkStudentLoginHandler>();

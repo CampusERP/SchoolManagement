@@ -77,123 +77,61 @@ const mockTeacherClasses: TeacherClass[] = [
 
 export const DashboardApi = {
   getPlatformDashboard: async () => {
-    try {
-      const response = await api.get("/schools/analytics");
-      const data = response.data;
-      return {
-        ...data,
-        recentSchools: [], // Will be fetched separately
-        recentActivity: mockActivity,
-        systemHealth: mockSystemHealth,
-      } as PlatformDashboardData;
-    } catch {
-      // Return mock data as fallback
-      return {
-        totalSchools: 5,
-        activeSchools: 3,
-        suspendedSchools: 1,
-        totalUsers: 150,
-        recentSchools: [],
-        recentActivity: mockActivity,
-        systemHealth: mockSystemHealth,
-      } as PlatformDashboardData;
-    }
+    const response = await api.get("/schools/analytics");
+    const data = response.data;
+    return {
+      ...data,
+      recentSchools: data.recentSchools ?? [],
+      recentActivity: data.recentActivity ?? [],
+      systemHealth: data.systemHealth ?? {
+        apiStatus: "unknown",
+        dbStatus: "unknown",
+        uptime: "N/A",
+        lastChecked: new Date().toISOString(),
+      },
+    } as PlatformDashboardData;
   },
 
   getSchoolDashboard: async (schoolId: string) => {
-    try {
-      const response = await api.get(`/schools/${schoolId}/dashboard`);
-      const data = response.data;
-      return {
-        ...data,
-        recentStudents: mockRecentStudents,
-        upcomingEvents: mockEvents,
-        announcements: mockAnnouncements,
-        attendanceSummary: mockAttendanceSummary,
-      } as SchoolDashboardData;
-    } catch {
-      return {
-        schoolName: "Demo School",
-        totalStudents: 450,
-        totalTeachers: 32,
-        totalParents: 310,
-        totalClassRooms: 24,
-        activeEnrollments: 8,
-        currentAcademicYear: "2024-2025",
-        recentStudents: mockRecentStudents,
-        upcomingEvents: mockEvents,
-        announcements: mockAnnouncements,
-        attendanceSummary: mockAttendanceSummary,
-      } as SchoolDashboardData;
-    }
+    const response = await api.get(`/schools/${schoolId}/dashboard`);
+    const data = response.data;
+    return {
+      ...data,
+      recentStudents: data.recentStudents ?? [],
+      upcomingEvents: data.upcomingEvents ?? [],
+      announcements: data.announcements ?? [],
+      attendanceSummary: data.attendanceSummary ?? { present: 0, absent: 0, late: 0, excused: 0 },
+    } as SchoolDashboardData;
   },
 
   getTeacherDashboard: async () => {
-    try {
-      const response = await api.get("/teacher/dashboard");
-      return response.data as TeacherDashboardData;
-    } catch {
-      // TODO: Replace with real API call
-      return {
-        totalClasses: 3,
-        totalStudents: 105,
-        todayLessons: 4,
-        pendingAttendance: 2,
-        pendingAssignments: 5,
-        todaySchedule: mockSchedule,
-        myClasses: mockTeacherClasses,
-        announcements: mockAnnouncements,
-      } as TeacherDashboardData;
-    }
+    const response = await api.get("/teacher/dashboard");
+    return response.data as TeacherDashboardData;
   },
 
   getSchools: async (params?: { page?: number; pageSize?: number; search?: string }) => {
-    try {
-      const response = await api.get("/schools", {
-        params: {
-          page: params?.page ?? 1,
-          pageSize: params?.pageSize ?? 20,
-          search: params?.search,
-        },
-      });
-      const data = response.data;
-      return {
-        items: data.items?.map((item: SchoolApiItem) => ({
-          id: item.id,
-          name: item.name,
-          subdomainCode: item.subdomainCode,
-          status: item.status,
-          totalStudents: item.totalStudents,
-          totalTeachers: item.totalTeachers,
-          createdAt: item.createdAtUtc,
-        })) || [],
-        totalCount: data.totalCount || 0,
+    const response = await api.get("/schools", {
+      params: {
         page: params?.page ?? 1,
         pageSize: params?.pageSize ?? 20,
-        totalPages: Math.ceil((data.totalCount || 0) / (params?.pageSize ?? 20)),
-      };
-    } catch {
-      // Return mock data as fallback
-      const mockSchools: School[] = [
-        { id: "1", name: "Greenfield Academy", subdomainCode: "greenfield", status: "Active", totalStudents: 450, totalTeachers: 32, createdAt: "2025-09-01" },
-        { id: "2", name: "Sunrise International", subdomainCode: "sunrise", status: "Active", totalStudents: 320, totalTeachers: 24, createdAt: "2025-10-15" },
-        { id: "3", name: "Oakwood Prep", subdomainCode: "oakwood", status: "Active", totalStudents: 180, totalTeachers: 15, createdAt: "2026-01-10" },
-      ];
-      let filtered = [...mockSchools];
-      if (params?.search) {
-        const q = params.search.toLowerCase();
-        filtered = filtered.filter((s) => s.name.toLowerCase().includes(q));
-      }
-      const page = params?.page ?? 1;
-      const pageSize = params?.pageSize ?? 10;
-      const start = (page - 1) * pageSize;
-      return {
-        items: filtered.slice(start, start + pageSize),
-        totalCount: filtered.length,
-        page,
-        pageSize,
-        totalPages: Math.ceil(filtered.length / pageSize),
-      };
-    }
+        search: params?.search,
+      },
+    });
+    const data = response.data;
+    return {
+      items: data.items?.map((item: SchoolApiItem) => ({
+        id: item.id,
+        name: item.name,
+        subdomainCode: item.subdomainCode,
+        status: item.status,
+        totalStudents: item.totalStudents,
+        totalTeachers: item.totalTeachers,
+        createdAt: item.createdAtUtc,
+      })) || [],
+      totalCount: data.totalCount || 0,
+      page: params?.page ?? 1,
+      pageSize: params?.pageSize ?? 20,
+      totalPages: Math.ceil((data.totalCount || 0) / (params?.pageSize ?? 20)),
+    };
   },
 };

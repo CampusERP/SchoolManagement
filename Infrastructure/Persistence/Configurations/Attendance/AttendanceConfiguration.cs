@@ -41,6 +41,9 @@ public class AttendanceRecordConfiguration : IEntityTypeConfiguration<Attendance
         // This index supports student and parent portal with a single seek.
         builder.HasIndex(r => r.StudentEnrollmentId);
 
+        // Tenant isolation index — SchoolId leads for filtered queries
+        builder.HasIndex(r => r.SchoolId);
+
         // NOTE: When AttendanceRecords hits ~50M rows, add SQL Server table
         // partitioning by year (using a computed column from AttendanceSession.Date).
         // Design for it now; implement at the volume threshold, not after.

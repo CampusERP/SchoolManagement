@@ -10,4 +10,7 @@ public interface IIdentityService
     Task<SignInAttempt> ValidateCredentialsAsync(string email, string password, CancellationToken ct);
     Task<IReadOnlyList<string>> GetRolesAsync(Guid userId, CancellationToken ct);
     Task<AuthenticatedUser?> GetByIdAsync(Guid userId, CancellationToken ct);
+    Task<AuthenticatedUser?> GetByEmailAsync(string email, CancellationToken ct);
+    Task<string> GeneratePasswordResetTokenAsync(Guid userId, CancellationToken ct);
+    Task<Result> ResetPasswordAsync(Guid userId, string token, string newPassword, CancellationToken ct);
 }

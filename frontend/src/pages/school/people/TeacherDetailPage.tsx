@@ -21,7 +21,9 @@ const schema = z.object({
   employeeCode: z.string().min(1, "Employee code is required"),
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
-  employmentStatus: z.string().min(1, "Employment status is required"),
+  employmentStatus: z.enum(["Active", "OnLeave", "Terminated"], {
+    errorMap: () => ({ message: "Employment status is required" }),
+  }),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -48,7 +50,7 @@ export default function TeacherDetailPage() {
       employeeCode: teacher.employeeCode,
       firstName: teacher.firstName,
       lastName: teacher.lastName,
-      employmentStatus: teacher.employmentStatus,
+      employmentStatus: teacher.employmentStatus as "Active" | "OnLeave" | "Terminated",
     });
     setModalOpen(true);
   };

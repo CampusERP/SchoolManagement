@@ -99,12 +99,15 @@ public class ApplicationDbContext : DbContext
         ApplyTenantFilter<TeachingAssignment>(builder);
 
         ApplyTenantFilter<AttendanceSession>(builder);
+        ApplyTenantFilter<AttendanceRecord>(builder);
 
         ApplyTenantFilter<Assignment>(builder);
+        ApplyTenantFilter<AssignmentSubmission>(builder);
 
         ApplyTenantFilter<Document>(builder);
 
         ApplyTenantFilter<Exam>(builder);
+        ApplyTenantFilter<ExamResult>(builder);
         ApplyTenantFilter<ReportCard>(builder);
 
         ApplyTenantFilter<NotificationTemplate>(builder);
@@ -112,10 +115,7 @@ public class ApplicationDbContext : DbContext
 
         ApplySoftDeleteFilter<Term>(builder);
         ApplySoftDeleteFilter<ClassSchedule>(builder);
-        ApplySoftDeleteFilter<AttendanceRecord>(builder);
-        ApplySoftDeleteFilter<AssignmentSubmission>(builder);
         ApplySoftDeleteFilter<AssignmentSubmissionDocument>(builder);
-        ApplySoftDeleteFilter<ExamResult>(builder);
         ApplySoftDeleteFilter<ReportCardSubjectResult>(builder);
         ApplySoftDeleteFilter<Notification>(builder);
 

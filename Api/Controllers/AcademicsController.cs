@@ -2,6 +2,7 @@ using Application.Features.Academics.Queries.GetAcademicYears;
 using Application.Features.Academics.Queries.GetClassRooms;
 using Application.Features.Academics.Queries.GetGradeLevels;
 using Application.Features.Academics.Queries.GetRooms;
+using Application.Features.Academics.Queries.GetTerms;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +15,8 @@ using Application.Features.Academics.Commands.UpdateClassRoom;
 using Application.Features.Academics.Commands.UpdateRoom;
 using Application.Features.Academics.Commands.UpdateGradeLevel;
 using Application.Features.Academics.Commands.UpdateAcademicYear;
+using Application.Features.Academics.Commands.UpdateTerm;
+using Application.Features.Academics.Commands.DeleteTerm;
 using Application.Features.Academics.Commands.CloseAcademicYear;
 
 namespace Api.Controllers;
@@ -57,6 +60,34 @@ public class AcademicsController : ApiControllerBase
         Guid academicYearId,
         [FromBody] CreateTermCommand command, CancellationToken ct) =>
         Created(await _mediator.Send(command with { AcademicYearId = academicYearId }, ct));
+
+    [HttpGet("academic-years/{academicYearId:guid}/terms")]
+    [Authorize(Policy = "AcademicYear.Read")]
+    public async Task<IActionResult> GetTerms(
+        Guid academicYearId,
+        [FromQuery] Guid schoolId,
+        CancellationToken ct) =>
+        FromResult(await _mediator.Send(new GetTermsQuery(schoolId, academicYearId), ct));
+
+    [HttpPut("academic-years/{academicYearId:guid}/terms/{termId:guid}")]
+    [Authorize(Policy = "AcademicYear.Update")]
+    public async Task<IActionResult> UpdateTerm(
+        Guid academicYearId,
+        Guid termId,
+        [FromBody] UpdateTermCommand command,
+        CancellationToken ct) =>
+        FromResult(await _mediator.Send(
+            command with { AcademicYearId = academicYearId, TermId = termId }, ct));
+
+    [HttpDelete("academic-years/{academicYearId:guid}/terms/{termId:guid}")]
+    [Authorize(Policy = "AcademicYear.Update")]
+    public async Task<IActionResult> DeleteTerm(
+        Guid academicYearId,
+        Guid termId,
+        [FromQuery] Guid schoolId,
+        CancellationToken ct) =>
+        FromResult(await _mediator.Send(
+            new DeleteTermCommand(schoolId, academicYearId, termId), ct));
 
     // ── Classrooms ────────────────────────────────────────────────────
 

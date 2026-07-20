@@ -41,6 +41,9 @@ public class AssignmentSubmissionConfiguration : IEntityTypeConfiguration<Assign
         builder.HasIndex(s => new { s.AssignmentId, s.StudentEnrollmentId }).IsUnique();
         builder.HasIndex(s => s.StudentEnrollmentId); // "my submissions" for student portal
 
+        // Tenant isolation index — SchoolId leads for filtered queries
+        builder.HasIndex(s => s.SchoolId);
+
         builder.HasMany(s => s.Documents)
             .WithOne()
             .HasForeignKey(d => d.AssignmentSubmissionId)

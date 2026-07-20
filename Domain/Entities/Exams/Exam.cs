@@ -68,7 +68,7 @@ public class Exam : TenantEntity, IAggregateRoot
             return existing;
         }
 
-        var result = ExamResult.Create(Id, examScheduleId, studentEnrollmentId, score);
+        var result = ExamResult.Create(SchoolId, Id, examScheduleId, studentEnrollmentId, score);
         _results.Add(result);
         return result;
     }

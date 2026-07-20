@@ -30,4 +30,17 @@ public class Term : AuditableEntity
     {
         return new Term(Guid.NewGuid(), academicYearId, name, sequence, startDate, endDate);
     }
+
+    public void Update(string name, int sequence, DateTime startDate, DateTime endDate)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Term name is required.");
+        if (endDate <= startDate)
+            throw new Domain.Exceptions.DomainException("Term end date must be after start date.");
+
+        Name = name;
+        Sequence = sequence;
+        StartDate = startDate;
+        EndDate = endDate;
+    }
 }

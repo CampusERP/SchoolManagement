@@ -157,3 +157,11 @@ export const useUpdateRoom = () => {
     },
   });
 };
+
+// ── Subjects ───────────────────────────────────────────────────────
+export const useSubjects = (gradeLevelId?: string) => {
+  return useQuery({
+    queryKey: ["subjects", gradeLevelId],
+    queryFn: () => AcademicsApi.getSubjects(gradeLevelId),
+  });
+};

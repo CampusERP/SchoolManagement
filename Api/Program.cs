@@ -9,13 +9,17 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Scalar.AspNetCore;
 using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddOpenApi(options =>
@@ -104,7 +108,7 @@ var permissionPolicies = new[]
 {
     "AcademicYear.Read", "AcademicYear.Create", "AcademicYear.Update",
     "ClassRoom.Read", "ClassRoom.Create", "ClassRoom.Update",
-    "GradeLevel.Read", "GradeLevel.Update", "Room.Read", "Room.Update",
+    "GradeLevel.Read", "GradeLevel.Create", "GradeLevel.Update", "Room.Read", "Room.Create", "Room.Update",
     "EducationStage.Read", "EducationStage.Create", "EducationStage.Update", "EducationStage.Delete",
     "School.Read", "School.Dashboard", "School.Create", "School.Update",
     "Platform.Analytics", "Student.Read", "Student.Create", "Student.Update",
@@ -136,18 +140,8 @@ await DataSeeder.SeedAsync(app.Services);
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-app.UseSwagger();
-
-app.UseSwaggerUI(c =>
-{
-<<<<<<< HEAD
-    app.MapOpenApi();
-    app.MapScalarApiReference();
-}
-=======
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "School Management v1");
-});
->>>>>>> 03987e2ffa0a2a33caf9cc6319a4f80a92e164fd
+app.MapOpenApi();
+app.MapScalarApiReference();
 
     app.UseHttpsRedirection();
     app.UseCors(app.Environment.IsDevelopment() ? "Development" : "Frontend");

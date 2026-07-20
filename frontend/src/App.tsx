@@ -1,5 +1,10 @@
+import ErrorBoundary from "@/components/organisms/ErrorBoundary";
 import Router from "@/router";
 
 export default function App() {
-  return <Router />;
+  return (
+    <ErrorBoundary>
+      <Router />
+    </ErrorBoundary>
+  );
 }

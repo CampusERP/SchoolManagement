@@ -13,7 +13,9 @@ public class TerminateTeacherCommandHandler : IRequestHandler<TerminateTeacherCo
     public async Task<Result> Handle(TerminateTeacherCommand request, CancellationToken ct)
     {
         var teacher = await _teachers.GetByIdAsync(request.TeacherId, ct);
-        if (teacher is null) throw new NotFoundException("Teacher", request.TeacherId);
+        if (teacher is null || teacher.SchoolId != request.SchoolId)
+            return Result.Failure("Teacher not found.");
+
         teacher.Terminate();
         return Result.Success();
     }

@@ -13,11 +13,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-<<<<<<< HEAD
     <PackageReference Include="Scalar.AspNetCore" Version="2.16.15" />
-=======
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
->>>>>>> 03987e2ffa0a2a33caf9cc6319a4f80a92e164fd
   </ItemGroup>
 
   <ItemGroup>
