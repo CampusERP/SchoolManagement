@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 type Variant = "primary" | "secondary" | "ghost" | "danger";
 
-export interface ButtonProps extends Omit<AntButtonProps, "type" | "variant"> {
+export interface ButtonProps extends Omit<AntButtonProps, "variant"> {
   variant?: Variant;
   children?: React.ReactNode;
 }
@@ -19,14 +19,26 @@ const variantStyles: Record<Variant, string> = {
     "bg-[var(--color-danger)] !text-white hover:bg-red-600 border-none",
 };
 
+const variantToType: Record<Variant, "primary" | "default" | "dashed" | "link" | "text" | undefined> = {
+  primary: "primary",
+  secondary: "default",
+  ghost: "default",
+  danger: "primary",
+};
+
 export default function Button({
   variant = "primary",
   className,
   children,
+  type,
+  danger,
   ...props
 }: ButtonProps) {
+  const resolvedType = type ?? variantToType[variant];
   return (
     <AntButton
+      type={resolvedType}
+      danger={variant === "danger" ? true : danger}
       className={cn(variantStyles[variant], className)}
       {...props}
     >

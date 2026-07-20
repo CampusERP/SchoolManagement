@@ -2,21 +2,17 @@ export interface School {
   id: string;
   name: string;
   subdomainCode: string;
-  ownerName: string;
+  status: string;
   totalStudents: number;
   totalTeachers: number;
-  subscriptionStatus: "Active" | "Trial" | "Expired";
   createdAt: string;
-  status: "Active" | "Inactive";
 }
 
 export interface PlatformDashboardData {
   totalSchools: number;
   activeSchools: number;
-  totalStudents: number;
-  totalTeachers: number;
-  totalRevenue: number;
-  activeSubscriptions: number;
+  suspendedSchools: number;
+  totalUsers: number;
   recentSchools: School[];
   recentActivity: ActivityItem[];
   systemHealth: SystemHealth;
@@ -38,12 +34,13 @@ export interface SystemHealth {
 }
 
 export interface SchoolDashboardData {
+  schoolName: string;
   totalStudents: number;
   totalTeachers: number;
   totalParents: number;
-  totalClasses: number;
-  todayAttendance: number;
-  pendingEnrollments: number;
+  totalClassRooms: number;
+  activeEnrollments: number;
+  currentAcademicYear: string | null;
   recentStudents: RecentStudent[];
   upcomingEvents: EventItem[];
   announcements: Announcement[];

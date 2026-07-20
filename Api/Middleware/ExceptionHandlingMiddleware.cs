@@ -1,6 +1,8 @@
 using System.Net;
 using System.Text.Json;
+using System.Data;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using Application.Common.Exceptions;
 using Domain.Exceptions;
 
@@ -43,6 +45,14 @@ public class ExceptionHandlingMiddleware
             NotFoundException nfe   => (HttpStatusCode.NotFound,       nfe.Message,  (object?)null),
             ForbiddenException fe   => (HttpStatusCode.Forbidden,       fe.Message,  null),
             DomainException de      => (HttpStatusCode.BadRequest,      de.Message,  null),
+            DbUpdateConcurrencyException => (
+                HttpStatusCode.Conflict,
+                "The record was modified by another process. Please reload and try again.",
+                (object?)null),
+            DbUpdateException due    => (
+                HttpStatusCode.Conflict,
+                "The operation conflicts with existing data (e.g. a duplicate value). Please check your input.",
+                (object?)null),
             _                       => (HttpStatusCode.InternalServerError, "An unexpected error occurred.", null)
         };
 

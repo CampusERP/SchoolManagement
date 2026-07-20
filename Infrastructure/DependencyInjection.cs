@@ -75,8 +75,32 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         services.AddScoped<IPlatformUnitOfWork, PlatformUnitOfWork>();
+        services.AddScoped<IIdentityService, IdentityService>();
+        services.AddScoped<IJwtTokenService, JwtTokenService>();
+        services.AddScoped<IPermissionProvider, PermissionProvider>();
 
-        // ───────────────── Identity ──────────────
+        // Repositories
+        services.AddScoped<IStudentRepository, StudentRepository>();
+        services.AddScoped<ITeacherRepository, TeacherRepository>();
+        services.AddScoped<IParentRepository, ParentRepository>();
+        services.AddScoped<IStudentGuardianRepository, StudentGuardianRepository>();
+        services.AddScoped<IAcademicYearRepository, AcademicYearRepository>();
+        services.AddScoped<IClassRoomRepository, ClassRoomRepository>();
+        services.AddScoped<IGradeLevelRepository, GradeLevelRepository>();
+        services.AddScoped<IRoomRepository, RoomRepository>();
+        services.AddScoped<IStudentEnrollmentRepository, StudentEnrollmentRepository>();
+        services.AddScoped<ITeachingAssignmentRepository, TeachingAssignmentRepository>();
+        services.AddScoped<IUserSchoolMembershipRepository, UserSchoolMembershipRepository>();
+        services.AddScoped<ISchoolAdminProfileRepository, SchoolAdminProfileRepository>();
+        services.AddScoped<ISchoolRepository, SchoolRepository>();
+        services.AddScoped<IEducationStageRepository, EducationStageRepository>();
+
+        // Read Services
+        services.AddScoped<IStudentReadService, StudentReadService>();
+        services.AddScoped<ITeacherReadService, TeacherReadService>();
+        services.AddScoped<IParentReadService, ParentReadService>();
+        services.AddScoped<ISchoolReadService, SchoolReadService>();
+        services.AddScoped<IAcademicReadService, AcademicReadService>();
 
         services
             .AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>

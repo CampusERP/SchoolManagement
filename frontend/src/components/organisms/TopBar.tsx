@@ -1,10 +1,11 @@
-import { useState } from "react";
-import { Menu, Sun, Moon, Search } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { useState, useCallback } from "react";
+import { Menu, Sun, Moon } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useThemeStore } from "@/store/themeStore";
 import { useUiStore } from "@/store/uiStore";
 import { useAuthStore } from "@/store/authStore";
 import BreadcrumbNav from "@/components/molecules/BreadcrumbNav";
+import SearchInput from "@/components/molecules/SearchInput";
 import NotificationBell from "@/components/molecules/NotificationBell";
 import UserMenu from "@/components/molecules/UserMenu";
 
@@ -28,8 +29,14 @@ export default function TopBar() {
   const user = useAuthStore((s) => s.user);
   const clearAuth = useAuthStore((s) => s.clearAuth);
   const location = useLocation();
+  const navigate = useNavigate();
 
-  const [searchValue] = useState("");
+  const [searchValue, setSearchValue] = useState("");
+
+  const handleLogout = useCallback(() => {
+    clearAuth();
+    navigate("/auth/login", { replace: true });
+  }, [clearAuth, navigate]);
 
   const handleMenuClick = () => {
     if (window.innerWidth < 768) {
@@ -47,7 +54,7 @@ export default function TopBar() {
     }));
 
   return (
-    <header className="sticky top-0 z-20 flex h-[var(--topbar-height)] items-center border-b border-[var(--color-border)] bg-[var(--color-surface-card)] px-6">
+    <header className="sticky top-0 z-20 flex h-[var(--topbar-height)] items-center border-b border-[var(--color-border)] bg-[var(--color-surface-card)] px-4 sm:px-6">
       <div className="flex items-center gap-4">
         <button
           onClick={handleMenuClick}
@@ -65,9 +72,8 @@ export default function TopBar() {
       </div>
 
       <div className="ml-auto flex items-center gap-3">
-        <div className="hidden sm:flex items-center gap-2 rounded-[var(--border-radius)] border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-1.5 text-sm text-[var(--color-text-muted)]">
-          <Search className="h-4 w-4" />
-          <span>Search...</span>
+        <div className="hidden sm:block w-full max-w-64">
+          <SearchInput placeholder="Search..." value={searchValue} onChange={setSearchValue} />
         </div>
 
         <NotificationBell />
@@ -87,7 +93,7 @@ export default function TopBar() {
               email: user.email,
               role: user.role,
             }}
-            onLogout={clearAuth}
+            onLogout={handleLogout}
           />
         )}
       </div>

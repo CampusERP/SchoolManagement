@@ -14,7 +14,7 @@ public class AuditableEntity : Entity
     public DateTime? DeletedAtUtc { get; set; }
     public Guid? DeletedBy { get; set; }
 
-    public byte[] RowVersion { get; set; } = [];
+    public byte[] RowVersion { get; set; }
 
     protected AuditableEntity() : base() { }
     protected AuditableEntity(Guid id) : base(id) { }

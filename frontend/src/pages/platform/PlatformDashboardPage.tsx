@@ -2,9 +2,6 @@ import { useNavigate } from "react-router-dom";
 import {
   Building2,
   Users,
-  GraduationCap,
-  DollarSign,
-  CreditCard,
   Activity,
   PlusCircle,
   UserPlus,
@@ -15,10 +12,8 @@ import DashboardTemplate from "@/components/templates/DashboardTemplate";
 import AnalyticsCardsGrid from "@/components/organisms/AnalyticsCardsGrid";
 import RecentSchoolsTable from "@/components/organisms/RecentSchoolsTable";
 import TimelinePanel from "@/components/organisms/TimelinePanel";
-import ChartsPlaceholder from "@/components/organisms/ChartsPlaceholder";
 import QuickActionCard from "@/components/molecules/QuickActionCard";
 import StatusBadge from "@/components/molecules/StatusBadge";
-import Spinner from "@/components/atoms/Spinner";
 
 export default function PlatformDashboardPage() {
   const navigate = useNavigate();
@@ -45,17 +40,15 @@ export default function PlatformDashboardPage() {
   const statCards = [
     { title: "Total Schools", value: data.totalSchools, icon: <Building2 className="h-5 w-5" /> },
     { title: "Active Schools", value: data.activeSchools, icon: <Activity className="h-5 w-5" /> },
-    { title: "Total Students", value: data.totalStudents, icon: <GraduationCap className="h-5 w-5" /> },
-    { title: "Total Teachers", value: data.totalTeachers, icon: <Users className="h-5 w-5" /> },
-    { title: "Total Revenue", value: `$${data.totalRevenue.toLocaleString()}`, icon: <DollarSign className="h-5 w-5" /> },
-    { title: "Active Subscriptions", value: data.activeSubscriptions, icon: <CreditCard className="h-5 w-5" /> },
+    { title: "Suspended Schools", value: data.suspendedSchools, icon: <Building2 className="h-5 w-5" /> },
+    { title: "Total Users", value: data.totalUsers, icon: <Users className="h-5 w-5" /> },
   ];
 
   return (
     <DashboardTemplate title="Platform Dashboard" subtitle="Overview of all schools and system performance">
       <AnalyticsCardsGrid cards={statCards} />
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         <QuickActionCard
           icon={<PlusCircle className="h-6 w-6" />}
           label="Create School"
@@ -75,7 +68,7 @@ export default function PlatformDashboardPage() {
         <div className="space-y-6">
           <TimelinePanel activities={data.recentActivity} />
 
-          <div className="rounded-[var(--card-radius)] bg-[var(--color-surface-card)] p-5 shadow-[var(--shadow-card)]">
+          <div className="rounded-[var(--card-radius)] bg-[var(--color-surface-card)] p-6 shadow-[var(--shadow-card)]">
             <div className="mb-4 flex items-center gap-2">
               <HeartPulse className="h-5 w-5 text-[var(--color-primary)]" />
               <h3 className="text-sm font-semibold text-[var(--color-text-primary)]">
@@ -99,8 +92,6 @@ export default function PlatformDashboardPage() {
           </div>
         </div>
       </div>
-
-      <ChartsPlaceholder title="Revenue & Growth Analytics" />
     </DashboardTemplate>
   );
 }

@@ -9,5 +9,6 @@ public record CreateStudentCommand(
     string FirstName,
     string LastName,
     DateTime DateOfBirth,
+    string? NationalId = null,
     string? Email = null,
     string? Password = null) : ICommand<Guid>, IBaseCommand, ITenantScopedRequest;

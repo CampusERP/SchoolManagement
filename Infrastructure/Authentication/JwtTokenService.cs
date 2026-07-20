@@ -141,7 +141,7 @@ public class JwtTokenService : IJwtTokenService
             new(JwtRegisteredClaimNames.Sub, userId.ToString()),
             new(JwtRegisteredClaimNames.Email, email),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new("is_platform_admin", isPlatformAdmin.ToString())
+            new("is_platform_admin", isPlatformAdmin.ToString().ToLowerInvariant())
         };
 
         if (schoolId.HasValue)

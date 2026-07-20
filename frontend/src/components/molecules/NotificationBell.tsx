@@ -1,5 +1,6 @@
 import { Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface NotificationBellProps {
   count?: number;
@@ -10,10 +11,18 @@ export default function NotificationBell({
   count = 0,
   onClick,
 }: NotificationBellProps) {
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
+    } else {
+      toast.info("Notifications feature coming soon!");
+    }
+  };
+
   return (
     <button
       type="button"
-      onClick={onClick}
+      onClick={handleClick}
       className="relative flex h-10 w-10 items-center justify-center rounded-[var(--border-radius)] text-[var(--color-text-secondary)] hover:bg-[var(--color-border)]/50 hover:text-[var(--color-text-primary)]"
     >
       <Bell className="h-5 w-5" />

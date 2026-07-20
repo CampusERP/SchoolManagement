@@ -9,4 +9,5 @@ public record UpdateStudentCommand(
     string StudentCode,
     string FirstName,
     string LastName,
-    DateTime DateOfBirth) : ICommand, IBaseCommand, ITenantScopedRequest;
+    DateTime DateOfBirth,
+    string? NationalId = null) : ICommand, IBaseCommand, ITenantScopedRequest;

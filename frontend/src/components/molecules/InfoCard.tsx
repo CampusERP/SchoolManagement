@@ -22,14 +22,14 @@ export default function InfoCard({
       )}
     >
       {title && (
-        <div className="flex items-center justify-between border-b border-[var(--color-border)] px-5 py-4">
+        <div className="flex items-center justify-between border-b border-[var(--color-border)] px-6 py-4">
           <h3 className="text-base font-semibold text-[var(--color-text-primary)]">
             {title}
           </h3>
           {extra && <div>{extra}</div>}
         </div>
       )}
-      <div className="p-5">{children}</div>
+      <div className="p-6">{children}</div>
     </div>
   );
 }

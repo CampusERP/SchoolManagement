@@ -2,18 +2,40 @@ import { lazy } from "react";
 import { Navigate } from "react-router-dom";
 import type { RouteObject } from "react-router-dom";
 import ProtectedRoute from "@/router/guards";
+import RequirePermission from "@/router/RequirePermission";
 import AppLayout from "@/layouts/AppLayout";
 import AuthLayout from "@/layouts/AuthLayout";
 
 const LoginPage = lazy(() => import("@/pages/auth/LoginPage"));
 const PlatformDashboardPage = lazy(() => import("@/pages/platform/PlatformDashboardPage"));
+const SchoolsPage = lazy(() => import("@/pages/platform/SchoolsPage"));
+const CreateSchoolPage = lazy(() => import("@/pages/platform/CreateSchoolPage"));
+const RegisterAdminPage = lazy(() => import("@/pages/platform/RegisterAdminPage"));
+const SchoolDetailPage = lazy(() => import("@/pages/platform/SchoolDetailPage"));
+const EditSchoolPage = lazy(() => import("@/pages/platform/EditSchoolPage"));
 const SchoolDashboardPage = lazy(() => import("@/pages/school/SchoolDashboardPage"));
 const TeacherDashboardPage = lazy(() => import("@/pages/teacher/TeacherDashboardPage"));
 const PlaceholderPage = lazy(() => import("@/pages/PlaceholderPage"));
 
-const placeholder = (title: string) => (
-  <PlaceholderPage title={title} description={`${title} page is under development.`} />
-);
+// School admin — Academics
+const AcademicYearsPage = lazy(() => import("@/pages/school/academic/AcademicYearsPage"));
+const ClassroomsPage = lazy(() => import("@/pages/school/academic/ClassroomsPage"));
+const GradeLevelsPage = lazy(() => import("@/pages/school/academic/GradeLevelsPage"));
+const EducationStagesPage = lazy(() => import("@/pages/school/academic/EducationStagesPage"));
+const RoomsPage = lazy(() => import("@/pages/school/academic/RoomsPage"));
+
+// School admin — People
+const StudentsPage = lazy(() => import("@/pages/school/people/StudentsPage"));
+const StudentDetailPage = lazy(() => import("@/pages/school/people/StudentDetailPage"));
+const TeachersPage = lazy(() => import("@/pages/school/people/TeachersPage"));
+const TeacherDetailPage = lazy(() => import("@/pages/school/people/TeacherDetailPage"));
+const ParentsPage = lazy(() => import("@/pages/school/people/ParentsPage"));
+const ParentDetailPage = lazy(() => import("@/pages/school/people/ParentDetailPage"));
+const ImportDocsPage = lazy(() => import("@/pages/school/ImportDocsPage"));
+
+// School admin — Enrollment
+const EnrollmentPage = lazy(() => import("@/pages/school/enrollment/EnrollmentPage"));
+const AssignTeacherPage = lazy(() => import("@/pages/school/enrollment/AssignTeacherPage"));
 
 export const routes: RouteObject[] = [
   {
@@ -31,18 +53,19 @@ export const routes: RouteObject[] = [
         element: <AppLayout />,
         children: [
           { index: true, element: <PlatformDashboardPage /> },
-          { path: "schools", element: <PlaceholderPage title="Schools" description="Manage all schools in the platform." /> },
-          { path: "schools/new", element: <PlaceholderPage title="Create School" description="Create a new school." /> },
-          { path: "schools/:id", element: <PlaceholderPage title="School Details" description="View school details." /> },
-          { path: "schools/:id/edit", element: <PlaceholderPage title="Edit School" description="Edit school information." /> },
-          { path: "admins/new", element: <PlaceholderPage title="Register Admin" description="Register a new school admin." /> },
+          { path: "schools", element: <SchoolsPage /> },
+          { path: "schools/new", element: <CreateSchoolPage /> },
+          { path: "schools/:id", element: <SchoolDetailPage /> },
+          { path: "schools/:id/edit", element: <EditSchoolPage /> },
+          { path: "admins/new", element: <RegisterAdminPage /> },
+          { path: "import-guide", element: <ImportDocsPage /> },
         ],
       },
     ],
   },
   {
     path: "/school",
-    element: <ProtectedRoute requiredRole="school_admin" />,
+    element: <RequirePermission permission="school.dashboard" requiredRole="school_admin" />,
     children: [
       {
         element: <AppLayout />,
@@ -54,45 +77,46 @@ export const routes: RouteObject[] = [
   },
   {
     path: "/academics",
-    element: <ProtectedRoute requiredRole="school_admin" />,
+    element: <RequirePermission permission="academicyear.read" requiredRole="school_admin" />,
     children: [
       {
         element: <AppLayout />,
         children: [
-          { path: "years", element: <PlaceholderPage title="Academic Years" description="Manage academic years and terms." /> },
-          { path: "classrooms", element: <PlaceholderPage title="Classrooms" description="Manage classrooms and assignments." /> },
-          { path: "grade-levels", element: <PlaceholderPage title="Grade Levels" description="Configure grade levels." /> },
-          { path: "rooms", element: <PlaceholderPage title="Rooms" description="Manage physical rooms and facilities." /> },
+          { path: "years", element: <AcademicYearsPage /> },
+          { path: "classrooms", element: <ClassroomsPage /> },
+          { path: "grade-levels", element: <GradeLevelsPage /> },
+          { path: "education-stages", element: <EducationStagesPage /> },
+          { path: "rooms", element: <RoomsPage /> },
         ],
       },
     ],
   },
   {
     path: "/people",
-    element: <ProtectedRoute requiredRole="school_admin" />,
+    element: <RequirePermission permission="student.read" requiredRole="school_admin" />,
     children: [
       {
         element: <AppLayout />,
         children: [
-          { path: "students", element: <PlaceholderPage title="Students" description="Manage student records." /> },
-          { path: "students/:id", element: <PlaceholderPage title="Student Profile" description="View student profile and details." /> },
-          { path: "teachers", element: <PlaceholderPage title="Teachers" description="Manage teacher records." /> },
-          { path: "teachers/:id", element: <PlaceholderPage title="Teacher Profile" description="View teacher profile and details." /> },
-          { path: "parents", element: <PlaceholderPage title="Parents" description="Manage parent records." /> },
-          { path: "parents/:id", element: <PlaceholderPage title="Parent Profile" description="View parent profile and children." /> },
+          { path: "students", element: <StudentsPage /> },
+          { path: "students/:id", element: <StudentDetailPage /> },
+          { path: "teachers", element: <TeachersPage /> },
+          { path: "teachers/:id", element: <TeacherDetailPage /> },
+          { path: "parents", element: <ParentsPage /> },
+          { path: "parents/:id", element: <ParentDetailPage /> },
         ],
       },
     ],
   },
   {
     path: "/enrollment",
-    element: <ProtectedRoute requiredRole="school_admin" />,
+    element: <RequirePermission permission="enrollment.create" requiredRole="school_admin" />,
     children: [
       {
         element: <AppLayout />,
         children: [
-          { index: true, element: <PlaceholderPage title="Enrollment" description="Enroll students and assign teachers." /> },
-          { path: "assign-teacher", element: <PlaceholderPage title="Assign Teacher" description="Assign a teacher to a class." /> },
+          { index: true, element: <EnrollmentPage /> },
+          { path: "assign-teacher", element: <AssignTeacherPage /> },
         ],
       },
     ],
@@ -105,7 +129,7 @@ export const routes: RouteObject[] = [
         element: <AppLayout />,
         children: [
           { index: true, element: <TeacherDashboardPage /> },
-          { path: "classes", element: <TeacherDashboardPage /> },
+          { path: "classes", element: <PlaceholderPage title="My Classes" description="My Classes — Detailed view coming soon" /> },
         ],
       },
     ],

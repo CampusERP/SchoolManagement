@@ -9,12 +9,12 @@ public class CreateClassRoomCommandHandler : IRequestHandler<CreateClassRoomComm
 {
     private readonly IClassRoomRepository _classRooms;
     private readonly IGradeLevelRepository _gradeLevels;
-    private readonly ISchoolRepository _academicYears;
+    private readonly IAcademicYearRepository _academicYears;
 
     public CreateClassRoomCommandHandler(
         IClassRoomRepository classRooms,
         IGradeLevelRepository gradeLevels,
-        ISchoolRepository academicYears)
+        IAcademicYearRepository academicYears)
     {
         _classRooms = classRooms;
         _gradeLevels = gradeLevels;

@@ -10,7 +10,7 @@ export default function PlaceholderPage({
   description = "This page is under development.",
 }: PlaceholderPageProps) {
   return (
-    <div className="flex flex-col items-center justify-center py-20 text-center">
+    <div className="flex flex-col items-center justify-center py-24 text-center">
       <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[var(--color-primary-light)] text-[var(--color-primary)]">
         <Construction className="h-8 w-8" />
       </div>

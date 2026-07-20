@@ -31,8 +31,7 @@ public class CreateStudentCommandHandler : IRequestHandler<CreateStudentCommand,
         if (exists)
             return Result.Failure<Guid>($"A student with code '{request.StudentCode}' already exists in this school.");
 
-        var student = Student.Create(request.SchoolId, request.StudentCode, request.FirstName, request.LastName, request.DateOfBirth);
-        await _students.AddAsync(student, ct);
+        var student = Student.Create(request.SchoolId, request.StudentCode, request.FirstName, request.LastName, request.DateOfBirth, request.NationalId);
 
         if (!string.IsNullOrWhiteSpace(request.Email) && !string.IsNullOrWhiteSpace(request.Password))
         {

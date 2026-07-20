@@ -12,6 +12,7 @@ public class CreateStudentCommandValidator : AbstractValidator<CreateStudentComm
         RuleFor(x => x.LastName).NotEmpty().MaximumLength(100);
         RuleFor(x => x.DateOfBirth).NotEmpty().LessThan(DateTime.Today)
             .WithMessage("Date of birth must be in the past.");
+        When(x => x.NationalId != null, () => RuleFor(x => x.NationalId).MaximumLength(50));
         When(x => x.Email != null, () => RuleFor(x => x.Email).EmailAddress());
     }
 }

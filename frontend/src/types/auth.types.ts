@@ -26,3 +26,9 @@ export interface LoginResponse {
   schoolId: string | null;
   role: string;
 }
+
+export interface RefreshTokenResponse {
+  accessToken: string;
+  refreshToken: string;
+  accessTokenExpiry: string;
+}

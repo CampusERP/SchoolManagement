@@ -50,7 +50,7 @@ export default function TeacherDashboardPage() {
     <DashboardTemplate title="Teacher Dashboard" subtitle="Your classes and schedule at a glance">
       <AnalyticsCardsGrid cards={statCards} />
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         <QuickActionCard
           icon={<ClipboardList className="h-6 w-6" />}
           label="Take Attendance"

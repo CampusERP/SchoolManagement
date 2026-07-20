@@ -18,9 +18,9 @@ interface UpcomingLessonsProps {
 }
 
 const statusStyles: Record<string, { dot: string; text: string; bg: string }> = {
-  completed: { dot: "bg-gray-400", text: "text-[var(--color-text-muted)]", bg: "bg-gray-50" },
+  completed: { dot: "bg-gray-400", text: "text-gray-500", bg: "bg-gray-50" },
   in_progress: { dot: "bg-[var(--color-primary)]", text: "text-[var(--color-primary)]", bg: "bg-[var(--color-primary-light)]" },
-  upcoming: { dot: "bg-[var(--color-text-muted)]", text: "text-[var(--color-text-secondary)]", bg: "bg-[var(--color-surface)]" },
+  upcoming: { dot: "bg-gray-400", text: "text-gray-600", bg: "bg-gray-50" },
 };
 
 export default function UpcomingLessons({

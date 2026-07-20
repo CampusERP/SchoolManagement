@@ -77,7 +77,13 @@ var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>()
 if (string.IsNullOrWhiteSpace(jwtSettings.Secret) || Encoding.UTF8.GetByteCount(jwtSettings.Secret) < 32)
     throw new InvalidOperationException("Jwt:Secret must be set and at least 256 bits (32 bytes).");
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+builder.Services
+    .AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultForbidScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
     .AddJwtBearer(options =>
     {
         options.MapInboundClaims = false;
@@ -99,6 +105,7 @@ var permissionPolicies = new[]
     "AcademicYear.Read", "AcademicYear.Create", "AcademicYear.Update",
     "ClassRoom.Read", "ClassRoom.Create", "ClassRoom.Update",
     "GradeLevel.Read", "GradeLevel.Update", "Room.Read", "Room.Update",
+    "EducationStage.Read", "EducationStage.Create", "EducationStage.Update", "EducationStage.Delete",
     "School.Read", "School.Dashboard", "School.Create", "School.Update",
     "Platform.Analytics", "Student.Read", "Student.Create", "Student.Update",
     "Teacher.Read", "Teacher.Create", "Teacher.Update",
@@ -115,9 +122,7 @@ builder.Services.AddAuthorization(options =>
 {
     foreach (var policyName in permissionPolicies)
     {
-        var permission = policyName == "Platform.Analytics"
-            ? "platform.analytics"
-            : policyName.Replace(".", string.Empty).ToLowerInvariant();
+        var permission = policyName.ToLowerInvariant();
 
         options.AddPolicy(policyName, policy => policy.RequireAssertion(context =>
             context.User.HasClaim("is_platform_admin", "true") ||
@@ -144,10 +149,10 @@ app.UseSwaggerUI(c =>
 });
 >>>>>>> 03987e2ffa0a2a33caf9cc6319a4f80a92e164fd
 
-app.UseHttpsRedirection();
-app.UseCors(app.Environment.IsDevelopment() ? "Development" : "Frontend");
-app.UseAuthentication();
-app.UseAuthorization();
-app.MapControllers();
+    app.UseHttpsRedirection();
+    app.UseCors(app.Environment.IsDevelopment() ? "Development" : "Frontend");
+    app.UseAuthentication();
+    app.UseAuthorization();
+    app.MapControllers();
 
 app.Run();

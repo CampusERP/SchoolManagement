@@ -108,6 +108,7 @@ public class StudentReadService : IStudentReadService
             student.Student.FirstName,
             student.Student.LastName,
             student.Student.DateOfBirth,
+            student.Student.NationalId,
             student.Student.ApplicationUserId != null,
             student.Enrollments,
             student.Guardians
@@ -143,6 +144,7 @@ public class StudentReadService : IStudentReadService
             student.Student.FirstName,
             student.Student.LastName,
             student.Student.DateOfBirth,
+            student.Student.NationalId,
             student.Student.ApplicationUserId != null,
             student.Enrollments,
             student.Guardians
