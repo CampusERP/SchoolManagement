@@ -76,10 +76,14 @@ public class PermissionProvider : IPermissionProvider
             "exam.create",
 
             "notification.send",
+            "notification.read",
             "educationstage.read",
             "educationstage.create",
             "educationstage.update",
             "educationstage.delete",
+
+            "profile.read",
+            "myclasses.read",
         },
 
         "Teacher" => new()
@@ -93,11 +97,25 @@ public class PermissionProvider : IPermissionProvider
 
             "classroom.read",
 
+            "academicyear.read",
+
+            "room.read",
+
+            "student.read",
+
             "schedule.read",
 
             "exam.record",
+            "exam.read",
+            "exam.create",
+            "exam.manage",
 
-            "myclasses.read"
+            "assignment.read",
+
+            "myclasses.read",
+
+            "profile.read",
+            "notification.read"
         },
 
         "Student" => new()
@@ -115,7 +133,11 @@ public class PermissionProvider : IPermissionProvider
 
             "reportcard.read.own",
 
-            "profile.read"
+            "profile.read",
+
+            "myclasses.read",
+            "exam.read",
+            "notification.read"
         },
 
         "Parent" => new()

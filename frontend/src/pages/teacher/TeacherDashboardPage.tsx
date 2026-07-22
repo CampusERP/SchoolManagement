@@ -66,6 +66,11 @@ export default function TeacherDashboardPage() {
           label="View Schedule"
           onClick={() => navigate("/teacher/classes")}
         />
+        <QuickActionCard
+          icon={<ClipboardCheck className="h-6 w-6" />}
+          label="Manage Exams"
+          onClick={() => navigate("/teacher/exams")}
+        />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">

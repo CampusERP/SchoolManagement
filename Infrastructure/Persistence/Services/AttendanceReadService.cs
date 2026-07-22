@@ -15,33 +15,86 @@ public class AttendanceReadService : IAttendanceReadService
     public async Task<ClassAttendanceDto?> GetClassAttendanceAsync(
         Guid classScheduleId, DateOnly date, CancellationToken ct = default)
     {
+        var classRoomId = await _db.ClassSchedules.AsNoTracking()
+            .Where(cs => cs.Id == classScheduleId)
+            .Join(_db.TeachingAssignments,
+                cs => cs.TeachingAssignmentId, ta => ta.Id,
+                (cs, ta) => ta.ClassRoomId)
+            .FirstOrDefaultAsync(ct);
+
+        if (classRoomId == Guid.Empty)
+            return null;
+
+        var enrollmentQuery = _db.StudentEnrollments.AsNoTracking()
+            .Where(e => e.ClassRoomId == classRoomId && e.Status == EnrollmentStatus.Active);
+
         var session = await _db.AttendanceSessions.AsNoTracking()
             .Where(s => s.ClassScheduleId == classScheduleId && s.Date == date)
             .FirstOrDefaultAsync(ct);
 
-        if (session is null) return null;
+        if (session is null)
+        {
+            var students = await enrollmentQuery
+                .Join(_db.Students,
+                    e => e.StudentId, s => s.Id,
+                    (e, s) => new StudentAttendanceDto(
+                        e.Id,
+                        s.FirstName,
+                        s.LastName,
+                        s.StudentCode,
+                        AttendanceStatus.Present,
+                        null))
+                .ToListAsync(ct);
 
-        var records = await _db.AttendanceRecords.AsNoTracking()
-            .Where(r => r.AttendanceSessionId == session.Id)
-            .Join(_db.StudentEnrollments,
-                r => r.StudentEnrollmentId, e => e.Id,
-                (r, e) => new { r, e })
+            return new ClassAttendanceDto(
+                Guid.Empty,
+                date,
+                false,
+                students);
+        }
+
+        if (session.IsLocked)
+        {
+            var records = await _db.AttendanceRecords.AsNoTracking()
+                .Where(r => r.AttendanceSessionId == session.Id)
+                .Join(_db.StudentEnrollments,
+                    r => r.StudentEnrollmentId, e => e.Id,
+                    (r, e) => new { r, e })
+                .Join(_db.Students,
+                    x => x.e.StudentId, s => s.Id,
+                    (x, s) => new StudentAttendanceDto(
+                        x.e.Id,
+                        s.FirstName,
+                        s.LastName,
+                        s.StudentCode,
+                        x.r.Status,
+                        x.r.Note))
+                .ToListAsync(ct);
+
+            return new ClassAttendanceDto(
+                session.Id,
+                session.Date,
+                session.IsLocked,
+                records);
+        }
+
+        var freshStudents = await enrollmentQuery
             .Join(_db.Students,
-                x => x.e.StudentId, s => s.Id,
-                (x, s) => new StudentAttendanceDto(
-                    x.e.Id,
+                e => e.StudentId, s => s.Id,
+                (e, s) => new StudentAttendanceDto(
+                    e.Id,
                     s.FirstName,
                     s.LastName,
                     s.StudentCode,
-                    x.r.Status,
-                    x.r.Note))
+                    AttendanceStatus.Present,
+                    null))
             .ToListAsync(ct);
 
         return new ClassAttendanceDto(
             session.Id,
             session.Date,
             session.IsLocked,
-            records);
+            freshStudents);
     }
 
     public async Task<PagedResult<StudentAttendanceSummaryDto>> GetStudentAttendanceAsync(
@@ -82,19 +135,18 @@ public class AttendanceReadService : IAttendanceReadService
         if (status.HasValue)
             query = query.Where(x => x.ar.Status == status.Value);
 
-        var projected = query.Select(x => new StudentAttendanceSummaryDto(
-            x.Session.Date,
-            x.Subject.Name,
-            x.Subject.Code,
-            x.ar.Status,
-            x.ar.Note));
+        var total = await query.CountAsync(ct);
 
-        var total = await projected.CountAsync(ct);
-
-        var items = await projected
-            .OrderByDescending(x => x.Date)
+        var items = await query
+            .OrderByDescending(x => x.Session.Date)
             .Skip(p.Skip)
             .Take(p.PageSize)
+            .Select(x => new StudentAttendanceSummaryDto(
+                x.Session.Date,
+                x.Subject.Name,
+                x.Subject.Code,
+                x.ar.Status,
+                x.ar.Note))
             .ToListAsync(ct);
 
         return new PagedResult<StudentAttendanceSummaryDto>(items, total, p.Page, p.PageSize);
@@ -133,13 +185,14 @@ public class AttendanceReadService : IAttendanceReadService
                 (x, ta) => new { x.ar, x.Session, x.cs, ta })
             .Join(_db.Subjects,
                 x => x.ta.SubjectId, s => s.Id,
-                (x, s) => new StudentAttendanceSummaryDto(
-                    x.Session.Date,
-                    s.Name,
-                    s.Code,
-                    x.ar.Status,
-                    x.ar.Note))
-            .OrderByDescending(x => x.Date)
+                (x, s) => new { x.ar, x.Session, x.cs, x.ta, Subject = s })
+            .OrderByDescending(x => x.Session.Date)
+            .Select(x => new StudentAttendanceSummaryDto(
+                x.Session.Date,
+                x.Subject.Name,
+                x.Subject.Code,
+                x.ar.Status,
+                x.ar.Note))
             .ToListAsync(ct);
 
         return new StudentAttendanceSummaryResponse(

@@ -13,6 +13,7 @@ import {
   FileSpreadsheet,
   PenLine,
   CalendarDays,
+  ClipboardCheck,
 } from "lucide-react";
 import * as Separator from "@radix-ui/react-separator";
 import * as ScrollArea from "@radix-ui/react-scroll-area";
@@ -101,8 +102,12 @@ function getNavigationForRole(
           ],
         },
         {
+          label: "Enrollment",
+          defaultOpen: true,
           items: [
-            { label: "Enrollment", path: "/enrollment", icon: <ClipboardList className="h-5 w-5" />, permission: "enrollment.create" },
+            { label: "Enroll Student", path: "/enrollment", icon: <ClipboardList className="h-5 w-5" />, permission: "enrollment.create" },
+            { label: "Enroll Teacher", path: "/enrollment/enroll-teacher", icon: <GraduationCap className="h-5 w-5" />, permission: "enrollment.create" },
+            { label: "Assign Teacher", path: "/enrollment/assign-teacher", icon: <UserPlus className="h-5 w-5" />, permission: "schedule.create" },
           ],
         },
       ];
@@ -113,6 +118,7 @@ function getNavigationForRole(
             { label: "My Classes", path: "/teacher/classes", icon: <GraduationCap className="h-5 w-5" /> },
             { label: "Take Attendance", path: "/teacher/attendance", icon: <ClipboardList className="h-5 w-5" /> },
             { label: "Enter Grades", path: "/teacher/grades", icon: <PenLine className="h-5 w-5" /> },
+            { label: "Exams", path: "/teacher/exams", icon: <ClipboardCheck className="h-5 w-5" /> },
             { label: "My Schedule", path: "/teacher/schedule", icon: <CalendarDays className="h-5 w-5" /> },
           ],
         },

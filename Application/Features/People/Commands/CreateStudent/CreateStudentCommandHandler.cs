@@ -45,6 +45,8 @@ public class CreateStudentCommandHandler : IRequestHandler<CreateStudentCommand,
             try
             {
                 await _identityService.AddToRoleAsync(userId, "Student", ct);
+                student.LinkLogin(userId);
+                await _students.AddAsync(student, ct);
                 _outbox.Publish(new LinkStudentLoginMessage(student.Id, userId));
                 return Result.Success(student.Id);
             }

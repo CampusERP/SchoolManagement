@@ -50,3 +50,14 @@ export const useUpdateTeacher = () => {
     },
   });
 };
+
+export const useDeleteTeacher = () => {
+  const queryClient = useQueryClient();
+  const schoolId = useAuthStore((s) => s.user?.schoolId);
+  return useMutation({
+    mutationFn: (teacherId: string) => TeachersApi.deleteTeacher(teacherId, schoolId!),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["teachers"] });
+    },
+  });
+};

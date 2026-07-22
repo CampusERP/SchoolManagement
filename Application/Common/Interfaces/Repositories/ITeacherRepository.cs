@@ -13,5 +13,5 @@ public interface ITeacherRepository
         Guid? excludingTeacherId = null,
         CancellationToken ct = default);
     Task AddAsync(Teacher teacher, CancellationToken ct = default);
-
+    Task RemoveAsync(Teacher teacher, CancellationToken ct = default);
 }

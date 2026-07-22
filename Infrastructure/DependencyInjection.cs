@@ -90,6 +90,7 @@ public static class DependencyInjection
         services.AddScoped<IGradeLevelRepository, GradeLevelRepository>();
         services.AddScoped<IRoomRepository, RoomRepository>();
         services.AddScoped<IStudentEnrollmentRepository, StudentEnrollmentRepository>();
+        services.AddScoped<ITeacherEnrollmentRepository, TeacherEnrollmentRepository>();
         services.AddScoped<ITeachingAssignmentRepository, TeachingAssignmentRepository>();
         services.AddScoped<IUserSchoolMembershipRepository, UserSchoolMembershipRepository>();
         services.AddScoped<ISchoolAdminProfileRepository, SchoolAdminProfileRepository>();
@@ -166,7 +167,7 @@ public static class DependencyInjection
         services.AddScoped<IOutboxMessageHandler<LinkTeacherLoginMessage>, LinkTeacherLoginHandler>();
         services.AddScoped<IOutboxMessageHandler<LinkParentLoginMessage>, LinkParentLoginHandler>();
         services.AddScoped<IOutboxMessageHandler<DeliverNotificationBatchMessage>, DeliverNotificationBatchHandler>();
-        services.AddHostedService<OutboxProcessor>();
+        // services.AddHostedService<OutboxProcessor>(); // Disabled: LinkStudentLoginHandler fails for missing students
 
         // ───────────── Outbox Handlers ───────────
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, GraduationCap } from "lucide-react";
+import { Plus, GraduationCap, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Table, Modal, Form, type TableProps } from "antd";
 import { useForm, Controller } from "react-hook-form";
@@ -13,7 +13,7 @@ import SearchInput from "@/components/molecules/SearchInput";
 import EmptyState from "@/components/molecules/EmptyState";
 import StatusBadge from "@/components/molecules/StatusBadge";
 import { useAuthStore } from "@/store/authStore";
-import { useTeachers, useCreateTeacher } from "@/features/teachers/hooks";
+import { useTeachers, useCreateTeacher, useDeleteTeacher } from "@/features/teachers/hooks";
 import ImportExportButtons from "@/components/importExport/ImportExportButtons";
 import type { TeacherListDto } from "@/types/teacher.types";
 
@@ -37,6 +37,7 @@ export default function TeachersPage() {
 
   const { data, isLoading, isError } = useTeachers({ searchTerm: search, page, pageSize });
   const createTeacher = useCreateTeacher();
+  const deleteTeacher = useDeleteTeacher();
 
   const [modalOpen, setModalOpen] = useState(false);
   const {
@@ -83,6 +84,16 @@ export default function TeachersPage() {
       ),
     },
     {
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
+      render: (email: string) => (
+        <span className="text-sm text-[var(--color-text-secondary)]">
+          {email || "—"}
+        </span>
+      ),
+    },
+    {
       title: "Employment Status",
       dataIndex: "employmentStatus",
       key: "employmentStatus",
@@ -103,17 +114,43 @@ export default function TeachersPage() {
       title: "Actions",
       key: "actions",
       align: "center",
-      width: 120,
+      width: 140,
       render: (_, record) => (
-        <Button
-          variant="ghost"
-          type="link"
-          size="small"
-          className="p-0"
-          onClick={() => navigate(`/people/teachers/${record.id}`)}
-        >
-          View
-        </Button>
+        <div className="flex items-center justify-center gap-2">
+          <Button
+            variant="ghost"
+            type="link"
+            size="small"
+            className="p-0"
+            onClick={() => navigate(`/people/teachers/${record.id}`)}
+          >
+            View
+          </Button>
+          <Button
+            variant="ghost"
+            type="link"
+            size="small"
+            className="p-0 text-[var(--color-danger)]"
+            onClick={() => {
+              Modal.confirm({
+                title: "Delete Teacher",
+                content: `Are you sure you want to delete ${record.firstName} ${record.lastName}?`,
+                okText: "Delete",
+                okType: "danger",
+                onOk: async () => {
+                  try {
+                    await deleteTeacher.mutateAsync(record.id);
+                    toast.success("Teacher deleted");
+                  } catch {
+                    toast.error("Failed to delete teacher");
+                  }
+                },
+              });
+            }}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
       ),
     },
   ];

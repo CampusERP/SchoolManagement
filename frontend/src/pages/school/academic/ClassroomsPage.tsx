@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Plus, LayoutGrid } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Plus, LayoutGrid, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { Table, Modal, Form, Select, type TableProps } from "antd";
 import { useForm, Controller } from "react-hook-form";
@@ -28,6 +29,7 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 export default function ClassroomsPage() {
+  const navigate = useNavigate();
   const schoolId = useAuthStore((s) => s.user?.schoolId)!;
 
   const [academicYearId, setAcademicYearId] = useState<string | undefined>();
@@ -97,8 +99,16 @@ export default function ClassroomsPage() {
       title: "Name",
       dataIndex: "name",
       key: "name",
-      render: (name: string) => (
-        <span className="font-medium text-[var(--color-text-primary)]">{name}</span>
+      render: (name: string, record) => (
+        <Button
+          variant="ghost"
+          type="link"
+          size="small"
+          className="p-0 font-medium text-[var(--color-text-primary)]"
+          onClick={() => navigate(`/academics/classrooms/${record.id}`)}
+        >
+          {name}
+        </Button>
       ),
     },
     {
@@ -121,11 +131,23 @@ export default function ClassroomsPage() {
       title: "Actions",
       key: "actions",
       align: "center",
-      width: 120,
+      width: 160,
       render: (_, record) => (
-        <Button variant="ghost" type="link" size="small" className="p-0" onClick={() => openEdit(record)}>
-          Edit
-        </Button>
+        <div className="flex items-center justify-center gap-2">
+          <Button
+            variant="ghost"
+            type="link"
+            size="small"
+            className="p-0"
+            icon={<Eye className="h-3.5 w-3.5" />}
+            onClick={() => navigate(`/academics/classrooms/${record.id}`)}
+          >
+            View
+          </Button>
+          <Button variant="ghost" type="link" size="small" className="p-0" onClick={() => openEdit(record)}>
+            Edit
+          </Button>
+        </div>
       ),
     },
   ];

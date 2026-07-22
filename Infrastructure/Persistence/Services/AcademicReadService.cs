@@ -60,6 +60,20 @@ public class AcademicReadService : IAcademicReadService
                      .ToListAsync(ct);
     }
 
+    public async Task<List<ClassRoomTeachingAssignmentDto>> GetClassRoomTeachingAssignmentsAsync(Guid classRoomId, CancellationToken ct = default)
+    {
+        return await (from ta in _db.TeachingAssignments.AsNoTracking()
+                      where ta.ClassRoomId == classRoomId
+                      join t in _db.Teachers.AsNoTracking() on ta.TeacherId equals t.Id
+                      join sub in _db.Subjects on ta.SubjectId equals sub.Id
+                      join term in _db.AcademicYears.SelectMany(y => y.Terms) on ta.TermId equals term.Id
+                      orderby term.Sequence, sub.Name
+                      select new ClassRoomTeachingAssignmentDto(
+                          ta.Id, sub.Name, sub.Code,
+                          t.FirstName, t.LastName, term.Name))
+                     .ToListAsync(ct);
+    }
+
     public async Task<List<RoomDto>> GetRoomsAsync(CancellationToken ct = default)
     {
         return await _db.Rooms.AsNoTracking()

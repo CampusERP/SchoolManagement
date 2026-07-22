@@ -47,8 +47,13 @@ export default function EnrollmentPage() {
       await enrollStudent.mutateAsync({ schoolId, ...values });
       toast.success("Student enrolled successfully");
       navigate(`/people/students/${values.studentId}`);
-    } catch {
-      toast.error("Failed to enroll student");
+    } catch (err: any) {
+      const msg =
+        err?.response?.data?.error ||
+        err?.response?.data?.message ||
+        err?.message ||
+        "Failed to enroll student";
+      toast.error(msg);
     }
   };
 

@@ -62,7 +62,9 @@ public sealed class OutboxProcessor(
 
     private static async Task DispatchAsync(IServiceProvider services, string type, string payload, CancellationToken ct)
     {
-        switch (type)
+        var shortName = type.Contains(',') ? type[..type.IndexOf(',')] : type;
+
+        switch (shortName)
         {
             case nameof(CreateSchoolAdminProfileMessage):
                 await HandleAsync<CreateSchoolAdminProfileMessage>(services, payload, ct); break;

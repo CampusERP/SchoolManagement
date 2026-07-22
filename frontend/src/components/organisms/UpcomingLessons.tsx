@@ -1,9 +1,9 @@
 import { cn } from "@/lib/utils";
-import dayjs from "dayjs";
 import InfoCard from "@/components/molecules/InfoCard";
 
 interface LessonItem {
-  id: string;
+  id?: string;
+  classScheduleId?: string;
   className: string;
   subject: string;
   startTime: string;
@@ -37,7 +37,7 @@ export default function UpcomingLessons({
             const style = statusStyles[item.status] ?? statusStyles.upcoming;
             return (
               <div
-                key={item.id}
+                key={item.classScheduleId ?? item.id}
                 className={cn(
                   "flex items-center gap-4 rounded-[var(--border-radius)] border border-[var(--color-border)] p-3",
                   style.bg
@@ -45,10 +45,10 @@ export default function UpcomingLessons({
               >
                 <div className="flex flex-col items-center text-xs text-[var(--color-text-secondary)]">
                   <span className="font-medium">
-                    {dayjs(item.startTime).format("HH:mm")}
+                    {item.startTime?.slice(0, 5)}
                   </span>
                   <span className="text-[var(--color-text-muted)]">
-                    {dayjs(item.endTime).format("HH:mm")}
+                    {item.endTime?.slice(0, 5)}
                   </span>
                 </div>
 

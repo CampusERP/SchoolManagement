@@ -46,6 +46,7 @@ public class ApplicationDbContext : DbContext
     // ─────────────────── Enrollment ───────────────────
 
     public DbSet<StudentEnrollment> StudentEnrollments => Set<StudentEnrollment>();
+    public DbSet<TeacherEnrollment> TeacherEnrollments => Set<TeacherEnrollment>();
     public DbSet<TeachingAssignment> TeachingAssignments => Set<TeachingAssignment>();
     public DbSet<ClassSchedule> ClassSchedules => Set<ClassSchedule>();
 
@@ -96,6 +97,7 @@ public class ApplicationDbContext : DbContext
         ApplyTenantFilter<CurriculumSubject>(builder);
 
         ApplyTenantFilter<StudentEnrollment>(builder);
+        ApplyTenantFilter<TeacherEnrollment>(builder);
         ApplyTenantFilter<TeachingAssignment>(builder);
 
         ApplyTenantFilter<AttendanceSession>(builder);

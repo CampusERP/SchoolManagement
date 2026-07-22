@@ -43,4 +43,7 @@ export const StudentsApi = {
 
   updateStudent: (studentId: string, data: UpdateStudentCommand) =>
     api.put(`/people/students/${studentId}`, data).then((r) => r.data),
+
+  deleteStudent: (studentId: string, schoolId: string) =>
+    api.delete(`/people/students/${studentId}`, { params: { schoolId } }).then((r) => r.data),
 };

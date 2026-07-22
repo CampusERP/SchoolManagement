@@ -1,7 +1,8 @@
 import { Table, type TableProps } from "antd";
 
 interface ClassRecord {
-  id: string;
+  id?: string;
+  classRoomId?: string;
   name: string;
   subject: string;
   studentCount: number;
@@ -48,7 +49,7 @@ export default function MyClassesTable({
     <Table<ClassRecord>
       columns={columns}
       dataSource={data}
-      rowKey="id"
+      rowKey={(r) => r.classRoomId ?? r.id ?? r.name}
       loading={loading}
       pagination={{ pageSize: 10, showSizeChanger: false }}
     />

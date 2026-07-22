@@ -95,6 +95,50 @@ export const useUpdateClassroom = () => {
   });
 };
 
+export const useClassroomRoster = (
+  classRoomId: string | undefined,
+  page = 1,
+  pageSize = 50
+) => {
+  const schoolId = useAuthStore((s) => s.user?.schoolId);
+  return useQuery({
+    queryKey: ["classroom-roster", schoolId, classRoomId, page, pageSize],
+    queryFn: () =>
+      AcademicsApi.getClassroomRoster(classRoomId!, schoolId!, page, pageSize),
+    enabled: !!schoolId && !!classRoomId,
+  });
+};
+
+export const useClassroomTeachingAssignments = (
+  classRoomId: string | undefined
+) => {
+  const schoolId = useAuthStore((s) => s.user?.schoolId);
+  return useQuery({
+    queryKey: ["classroom-teaching-assignments", schoolId, classRoomId],
+    queryFn: () =>
+      AcademicsApi.getClassroomTeachingAssignments(classRoomId!, schoolId!),
+    enabled: !!schoolId && !!classRoomId,
+  });
+};
+
+export const useWithdrawStudent = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      enrollmentId,
+      schoolId,
+    }: {
+      enrollmentId: string;
+      schoolId: string;
+    }) => AcademicsApi.withdrawStudent(enrollmentId, schoolId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["classroom-roster"] });
+      queryClient.invalidateQueries({ queryKey: ["students"] });
+      queryClient.invalidateQueries({ queryKey: ["classrooms"] });
+    },
+  });
+};
+
 // ── Grade Levels ──────────────────────────────────────────────────
 export const useGradeLevels = () => {
   const schoolId = useAuthStore((s) => s.user?.schoolId);

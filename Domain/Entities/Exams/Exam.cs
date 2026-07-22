@@ -57,6 +57,8 @@ public class Exam : TenantEntity, IAggregateRoot
             throw new DomainException("Cannot add results to a locked exam.");
         if (score < 0 || score > MaxScore)
             throw new DomainException($"Score {score} is out of range (0–{MaxScore}).");
+        if (!_schedules.Any(s => s.Id == examScheduleId))
+            throw new DomainException("Invalid exam schedule.");
 
         var existing = _results.FirstOrDefault(r =>
             r.ExamScheduleId == examScheduleId &&

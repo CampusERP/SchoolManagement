@@ -57,4 +57,20 @@ public class TeachingAssignment : TenantEntity, IAggregateRoot
         _schedules.Add(schedule);
         return schedule;
     }
+
+    public void RemoveSchedule(Guid scheduleId)
+    {
+        var schedule = _schedules.FirstOrDefault(s => s.Id == scheduleId);
+        if (schedule is not null)
+            _schedules.Remove(schedule);
+    }
+
+    public void ClearSchedules()
+    {
+        _schedules.Clear();
+    }
+
+    public void UpdateSubject(Guid subjectId) => SubjectId = subjectId;
+    public void UpdateClassRoom(Guid classRoomId) => ClassRoomId = classRoomId;
+    public void UpdateTerm(Guid termId) => TermId = termId;
 }

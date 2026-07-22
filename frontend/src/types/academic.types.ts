@@ -116,3 +116,28 @@ export interface UpdateRoomCommand {
   name: string;
   capacity: number;
 }
+
+export interface RosterStudentDto {
+  enrollmentId: string;
+  studentId: string;
+  studentCode: string;
+  firstName: string;
+  lastName: string;
+  enrollmentStatus: string;
+}
+
+export interface ClassRoomTeachingAssignmentDto {
+  id: string;
+  subjectName: string;
+  subjectCode: string;
+  teacherFirstName: string;
+  teacherLastName: string;
+  termName: string;
+}
+
+export interface PagedResult<T> {
+  items: T[];
+  totalCount: number;
+  page: number;
+  pageSize: number;
+}

@@ -13,6 +13,9 @@ import type {
   RoomDto,
   CreateRoomCommand,
   UpdateRoomCommand,
+  RosterStudentDto,
+  ClassRoomTeachingAssignmentDto,
+  PagedResult,
 } from "@/types/academic.types";
 
 export interface SubjectDto {
@@ -70,6 +73,34 @@ export const AcademicsApi = {
 
   updateClassroom: (id: string, data: UpdateClassRoomCommand) =>
     api.put(`/academics/classrooms/${id}`, data).then((r) => r.data),
+
+  getClassroomRoster: (
+    classRoomId: string,
+    schoolId: string,
+    page = 1,
+    pageSize = 50
+  ) =>
+    api
+      .get<PagedResult<RosterStudentDto>>(
+        `/academics/classrooms/${classRoomId}/roster`,
+        { params: { schoolId, page, pageSize } }
+      )
+      .then((r) => r.data),
+
+  getClassroomTeachingAssignments: (classRoomId: string, schoolId: string) =>
+    api
+      .get<ClassRoomTeachingAssignmentDto[]>(
+        `/academics/classrooms/${classRoomId}/teaching-assignments`,
+        { params: { schoolId } }
+      )
+      .then((r) => r.data),
+
+  withdrawStudent: (enrollmentId: string, schoolId: string) =>
+    api
+      .post(`/people/students/enrollments/${enrollmentId}/withdraw`, null, {
+        params: { schoolId },
+      })
+      .then((r) => r.data),
 
   // ── Grade Levels ────────────────────────────────────────────────
   getGradeLevels: (schoolId: string) =>

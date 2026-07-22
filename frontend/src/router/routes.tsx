@@ -17,11 +17,17 @@ const SchoolDetailPage = lazy(() => import("@/pages/platform/SchoolDetailPage"))
 const EditSchoolPage = lazy(() => import("@/pages/platform/EditSchoolPage"));
 const SchoolDashboardPage = lazy(() => import("@/pages/school/SchoolDashboardPage"));
 const TeacherDashboardPage = lazy(() => import("@/pages/teacher/TeacherDashboardPage"));
+const TeacherClassesPage = lazy(() => import("@/pages/teacher/TeacherClassesPage"));
+const TeacherAttendancePage = lazy(() => import("@/pages/teacher/TeacherAttendancePage"));
+const TeacherGradesPage = lazy(() => import("@/pages/teacher/TeacherGradesPage"));
+const TeacherSchedulePage = lazy(() => import("@/pages/teacher/TeacherSchedulePage"));
+const TeacherExamsPage = lazy(() => import("@/pages/teacher/TeacherExamsPage"));
 const PlaceholderPage = lazy(() => import("@/pages/PlaceholderPage"));
 
 // School admin — Academics
 const AcademicYearsPage = lazy(() => import("@/pages/school/academic/AcademicYearsPage"));
 const ClassroomsPage = lazy(() => import("@/pages/school/academic/ClassroomsPage"));
+const ClassroomDetailPage = lazy(() => import("@/pages/school/academic/ClassroomDetailPage"));
 const GradeLevelsPage = lazy(() => import("@/pages/school/academic/GradeLevelsPage"));
 const EducationStagesPage = lazy(() => import("@/pages/school/academic/EducationStagesPage"));
 const RoomsPage = lazy(() => import("@/pages/school/academic/RoomsPage"));
@@ -38,6 +44,7 @@ const ImportDocsPage = lazy(() => import("@/pages/school/ImportDocsPage"));
 // School admin — Enrollment
 const EnrollmentPage = lazy(() => import("@/pages/school/enrollment/EnrollmentPage"));
 const AssignTeacherPage = lazy(() => import("@/pages/school/enrollment/AssignTeacherPage"));
+const EnrollTeacherPage = lazy(() => import("@/pages/school/enrollment/EnrollTeacherPage"));
 
 export const routes: RouteObject[] = [
   {
@@ -86,6 +93,7 @@ export const routes: RouteObject[] = [
         children: [
           { path: "years", element: <AcademicYearsPage /> },
           { path: "classrooms", element: <ClassroomsPage /> },
+          { path: "classrooms/:id", element: <ClassroomDetailPage /> },
           { path: "grade-levels", element: <GradeLevelsPage /> },
           { path: "education-stages", element: <EducationStagesPage /> },
           { path: "rooms", element: <RoomsPage /> },
@@ -119,6 +127,7 @@ export const routes: RouteObject[] = [
         children: [
           { index: true, element: <EnrollmentPage /> },
           { path: "assign-teacher", element: <AssignTeacherPage /> },
+          { path: "enroll-teacher", element: <EnrollTeacherPage /> },
         ],
       },
     ],
@@ -131,10 +140,11 @@ export const routes: RouteObject[] = [
         element: <AppLayout />,
         children: [
           { index: true, element: <TeacherDashboardPage /> },
-          { path: "classes", element: <PlaceholderPage title="My Classes" description="Class list with student rosters — coming soon" /> },
-          { path: "attendance", element: <PlaceholderPage title="Take Attendance" description="Record daily attendance — coming soon" /> },
-          { path: "grades", element: <PlaceholderPage title="Enter Grades" description="Grade assignments and exams — coming soon" /> },
-          { path: "schedule", element: <PlaceholderPage title="My Schedule" description="Weekly timetable — coming soon" /> },
+          { path: "classes", element: <TeacherClassesPage /> },
+          { path: "attendance", element: <TeacherAttendancePage /> },
+          { path: "grades", element: <TeacherGradesPage /> },
+          { path: "schedule", element: <TeacherSchedulePage /> },
+          { path: "exams", element: <TeacherExamsPage /> },
         ],
       },
     ],

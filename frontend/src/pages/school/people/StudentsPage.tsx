@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Users } from "lucide-react";
+import { Plus, Users, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Table, Modal, Form, DatePicker, type TableProps } from "antd";
 import dayjs from "dayjs";
@@ -13,7 +13,7 @@ import { Input, InputPassword } from "@/components/atoms/Input";
 import SearchInput from "@/components/molecules/SearchInput";
 import EmptyState from "@/components/molecules/EmptyState";
 import { useAuthStore } from "@/store/authStore";
-import { useStudents, useCreateStudent } from "@/features/students/hooks";
+import { useStudents, useCreateStudent, useDeleteStudent } from "@/features/students/hooks";
 import ImportExportButtons from "@/components/importExport/ImportExportButtons";
 import type { StudentListDto } from "@/types/student.types";
 
@@ -44,6 +44,7 @@ export default function StudentsPage() {
 
   const { data, isLoading, isError } = useStudents({ searchTerm: search, page, pageSize });
   const createStudent = useCreateStudent();
+  const deleteStudent = useDeleteStudent();
 
   const [modalOpen, setModalOpen] = useState(false);
   const {
@@ -115,6 +116,16 @@ export default function StudentsPage() {
       ),
     },
     {
+      title: "Email",
+      dataIndex: "email",
+      key: "email",
+      render: (email: string) => (
+        <span className="text-sm text-[var(--color-text-secondary)]">
+          {email || "—"}
+        </span>
+      ),
+    },
+    {
       title: "Date of Birth",
       dataIndex: "dateOfBirth",
       key: "dateOfBirth",
@@ -141,7 +152,7 @@ export default function StudentsPage() {
       title: "Actions",
       key: "actions",
       align: "center",
-      width: 120,
+      width: 140,
       render: (_, record) => (
         <div className="flex items-center justify-center gap-2">
           <Button
@@ -152,6 +163,30 @@ export default function StudentsPage() {
             onClick={() => navigate(`/people/students/${record.id}`)}
           >
             View
+          </Button>
+          <Button
+            variant="ghost"
+            type="link"
+            size="small"
+            className="p-0 text-[var(--color-danger)]"
+            onClick={() => {
+              Modal.confirm({
+                title: "Delete Student",
+                content: `Are you sure you want to delete ${record.firstName} ${record.lastName}?`,
+                okText: "Delete",
+                okType: "danger",
+                onOk: async () => {
+                  try {
+                    await deleteStudent.mutateAsync(record.id);
+                    toast.success("Student deleted");
+                  } catch {
+                    toast.error("Failed to delete student");
+                  }
+                },
+              });
+            }}
+          >
+            <Trash2 className="h-4 w-4" />
           </Button>
         </div>
       ),

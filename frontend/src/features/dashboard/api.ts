@@ -63,16 +63,16 @@ const mockAnnouncements: Announcement[] = [
 const mockAttendanceSummary: AttendanceSummary = { present: 280, absent: 15, late: 8, excused: 5 };
 
 const mockSchedule: ScheduleItem[] = [
-  { id: "1", className: "Grade 10-A", subject: "Mathematics", startTime: "08:00", endTime: "09:00", room: "Room 101", status: "completed" },
-  { id: "2", className: "Grade 10-A", subject: "Physics", startTime: "09:15", endTime: "10:15", room: "Room 203", status: "completed" },
-  { id: "3", className: "Grade 11-B", subject: "Mathematics", startTime: "10:30", endTime: "11:30", room: "Room 102", status: "in_progress" },
-  { id: "4", className: "Grade 9-A", subject: "Mathematics", startTime: "13:00", endTime: "14:00", room: "Room 101", status: "upcoming" },
+  { classScheduleId: "1", teachingAssignmentId: "t1", className: "Grade 10-A", subject: "Mathematics", startTime: "08:00", endTime: "09:00", room: "Room 101", status: "completed" },
+  { classScheduleId: "2", teachingAssignmentId: "t2", className: "Grade 10-A", subject: "Physics", startTime: "09:15", endTime: "10:15", room: "Room 203", status: "completed" },
+  { classScheduleId: "3", teachingAssignmentId: "t3", className: "Grade 11-B", subject: "Mathematics", startTime: "10:30", endTime: "11:30", room: "Room 102", status: "in_progress" },
+  { classScheduleId: "4", teachingAssignmentId: "t4", className: "Grade 9-A", subject: "Mathematics", startTime: "13:00", endTime: "14:00", room: "Room 101", status: "upcoming" },
 ];
 
 const mockTeacherClasses: TeacherClass[] = [
-  { id: "1", name: "Grade 10-A", subject: "Mathematics", studentCount: 35, gradeLevel: "Grade 10" },
-  { id: "2", name: "Grade 11-B", subject: "Mathematics", studentCount: 32, gradeLevel: "Grade 11" },
-  { id: "3", name: "Grade 9-A", subject: "Mathematics", studentCount: 38, gradeLevel: "Grade 9" },
+  { teachingAssignmentId: "t1", classRoomId: "c1", name: "Grade 10-A", subject: "Mathematics", studentCount: 35, gradeLevel: "Grade 10" },
+  { teachingAssignmentId: "t2", classRoomId: "c2", name: "Grade 11-B", subject: "Mathematics", studentCount: 32, gradeLevel: "Grade 11" },
+  { teachingAssignmentId: "t3", classRoomId: "c3", name: "Grade 9-A", subject: "Mathematics", studentCount: 38, gradeLevel: "Grade 9" },
 ];
 
 export const DashboardApi = {
@@ -104,8 +104,8 @@ export const DashboardApi = {
     } as SchoolDashboardData;
   },
 
-  getTeacherDashboard: async () => {
-    const response = await api.get("/teacher/dashboard");
+  getTeacherDashboard: async (schoolId: string) => {
+    const response = await api.get("/portal/teacher/dashboard", { params: { schoolId } });
     return response.data as TeacherDashboardData;
   },
 

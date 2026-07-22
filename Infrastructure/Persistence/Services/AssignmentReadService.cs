@@ -51,8 +51,15 @@ public class AssignmentReadService : IAssignmentReadService
             .Select(ta => ta.Id)
             .ToListAsync(ct);
 
-        var query = _db.Assignments.AsNoTracking()
-            .Where(a => teachingAssignmentIds.Contains(a.TeachingAssignmentId))
+        var baseQuery = _db.Assignments.AsNoTracking()
+            .Where(a => teachingAssignmentIds.Contains(a.TeachingAssignmentId));
+
+        var total = await baseQuery.CountAsync(ct);
+
+        var items = await baseQuery
+            .OrderByDescending(a => a.DueDate)
+            .Skip(p.Skip)
+            .Take(p.PageSize)
             .Select(a => new StudentAssignmentDto(
                 a.Id,
                 a.Title,
@@ -75,14 +82,7 @@ public class AssignmentReadService : IAssignmentReadService
                     .Where(s => s.AssignmentId == a.Id && s.StudentEnrollmentId == enrollmentId)
                     .Select(s => s.SubmittedAtUtc)
                     .FirstOrDefault(),
-                new List<string>()));
-
-        var total = await query.CountAsync(ct);
-
-        var items = await query
-            .OrderByDescending(x => x.DueDate)
-            .Skip(p.Skip)
-            .Take(p.PageSize)
+                new List<string>()))
             .ToListAsync(ct);
 
         return new PagedResult<StudentAssignmentDto>(items, total, p.Page, p.PageSize);

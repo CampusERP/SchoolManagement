@@ -17,11 +17,14 @@ export const useSchoolDashboard = () => {
   });
 };
 
-export const useTeacherDashboard = () =>
-  useQuery({
-    queryKey: ["dashboard", "teacher"],
-    queryFn: DashboardApi.getTeacherDashboard,
+export const useTeacherDashboard = () => {
+  const schoolId = useAuthStore((s) => s.user?.schoolId);
+  return useQuery({
+    queryKey: ["dashboard", "teacher", schoolId],
+    queryFn: () => schoolId ? DashboardApi.getTeacherDashboard(schoolId) : null,
+    enabled: !!schoolId,
   });
+};
 
 export const useSchools = (params?: { page?: number; pageSize?: number; search?: string }) =>
   useQuery({

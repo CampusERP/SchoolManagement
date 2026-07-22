@@ -55,3 +55,14 @@ export const useUpdateStudent = () => {
     },
   });
 };
+
+export const useDeleteStudent = () => {
+  const queryClient = useQueryClient();
+  const schoolId = useAuthStore((s) => s.user?.schoolId);
+  return useMutation({
+    mutationFn: (studentId: string) => StudentsApi.deleteStudent(studentId, schoolId!),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["students"] });
+    },
+  });
+};

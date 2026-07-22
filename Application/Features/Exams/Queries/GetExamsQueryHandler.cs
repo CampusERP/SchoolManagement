@@ -14,7 +14,7 @@ public class GetExamsQueryHandler
         GetExamsQuery request, CancellationToken ct)
     {
         var p = request.Pagination ?? new PaginationParams();
-        var result = await _readService.GetExamsAsync(request.TermId, p, ct);
+        var result = await _readService.GetExamsAsync(request.SchoolId, request.TermId, p, ct);
         return Result.Success(result);
     }
 }

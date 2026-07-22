@@ -39,4 +39,7 @@ export const TeachersApi = {
 
   updateTeacher: (teacherId: string, data: UpdateTeacherCommand) =>
     api.put(`/people/teachers/${teacherId}`, data).then((r) => r.data),
+
+  deleteTeacher: (teacherId: string, schoolId: string) =>
+    api.delete(`/people/teachers/${teacherId}`, { params: { schoolId } }).then((r) => r.data),
 };

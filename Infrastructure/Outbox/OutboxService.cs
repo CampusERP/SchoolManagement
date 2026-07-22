@@ -12,7 +12,7 @@ public class OutboxService : IOutboxService
     public void Publish<TMessage>(TMessage message) where TMessage : class
     {
         var entry = Domain.Entities.Outbox.OutboxMessage.Create(
-            typeof(TMessage).AssemblyQualifiedName!,
+            typeof(TMessage).Name,
             System.Text.Json.JsonSerializer.Serialize(message, message.GetType()));
         _outbox.AddAsync(entry).GetAwaiter().GetResult();
     }
