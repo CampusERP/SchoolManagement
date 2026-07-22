@@ -31,7 +31,7 @@ public class AssignmentReadService : IAssignmentReadService
                 a.MaxScore,
                 a.Submissions.Count,
                 a.Submissions.Count(s => s.Status == SubmissionStatus.Graded),
-                a.Submissions.Count(s => s.Status == SubmissionStatus.NotSubmitted)))
+                a.Submissions.Count(s => s.Status != SubmissionStatus.Graded)))
             .ToListAsync(ct);
 
         return new PagedResult<AssignmentSummaryDto>(items, total, p.Page, p.PageSize);

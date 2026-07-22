@@ -46,11 +46,11 @@ export const useLockAttendance = () => {
   });
 };
 
-export const useClassAssignments = (teachingAssignmentId: string | null) =>
+export const useClassAssignments = (teachingAssignmentId: string | null, schoolId: string | null) =>
   useQuery({
-    queryKey: ["teacher", "assignments", teachingAssignmentId],
-    queryFn: () => TeacherApi.getClassAssignments(teachingAssignmentId!),
-    enabled: !!teachingAssignmentId,
+    queryKey: ["teacher", "assignments", teachingAssignmentId, schoolId],
+    queryFn: () => TeacherApi.getClassAssignments(teachingAssignmentId!, schoolId!),
+    enabled: !!teachingAssignmentId && !!schoolId,
   });
 
 export const useGradeSubmission = () => {

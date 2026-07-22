@@ -73,6 +73,15 @@ public static class DataSeeder
             await platformDb.Database.MigrateAsync();
             await appDb.Database.MigrateAsync();
 
+            // Demo data must be explicitly requested.  Running this on every startup
+            // can recreate records that were intentionally removed or modified by a
+            // user, and the demo data has relationships that only make sense together.
+            if (!configuration.GetValue<bool>("Seed:Enabled"))
+            {
+                logger.LogInformation("Database migrations completed. Demo data seeding is disabled.");
+                return;
+            }
+
             var password = configuration["Seed:DemoAccounts:Password"] ?? "Demo@123456";
 
             await SeedRolesAsync(roleManager, logger);

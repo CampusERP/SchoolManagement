@@ -3,6 +3,7 @@ import DashboardTemplate from "@/components/templates/DashboardTemplate";
 import { useAuthStore } from "@/store/authStore";
 import { useTeacherDashboard } from "@/features/dashboard/hooks";
 import { useTeacherSchedule } from "@/features/teacher/hooks";
+import type { ScheduleSlot } from "@/features/teacher/api";
 import { cn } from "@/lib/utils";
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -33,10 +34,10 @@ export default function TeacherSchedulePage() {
   const termId = dashboard?.currentTermId ?? null;
   const { data: slots, isLoading: slotsLoading } = useTeacherSchedule(teacherId, schoolId, termId);
 
-  const weekGrid = useMemo(() => {
-    if (!slots) return [];
-    const byDay: Record<number, typeof slots> = {};
-    for (let d = 0; d <= 6; d++) byDay[d] = [];
+  const weekGrid = useMemo<Record<string, ScheduleSlot[]>>(() => {
+    if (!slots) return {};
+    const byDay: Record<string, ScheduleSlot[]> = {};
+    for (const day of DAYS) byDay[day] = [];
     for (const s of slots) {
       byDay[s.dayOfWeek]?.push(s);
     }
@@ -60,7 +61,7 @@ export default function TeacherSchedulePage() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {DAYS.map((day, dayIdx) => {
-            const daySlots = weekGrid[dayIdx] ?? [];
+            const daySlots = weekGrid[day] ?? [];
             return (
               <div
                 key={day}

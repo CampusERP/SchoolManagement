@@ -50,13 +50,23 @@ export interface AssignmentSummary {
   pendingSubmissions: number;
 }
 
+export type DayOfWeek =
+  | "Sunday"
+  | "Monday"
+  | "Tuesday"
+  | "Wednesday"
+  | "Thursday"
+  | "Friday"
+  | "Saturday";
+
 export interface ScheduleSlot {
   teachingAssignmentId: string;
   subjectName: string;
   classRoomName: string;
   gradeLevelName: string;
   roomName: string;
-  dayOfWeek: number;
+  // ASP.NET serializes DayOfWeekEnum with JsonStringEnumConverter.
+  dayOfWeek: DayOfWeek;
   startTime: string;
   endTime: string;
 }
@@ -142,9 +152,9 @@ export const TeacherApi = {
     return response.data;
   },
 
-  getClassAssignments: async (teachingAssignmentId: string, page = 1, pageSize = 20) => {
+  getClassAssignments: async (teachingAssignmentId: string, schoolId: string, page = 1, pageSize = 20) => {
     const response = await api.get(`/assignments/class/${teachingAssignmentId}`, {
-      params: { page, pageSize },
+      params: { schoolId, page, pageSize },
     });
     return response.data as PagedResult<AssignmentSummary>;
   },

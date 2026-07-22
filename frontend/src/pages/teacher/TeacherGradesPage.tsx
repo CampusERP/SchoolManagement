@@ -13,7 +13,7 @@ export default function TeacherGradesPage() {
   const [selectedTaId, setSelectedTaId] = useState<string | null>(null);
   const [selectedAssignment, setSelectedAssignment] = useState<AssignmentSummary | null>(null);
 
-  const { data: assignmentsData, isLoading: assignLoading } = useClassAssignments(selectedTaId);
+  const { data: assignmentsData, isLoading: assignLoading } = useClassAssignments(selectedTaId, schoolId);
 
   const classes = dashboard?.myClasses ?? [];
   const assignments = assignmentsData?.items ?? [];

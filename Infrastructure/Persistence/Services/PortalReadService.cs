@@ -682,13 +682,15 @@ public class PortalReadService : IPortalReadService
         if (!hasGuardian)
             return PagedResult<PortalAttendanceRecordDto>.Empty(p.Page, p.PageSize);
 
-        var enrollmentIds = await _db.StudentEnrollments.AsNoTracking()
-            .Where(e => e.StudentId == studentId)
-            .Select(e => e.Id)
-            .ToListAsync(ct);
+        var attendanceRecords = _db.AttendanceRecords.AsNoTracking()
+            .Join(
+                _db.StudentEnrollments.AsNoTracking()
+                    .Where(e => e.StudentId == studentId && e.SchoolId == schoolId),
+                record => record.StudentEnrollmentId,
+                enrollment => enrollment.Id,
+                (record, _) => record);
 
-        var items = await _db.AttendanceRecords.AsNoTracking()
-            .Where(ar => enrollmentIds.Contains(ar.StudentEnrollmentId))
+        var attendanceData = await attendanceRecords
             .Join(_db.AttendanceSessions,
                 ar => ar.AttendanceSessionId, asess => asess.Id,
                 (ar, asess) => new { ar, Session = asess })
@@ -700,19 +702,21 @@ public class PortalReadService : IPortalReadService
                 (x, ta) => new { x.ar, x.Session, x.cs, ta })
             .Join(_db.Subjects,
                 x => x.ta.SubjectId, s => s.Id,
-                (x, s) => new PortalAttendanceRecordDto(
-                    x.Session.Date,
-                    s.Name,
-                    x.ar.Status.ToString(),
-                    x.ar.Note))
+                (x, s) => new { x.Session.Date, SubjectName = s.Name, x.ar.Status, x.ar.Note })
             .OrderByDescending(x => x.Date)
             .Skip(p.Skip)
             .Take(p.PageSize)
             .ToListAsync(ct);
 
-        var total = await _db.AttendanceRecords.AsNoTracking()
-            .Where(ar => enrollmentIds.Contains(ar.StudentEnrollmentId))
-            .CountAsync(ct);
+        var items = attendanceData
+            .Select(x => new PortalAttendanceRecordDto(
+                x.Date,
+                x.SubjectName,
+                x.Status.ToString(),
+                x.Note))
+            .ToList();
+
+        var total = await attendanceRecords.CountAsync(ct);
 
         return new PagedResult<PortalAttendanceRecordDto>(items, total, p.Page, p.PageSize);
     }
