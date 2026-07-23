@@ -10,10 +10,10 @@ import {
   ClipboardList,
   ChevronDown,
   Layers,
-  FileSpreadsheet,
   PenLine,
   CalendarDays,
   ClipboardCheck,
+  Link2,
 } from "lucide-react";
 import * as Separator from "@radix-ui/react-separator";
 import * as ScrollArea from "@radix-ui/react-scroll-area";
@@ -44,33 +44,6 @@ function getNavigationForRole(
           items: [
             { label: "Analytics", path: "/platform", icon: <LayoutDashboard className="h-5 w-5" /> },
             { label: "Schools", path: "/platform/schools", icon: <Building2 className="h-5 w-5" /> },
-            { label: "Import Guide", path: "/platform/import-guide", icon: <FileSpreadsheet className="h-5 w-5" /> },
-          ],
-        },
-        {
-          label: "Academics",
-          defaultOpen: false,
-          items: [
-            { label: "Academic Years", path: "/academics/years", icon: <BookOpen className="h-5 w-5" /> },
-            { label: "Classrooms", path: "/academics/classrooms", icon: <ClipboardList className="h-5 w-5" /> },
-            { label: "Grade Levels", path: "/academics/grade-levels", icon: <GraduationCap className="h-5 w-5" /> },
-            { label: "Education Stages", path: "/academics/education-stages", icon: <Layers className="h-5 w-5" /> },
-            { label: "Rooms", path: "/academics/rooms", icon: <Building2 className="h-5 w-5" /> },
-          ],
-        },
-        {
-          label: "People",
-          defaultOpen: false,
-          items: [
-            { label: "Students", path: "/people/students", icon: <Users className="h-5 w-5" /> },
-            { label: "Teachers", path: "/people/teachers", icon: <UserPlus className="h-5 w-5" /> },
-            { label: "Parents", path: "/people/parents", icon: <Users className="h-5 w-5" /> },
-            { label: "Import Guide", path: "/people/import-guide", icon: <FileSpreadsheet className="h-5 w-5" /> },
-          ],
-        },
-        {
-          items: [
-            { label: "Enrollment", path: "/enrollment", icon: <ClipboardList className="h-5 w-5" /> },
           ],
         },
       ];
@@ -99,6 +72,7 @@ function getNavigationForRole(
             { label: "Students", path: "/people/students", icon: <Users className="h-5 w-5" />, permission: "student.read" },
             { label: "Teachers", path: "/people/teachers", icon: <UserPlus className="h-5 w-5" />, permission: "teacher.read" },
             { label: "Parents", path: "/people/parents", icon: <Users className="h-5 w-5" />, permission: "parent.read" },
+            { label: "Student Guardians", path: "/people/student-guardians", icon: <Link2 className="h-5 w-5" />, permission: "student.create" },
           ],
         },
         {
@@ -106,7 +80,6 @@ function getNavigationForRole(
           defaultOpen: true,
           items: [
             { label: "Enroll Student", path: "/enrollment", icon: <ClipboardList className="h-5 w-5" />, permission: "enrollment.create" },
-            { label: "Enroll Teacher", path: "/enrollment/enroll-teacher", icon: <GraduationCap className="h-5 w-5" />, permission: "enrollment.create" },
             { label: "Assign Teacher", path: "/enrollment/assign-teacher", icon: <UserPlus className="h-5 w-5" />, permission: "schedule.create" },
           ],
         },

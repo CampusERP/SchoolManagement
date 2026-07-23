@@ -39,12 +39,11 @@ const TeachersPage = lazy(() => import("@/pages/school/people/TeachersPage"));
 const TeacherDetailPage = lazy(() => import("@/pages/school/people/TeacherDetailPage"));
 const ParentsPage = lazy(() => import("@/pages/school/people/ParentsPage"));
 const ParentDetailPage = lazy(() => import("@/pages/school/people/ParentDetailPage"));
-const ImportDocsPage = lazy(() => import("@/pages/school/ImportDocsPage"));
+const StudentGuardiansPage = lazy(() => import("@/pages/school/people/StudentGuardiansPage"));
 
 // School admin — Enrollment
 const EnrollmentPage = lazy(() => import("@/pages/school/enrollment/EnrollmentPage"));
 const AssignTeacherPage = lazy(() => import("@/pages/school/enrollment/AssignTeacherPage"));
-const EnrollTeacherPage = lazy(() => import("@/pages/school/enrollment/EnrollTeacherPage"));
 
 export const routes: RouteObject[] = [
   {
@@ -67,7 +66,6 @@ export const routes: RouteObject[] = [
           { path: "schools/:id", element: <SchoolDetailPage /> },
           { path: "schools/:id/edit", element: <EditSchoolPage /> },
           { path: "admins/new", element: <RegisterAdminPage /> },
-          { path: "import-guide", element: <ImportDocsPage /> },
         ],
       },
     ],
@@ -114,6 +112,7 @@ export const routes: RouteObject[] = [
           { path: "teachers/:id", element: <TeacherDetailPage /> },
           { path: "parents", element: <ParentsPage /> },
           { path: "parents/:id", element: <ParentDetailPage /> },
+          { path: "student-guardians", element: <StudentGuardiansPage /> },
         ],
       },
     ],
@@ -127,7 +126,6 @@ export const routes: RouteObject[] = [
         children: [
           { index: true, element: <EnrollmentPage /> },
           { path: "assign-teacher", element: <AssignTeacherPage /> },
-          { path: "enroll-teacher", element: <EnrollTeacherPage /> },
         ],
       },
     ],

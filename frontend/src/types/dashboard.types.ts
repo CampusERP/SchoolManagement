@@ -12,10 +12,11 @@ export interface PlatformDashboardData {
   totalSchools: number;
   activeSchools: number;
   suspendedSchools: number;
+  totalStudents: number;
+  totalParents: number;
+  totalTeachers: number;
+  totalSchoolAdmins: number;
   totalUsers: number;
-  recentSchools: School[];
-  recentActivity: ActivityItem[];
-  systemHealth: SystemHealth;
 }
 
 export interface ActivityItem {
@@ -42,8 +43,6 @@ export interface SchoolDashboardData {
   activeEnrollments: number;
   currentAcademicYear: string | null;
   recentStudents: RecentStudent[];
-  upcomingEvents: EventItem[];
-  announcements: Announcement[];
   attendanceSummary: AttendanceSummary;
 }
 

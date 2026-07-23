@@ -275,6 +275,15 @@ namespace UnitTests
                 Add(assignment);
                 return Task.CompletedTask;
             }
+
+            public Task UpdateAsync(TeachingAssignment assignment, CancellationToken ct = default) =>
+                Task.CompletedTask;
+
+            public Task DeleteAsync(TeachingAssignment assignment, CancellationToken ct = default)
+            {
+                _store.Remove(assignment);
+                return Task.CompletedTask;
+            }
         }
     }
 }

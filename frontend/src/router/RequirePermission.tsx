@@ -17,11 +17,11 @@ export default function RequirePermission({ permission, requiredRole }: RequireP
     return <Navigate to="/auth/login" replace />;
   }
 
-  if (requiredRole && user.role !== requiredRole && user.role !== "platform_admin") {
+  if (requiredRole && user.role !== requiredRole) {
     return <Navigate to={ROLE_HOME[user.role]} replace />;
   }
 
-  if (user.role !== "platform_admin" && !hasPermission(permission)) {
+  if (!hasPermission(permission)) {
     return <Navigate to={ROLE_HOME[user.role] ?? "/auth/login"} replace />;
   }
 

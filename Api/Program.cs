@@ -191,9 +191,8 @@ builder.Services.AddAuthorization(options =>
     {
         var claim = claimValue; // capture for closure
 
-        options.AddPolicy(policyName, policy => policy.RequireAssertion(context =>
-            context.User.HasClaim("is_platform_admin", "true") ||
-            context.User.HasClaim("permission", claim)));
+        options.AddPolicy(policyName, policy =>
+            policy.RequireClaim("permission", claim));
     }
 });
 
