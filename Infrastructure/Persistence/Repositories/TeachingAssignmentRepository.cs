@@ -30,4 +30,17 @@ public class TeachingAssignmentRepository : ITeachingAssignmentRepository
 
     public async Task AddAsync(TeachingAssignment assignment, CancellationToken ct = default) =>
         await _context.TeachingAssignments.AddAsync(assignment, ct);
+
+    public Task UpdateAsync(TeachingAssignment assignment, CancellationToken ct = default)
+    {
+        if (_context.Entry(assignment).State == EntityState.Detached)
+            _context.TeachingAssignments.Update(assignment);
+        return Task.CompletedTask;
+    }
+
+    public async Task DeleteAsync(TeachingAssignment assignment, CancellationToken ct = default)
+    {
+        _context.TeachingAssignments.Remove(assignment);
+        await Task.CompletedTask;
+    }
 }

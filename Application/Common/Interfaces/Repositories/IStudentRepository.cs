@@ -13,6 +13,7 @@ public interface IStudentRepository
         Guid? excludingStudentId = null,
         CancellationToken ct = default);
     Task AddAsync(Student student, CancellationToken ct = default);
+    Task RemoveAsync(Student student, CancellationToken ct = default);
 
     Task<PagedResult<StudentListDto>> GetStudentsAsync(
         Guid schoolId,

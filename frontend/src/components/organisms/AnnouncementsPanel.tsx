@@ -5,7 +5,8 @@ interface Announcement {
   id: string;
   title: string;
   content: string;
-  date: string;
+  date?: string;
+  createdAtUtc?: string;
   author: string;
 }
 
@@ -35,7 +36,7 @@ export default function AnnouncementsPanel({
               <div className="mt-2 flex items-center gap-2 text-xs text-[var(--color-text-muted)]">
                 <span>{a.author}</span>
                 <span>·</span>
-                <span>{dayjs(a.date).format("MMM D, YYYY")}</span>
+                <span>{dayjs(a.date ?? a.createdAtUtc).format("MMM D, YYYY")}</span>
               </div>
             </div>
           ))}

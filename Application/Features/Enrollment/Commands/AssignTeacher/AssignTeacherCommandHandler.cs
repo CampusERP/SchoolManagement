@@ -25,12 +25,12 @@ public class AssignTeacherCommandHandler : IRequestHandler<AssignTeacherCommand,
     public async Task<Result<Guid>> Handle(AssignTeacherCommand request, CancellationToken ct)
     {
         var teacher = await _teachers.GetByIdAsync(request.TeacherId, ct);
-        if (teacher is null)
-            return Result.Failure<Guid>($"Teacher with ID '{request.TeacherId}' was not found.");
+        if (teacher is null || teacher.SchoolId != request.SchoolId)
+            return Result.Failure<Guid>($"Teacher with ID '{request.TeacherId}' was not found in this school.");
 
         var classRoom = await _classRooms.GetByIdAsync(request.ClassRoomId, ct);
-        if (classRoom is null)
-            return Result.Failure<Guid>($"ClassRoom with ID '{request.ClassRoomId}' was not found.");
+        if (classRoom is null || classRoom.SchoolId != request.SchoolId)
+            return Result.Failure<Guid>($"ClassRoom with ID '{request.ClassRoomId}' was not found in this school.");
 
         var duplicate = await _assignments.ExistsAsync(request.SchoolId, request.TeacherId, request.ClassRoomId, request.SubjectId, request.TermId, ct);
         if (duplicate)

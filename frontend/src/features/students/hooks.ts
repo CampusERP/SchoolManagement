@@ -55,3 +55,24 @@ export const useUpdateStudent = () => {
     },
   });
 };
+
+export const useDeleteStudent = () => {
+  const queryClient = useQueryClient();
+  const schoolId = useAuthStore((s) => s.user?.schoolId);
+  return useMutation({
+    mutationFn: (studentId: string) => StudentsApi.deleteStudent(studentId, schoolId!),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["students"] });
+    },
+  });
+};
+
+export const useLinkStudentGuardian = () => {
+  const queryClient = useQueryClient();
+  const schoolId = useAuthStore((s) => s.user?.schoolId);
+  return useMutation({
+    mutationFn: (data: { studentId: string; parentId: string; relationshipType: string; isPrimaryContact: boolean; canViewGrades: boolean; canViewBilling: boolean }) =>
+      StudentsApi.linkGuardian({ ...data, schoolId: schoolId! }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["student"] }),
+  });
+};

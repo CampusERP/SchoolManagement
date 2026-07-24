@@ -12,10 +12,10 @@ public class ExamReadService : IExamReadService
     public ExamReadService(ApplicationDbContext db) => _db = db;
 
     public async Task<PagedResult<ExamListDto>> GetExamsAsync(
-        Guid termId, PaginationParams p, CancellationToken ct = default)
+        Guid schoolId, Guid termId, PaginationParams p, CancellationToken ct = default)
     {
         var query = _db.Exams.AsNoTracking()
-            .Where(e => e.TermId == termId)
+            .Where(e => e.SchoolId == schoolId && e.TermId == termId)
             .Join(_db.Subjects, e => e.SubjectId, s => s.Id, (e, s) => new { Exam = e, Subject = s })
             .Join(_db.Terms, x => x.Exam.TermId, t => t.Id, (x, t) => new { x.Exam, x.Subject, Term = t });
 
@@ -140,6 +140,17 @@ public class ExamReadService : IExamReadService
                 x.Exam.MaxScore > 0 ? Math.Round(x.er.Score * 100m / x.Exam.MaxScore, 1) : 0,
                 CalculateGrade(x.Exam.MaxScore > 0 ? x.er.Score * 100m / x.Exam.MaxScore : 0)))
             .ToList();
+    }
+
+    public async Task<List<ExamScheduleDto>> GetExamSchedulesAsync(
+        Guid examId, CancellationToken ct = default)
+    {
+        return await _db.ExamSchedules.AsNoTracking()
+            .Where(es => es.ExamId == examId)
+            .Join(_db.ClassRooms, es => es.ClassRoomId, cr => cr.Id, (es, cr) => new { es, ClassRoom = cr })
+            .Join(_db.Rooms, x => x.es.RoomId, r => r.Id, (x, r) => new ExamScheduleDto(
+                x.es.Id, x.es.ClassRoomId, x.ClassRoom.Name, x.es.RoomId, r.Name, x.es.ExamDate))
+            .ToListAsync(ct);
     }
 
     private static string CalculateGrade(decimal percentage) => percentage switch

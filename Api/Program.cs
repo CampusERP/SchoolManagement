@@ -3,6 +3,7 @@ using Application;
 using Application.Common.Models;
 using Infrastructure;
 using Infrastructure.Persistence.Seed;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.IdentityModel.Tokens;
@@ -19,6 +20,17 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+}).ConfigureApiBehaviorOptions(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var errors = context.ModelState
+            .Where(e => e.Value?.Errors.Count > 0)
+            .ToDictionary(
+                e => e.Key,
+                e => e.Value!.Errors.Select(x => x.ErrorMessage).ToArray());
+        return new BadRequestObjectResult(new { status = 400, message = "Model validation failed.", errors });
+    };
 });
 builder.Services.AddEndpointsApiExplorer();
 
@@ -179,9 +191,8 @@ builder.Services.AddAuthorization(options =>
     {
         var claim = claimValue; // capture for closure
 
-        options.AddPolicy(policyName, policy => policy.RequireAssertion(context =>
-            context.User.HasClaim("is_platform_admin", "true") ||
-            context.User.HasClaim("permission", claim)));
+        options.AddPolicy(policyName, policy =>
+            policy.RequireClaim("permission", claim));
     }
 });
 

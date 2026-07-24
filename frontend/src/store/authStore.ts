@@ -122,7 +122,6 @@ export const useAuthStore = create<AuthState>()(
       hasPermission: (perm) => {
         const u = get().user;
         if (!u) return false;
-        if (u.isPlatformAdmin) return true;
         return u.permissions.includes(perm);
       },
 

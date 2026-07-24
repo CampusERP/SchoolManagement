@@ -10,5 +10,6 @@ public interface IAcademicReadService
     Task<List<AcademicYearDto>> GetAcademicYearsAsync(CancellationToken ct = default);
     Task<List<GradeLevelDto>> GetGradeLevelsAsync(CancellationToken ct = default);
     Task<List<ClassRoomDetailDto>> GetClassRoomsAsync(Guid? academicYearId, Guid? gradeLevelId, CancellationToken ct = default);
+    Task<List<ClassRoomTeachingAssignmentDto>> GetClassRoomTeachingAssignmentsAsync(Guid classRoomId, CancellationToken ct = default);
     Task<List<RoomDto>> GetRoomsAsync(CancellationToken ct = default);
 }

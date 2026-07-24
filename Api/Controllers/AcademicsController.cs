@@ -3,6 +3,8 @@ using Application.Features.Academics.Queries.GetClassRooms;
 using Application.Features.Academics.Queries.GetGradeLevels;
 using Application.Features.Academics.Queries.GetRooms;
 using Application.Features.Academics.Queries.GetTerms;
+using Application.Features.Portal.Queries.GetTeacherSchedule;
+using Application.Common.Models;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -112,6 +114,26 @@ public class AcademicsController : ApiControllerBase
         Guid classRoomId,
         [FromBody] UpdateClassRoomCommand command, CancellationToken ct) =>
         FromResult(await _mediator.Send(command with { ClassRoomId = classRoomId }, ct));
+
+    [HttpGet("classrooms/{classRoomId:guid}/teaching-assignments")]
+    [Authorize(Policy = "ClassRoom.Read")]
+    public async Task<IActionResult> GetClassRoomTeachingAssignments(
+        Guid classRoomId,
+        [FromQuery] Guid schoolId,
+        CancellationToken ct) =>
+        FromResult(await _mediator.Send(new GetClassRoomTeachingAssignmentsQuery(schoolId, classRoomId), ct));
+
+    [HttpGet("classrooms/{classRoomId:guid}/roster")]
+    [Authorize(Policy = "ClassRoom.Read")]
+    public async Task<IActionResult> GetClassRoomRoster(
+        Guid classRoomId,
+        [FromQuery] Guid schoolId,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 50,
+        CancellationToken ct = default) =>
+        FromResult(await _mediator.Send(
+            new GetClassRoomRosterQuery(schoolId, classRoomId,
+                new PaginationParams(page, pageSize)), ct));
 
     // ── Grade Levels ──────────────────────────────────────────────────
 

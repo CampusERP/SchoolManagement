@@ -39,7 +39,7 @@ public class PortalReadService : IPortalReadService
             .FirstOrDefaultAsync(ct);
 
         if (teacher is null)
-            return new TeacherDashboardDto(0, 0, 0, 0, 0,
+            return new TeacherDashboardDto(Guid.Empty, null, 0, 0, 0, 0, 0,
                 new List<TeacherDashboardScheduleSlot>(),
                 new List<TeacherDashboardClass>(),
                 new List<TeacherDashboardAnnouncement>());
@@ -65,6 +65,7 @@ public class PortalReadService : IPortalReadService
             totalStudents += studentCount;
 
             myClasses.Add(new TeacherDashboardClass(
+                ta.ta.Id,
                 ta.ClassRoom.Id,
                 ta.ClassRoom.Name,
                 ta.Subject.Name,
@@ -92,6 +93,7 @@ public class PortalReadService : IPortalReadService
 
         var todaySchedule = todayScheduleData
             .Select(x => new TeacherDashboardScheduleSlot(
+                x.cs.Id,
                 x.ta.Id,
                 x.ClassRoom.Name,
                 x.Subject.Name,
@@ -142,7 +144,11 @@ public class PortalReadService : IPortalReadService
                 b.CreatedAtUtc))
             .ToListAsync(ct);
 
+        var currentTermId = teachingAssignments.FirstOrDefault()?.ta.TermId;
+
         return new TeacherDashboardDto(
+            teacher.Id,
+            currentTermId,
             myClasses.Count,
             totalStudents,
             todayLessonCount,
@@ -170,6 +176,8 @@ public class PortalReadService : IPortalReadService
             .Join(_db.GradeLevels,
                 x => x.ClassRoom.GradeLevelId, g => g.Id,
                 (x, g) => new { x.ta, x.cs, x.Subject, x.ClassRoom, GradeLevel = g })
+            .OrderBy(x => x.cs.DayOfWeek)
+            .ThenBy(x => x.cs.StartTime)
             .Join(_db.Rooms,
                 x => x.cs.RoomId, r => r.Id,
                 (x, r) => new TeacherScheduleSlotDto(
@@ -181,8 +189,6 @@ public class PortalReadService : IPortalReadService
                     x.cs.DayOfWeek,
                     x.cs.StartTime,
                     x.cs.EndTime))
-            .OrderBy(x => x.DayOfWeek)
-            .ThenBy(x => x.StartTime)
             .ToListAsync(ct);
     }
 
@@ -237,6 +243,8 @@ public class PortalReadService : IPortalReadService
             .Join(_db.Teachers,
                 x => x.ta.TeacherId, t => t.Id,
                 (x, t) => new { x.ta, x.cs, x.Subject, Teacher = t })
+            .OrderBy(x => x.cs.DayOfWeek)
+            .ThenBy(x => x.cs.StartTime)
             .Join(_db.Rooms,
                 x => x.cs.RoomId, r => r.Id,
                 (x, r) => new StudentScheduleSlotDto(
@@ -247,8 +255,6 @@ public class PortalReadService : IPortalReadService
                     x.cs.DayOfWeek,
                     x.cs.StartTime,
                     x.cs.EndTime))
-            .OrderBy(x => x.DayOfWeek)
-            .ThenBy(x => x.StartTime)
             .ToListAsync(ct);
     }
 
@@ -262,7 +268,7 @@ public class PortalReadService : IPortalReadService
             .Join(_db.GradeLevels, x => x.ClassRoom.GradeLevelId, g => g.Id, (x, g) => new { x.e, x.Student, x.ClassRoom, GradeLevel = g })
             .Join(_db.AcademicYears, x => x.e.AcademicYearId, a => a.Id, (x, a) => new { x.e, x.Student, x.ClassRoom, x.GradeLevel, AcademicYear = a })
             .Select(x => new StudentSummaryDto(
-                $"{x.Student.FirstName} {x.Student.LastName}",
+                x.Student.FirstName + " " + x.Student.LastName,
                 x.ClassRoom.Name,
                 x.GradeLevel.Name,
                 x.AcademicYear.Name,
@@ -308,13 +314,13 @@ public class PortalReadService : IPortalReadService
             .Where(x => x.cs.DayOfWeek == today)
             .Join(_db.Subjects, x => x.ta.SubjectId, s => s.Id, (x, s) => new { x.ta, x.cs, Subject = s })
             .Join(_db.Teachers, x => x.ta.TeacherId, t => t.Id, (x, t) => new { x.cs, x.Subject, Teacher = t })
+            .OrderBy(x => x.cs.StartTime)
             .Join(_db.Rooms, x => x.cs.RoomId, r => r.Id, (x, r) => new StudentDashboardScheduleSlot(
                 x.Subject.Name,
-                $"{x.Teacher.FirstName} {x.Teacher.LastName}",
+                x.Teacher.FirstName + " " + x.Teacher.LastName,
                 r.Name,
                 x.cs.StartTime,
                 x.cs.EndTime))
-            .OrderBy(x => x.StartTime)
             .ToListAsync(ct);
 
         var teachingAssignmentIds = await _db.TeachingAssignments.AsNoTracking()
@@ -428,10 +434,11 @@ public class PortalReadService : IPortalReadService
         {
             var slots = await _db.ClassSchedules.AsNoTracking()
                 .Where(cs => cs.TeachingAssignmentId == ta.ta.Id)
-                .Join(_db.Rooms, cs => cs.RoomId, r => r.Id, (cs, r) => new StudentClassScheduleSlot(
-                    cs.DayOfWeek, cs.StartTime, cs.EndTime, r.Name))
-                .OrderBy(s => s.DayOfWeek)
-                .ThenBy(s => s.StartTime)
+                .Join(_db.Rooms, cs => cs.RoomId, r => r.Id, (cs, r) => new { cs, Room = r })
+                .OrderBy(x => x.cs.DayOfWeek)
+                .ThenBy(x => x.cs.StartTime)
+                .Select(x => new StudentClassScheduleSlot(
+                    x.cs.DayOfWeek, x.cs.StartTime, x.cs.EndTime, x.Room.Name))
                 .ToListAsync(ct);
 
             result.Add(new StudentClassDto(
@@ -455,6 +462,8 @@ public class PortalReadService : IPortalReadService
             .Join(_db.NotificationBatches,
                 n => n.NotificationBatchId, b => b.Id,
                 (n, b) => new { n, Batch = b })
+            .OrderByDescending(x => x.Batch.CreatedAtUtc)
+            .Take(limit)
             .Select(x => new PortalNotificationDto(
                 x.n.Id,
                 x.Batch.Subject,
@@ -462,8 +471,6 @@ public class PortalReadService : IPortalReadService
                 x.n.Status.ToString(),
                 x.Batch.CreatedAtUtc,
                 x.n.ReadAtUtc))
-            .OrderByDescending(x => x.CreatedAtUtc)
-            .Take(limit)
             .ToListAsync(ct);
     }
 
@@ -675,13 +682,15 @@ public class PortalReadService : IPortalReadService
         if (!hasGuardian)
             return PagedResult<PortalAttendanceRecordDto>.Empty(p.Page, p.PageSize);
 
-        var enrollmentIds = await _db.StudentEnrollments.AsNoTracking()
-            .Where(e => e.StudentId == studentId)
-            .Select(e => e.Id)
-            .ToListAsync(ct);
+        var attendanceRecords = _db.AttendanceRecords.AsNoTracking()
+            .Join(
+                _db.StudentEnrollments.AsNoTracking()
+                    .Where(e => e.StudentId == studentId && e.SchoolId == schoolId),
+                record => record.StudentEnrollmentId,
+                enrollment => enrollment.Id,
+                (record, _) => record);
 
-        var items = await _db.AttendanceRecords.AsNoTracking()
-            .Where(ar => enrollmentIds.Contains(ar.StudentEnrollmentId))
+        var attendanceData = await attendanceRecords
             .Join(_db.AttendanceSessions,
                 ar => ar.AttendanceSessionId, asess => asess.Id,
                 (ar, asess) => new { ar, Session = asess })
@@ -693,19 +702,21 @@ public class PortalReadService : IPortalReadService
                 (x, ta) => new { x.ar, x.Session, x.cs, ta })
             .Join(_db.Subjects,
                 x => x.ta.SubjectId, s => s.Id,
-                (x, s) => new PortalAttendanceRecordDto(
-                    x.Session.Date,
-                    s.Name,
-                    x.ar.Status.ToString(),
-                    x.ar.Note))
+                (x, s) => new { x.Session.Date, SubjectName = s.Name, x.ar.Status, x.ar.Note })
             .OrderByDescending(x => x.Date)
             .Skip(p.Skip)
             .Take(p.PageSize)
             .ToListAsync(ct);
 
-        var total = await _db.AttendanceRecords.AsNoTracking()
-            .Where(ar => enrollmentIds.Contains(ar.StudentEnrollmentId))
-            .CountAsync(ct);
+        var items = attendanceData
+            .Select(x => new PortalAttendanceRecordDto(
+                x.Date,
+                x.SubjectName,
+                x.Status.ToString(),
+                x.Note))
+            .ToList();
+
+        var total = await attendanceRecords.CountAsync(ct);
 
         return new PagedResult<PortalAttendanceRecordDto>(items, total, p.Page, p.PageSize);
     }
@@ -925,6 +936,8 @@ public class PortalReadService : IPortalReadService
             .Join(_db.NotificationBatches,
                 n => n.NotificationBatchId, b => b.Id,
                 (n, b) => new { n, Batch = b })
+            .OrderByDescending(x => x.Batch.CreatedAtUtc)
+            .Take(limit)
             .Select(x => new PortalNotificationDto(
                 x.n.Id,
                 x.Batch.Subject,
@@ -932,8 +945,6 @@ public class PortalReadService : IPortalReadService
                 x.n.Status.ToString(),
                 x.Batch.CreatedAtUtc,
                 x.n.ReadAtUtc))
-            .OrderByDescending(x => x.CreatedAtUtc)
-            .Take(limit)
             .ToListAsync(ct);
     }
 

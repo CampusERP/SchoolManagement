@@ -3,6 +3,7 @@ export interface StudentListDto {
   studentCode: string;
   firstName: string;
   lastName: string;
+  email?: string | null;
   dateOfBirth: string;
   hasLogin: boolean;
   // Additional fields returned by the backend

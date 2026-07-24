@@ -19,6 +19,11 @@ public sealed class ExamsController(IMediator mediator) : ApiControllerBase
     [Authorize(Policy = "Exam.Create")]
     public async Task<IActionResult> Create(CreateExamCommand command, CancellationToken ct) => Created(await mediator.Send(command, ct));
 
+    [HttpGet("{examId:guid}/schedules")]
+    [Authorize(Policy = "Exam.Read")]
+    public async Task<IActionResult> GetExamSchedules(Guid examId, CancellationToken ct) =>
+        FromResult(await mediator.Send(new GetExamSchedulesQuery(examId), ct));
+
     [HttpPost("{examId:guid}/schedules")]
     [Authorize(Policy = "Exam.Create")]
     public async Task<IActionResult> AddSchedule(Guid examId, AddExamScheduleCommand command, CancellationToken ct) => Created(await mediator.Send(command with { ExamId = examId }, ct));

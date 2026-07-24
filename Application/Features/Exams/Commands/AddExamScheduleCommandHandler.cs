@@ -18,8 +18,9 @@ public class AddExamScheduleCommandHandler : IRequestHandler<AddExamScheduleComm
 
         try
         {
-            var schedule = exam.AddSchedule(request.ClassRoomId, request.RoomId, request.ExamDate);
-            return Result.Success(schedule.Id);
+            exam.AddSchedule(request.ClassRoomId, request.RoomId, request.ExamDate);
+            var scheduleId = await _exams.AddScheduleAsync(exam, ct);
+            return Result.Success(scheduleId);
         }
         catch (Domain.Exceptions.DomainException ex)
         {

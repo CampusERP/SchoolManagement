@@ -31,7 +31,7 @@ public class AssignmentSubmission : TenantEntity
         SubmittedAtUtc      = DateTime.UtcNow;
     }
 
-    internal static AssignmentSubmission Create(Guid schoolId, Guid assignmentId, Guid studentEnrollmentId, SubmissionStatus status)
+    public static AssignmentSubmission Create(Guid schoolId, Guid assignmentId, Guid studentEnrollmentId, SubmissionStatus status)
         => new(Guid.NewGuid(), schoolId, assignmentId, studentEnrollmentId, status);
 
     public void AttachDocument(Guid documentId)

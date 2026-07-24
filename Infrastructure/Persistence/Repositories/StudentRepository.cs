@@ -33,6 +33,12 @@ public class StudentRepository : IStudentRepository
     public async Task AddAsync(Student student, CancellationToken ct = default) =>
         await _context.Students.AddAsync(student, ct);
 
+    public async Task RemoveAsync(Student student, CancellationToken ct = default)
+    {
+        student.IsDeleted = true;
+        student.DeletedAtUtc = DateTime.UtcNow;
+    }
+
     public async Task<PagedResult<StudentListDto>> GetStudentsAsync(
         Guid schoolId,
         Guid? academicYearId,
@@ -66,6 +72,7 @@ public class StudentRepository : IStudentRepository
             x.Student.StudentCode,
             x.Student.FirstName,
             x.Student.LastName,
+            null,
             x.Student.DateOfBirth,
             x.Enrollment?.Name ?? string.Empty,
             x.Enrollment?.Status.ToString() ?? string.Empty

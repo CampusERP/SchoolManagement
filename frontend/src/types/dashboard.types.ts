@@ -12,10 +12,11 @@ export interface PlatformDashboardData {
   totalSchools: number;
   activeSchools: number;
   suspendedSchools: number;
+  totalStudents: number;
+  totalParents: number;
+  totalTeachers: number;
+  totalSchoolAdmins: number;
   totalUsers: number;
-  recentSchools: School[];
-  recentActivity: ActivityItem[];
-  systemHealth: SystemHealth;
 }
 
 export interface ActivityItem {
@@ -42,8 +43,6 @@ export interface SchoolDashboardData {
   activeEnrollments: number;
   currentAcademicYear: string | null;
   recentStudents: RecentStudent[];
-  upcomingEvents: EventItem[];
-  announcements: Announcement[];
   attendanceSummary: AttendanceSummary;
 }
 
@@ -67,7 +66,8 @@ export interface Announcement {
   id: string;
   title: string;
   content: string;
-  date: string;
+  date?: string;
+  createdAtUtc?: string;
   author: string;
 }
 
@@ -79,6 +79,8 @@ export interface AttendanceSummary {
 }
 
 export interface TeacherDashboardData {
+  teacherId: string;
+  currentTermId: string | null;
   totalClasses: number;
   totalStudents: number;
   todayLessons: number;
@@ -90,7 +92,8 @@ export interface TeacherDashboardData {
 }
 
 export interface ScheduleItem {
-  id: string;
+  classScheduleId: string;
+  teachingAssignmentId: string;
   className: string;
   subject: string;
   startTime: string;
@@ -100,7 +103,8 @@ export interface ScheduleItem {
 }
 
 export interface TeacherClass {
-  id: string;
+  teachingAssignmentId: string;
+  classRoomId: string;
   name: string;
   subject: string;
   studentCount: number;

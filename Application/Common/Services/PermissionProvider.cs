@@ -7,24 +7,8 @@ public class PermissionProvider : IPermissionProvider
     public List<string> GetPlatformAdminPermissions() =>
         new()
         {
-            "school.create", "school.read", "school.update", "school.dashboard",
-            "school.manage", "platform.analytics", "subscription.manage",
-            "academicyear.read", "academicyear.create", "academicyear.update",
-            "classroom.read", "classroom.create", "classroom.update",
-            "gradelevel.create", "gradelevel.read", "gradelevel.update",
-            "room.create", "room.read", "room.update",
-            "teacher.create", "teacher.read", "teacher.update",
-            "student.create", "student.read", "student.update",
-            "parent.create", "parent.read", "parent.update",
-            "enrollment.create", "schedule.create", "schedule.read",
-            "attendance.read", "attendance.record", "attendance.read.own", "attendance.read.child",
-            "grade.enter", "grade.read.own", "grade.read.child",
-            "assignment.create", "assignment.read",
-            "report.read",
-            "profile.read", "profileread",
-            "children.read", "childrenread",
-            "myclasses.read", "myclassesread",
-            "notification.read"
+            "school.create", "school.read", "school.update",
+            "school.manage", "platform.analytics", "subscription.manage"
         };
 
     public List<string> GetPermissionsForRole(string role) => role switch
@@ -76,10 +60,14 @@ public class PermissionProvider : IPermissionProvider
             "exam.create",
 
             "notification.send",
+            "notification.read",
             "educationstage.read",
             "educationstage.create",
             "educationstage.update",
             "educationstage.delete",
+
+            "profile.read",
+            "myclasses.read",
         },
 
         "Teacher" => new()
@@ -93,11 +81,25 @@ public class PermissionProvider : IPermissionProvider
 
             "classroom.read",
 
+            "academicyear.read",
+
+            "room.read",
+
+            "student.read",
+
             "schedule.read",
 
             "exam.record",
+            "exam.read",
+            "exam.create",
+            "exam.manage",
 
-            "myclasses.read"
+            "assignment.read",
+
+            "myclasses.read",
+
+            "profile.read",
+            "notification.read"
         },
 
         "Student" => new()
@@ -115,7 +117,11 @@ public class PermissionProvider : IPermissionProvider
 
             "reportcard.read.own",
 
-            "profile.read"
+            "profile.read",
+
+            "myclasses.read",
+            "exam.read",
+            "notification.read"
         },
 
         "Parent" => new()

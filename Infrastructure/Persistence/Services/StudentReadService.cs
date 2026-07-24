@@ -11,10 +11,12 @@ namespace Infrastructure.Persistence.Services;
 public class StudentReadService : IStudentReadService
 {
     private readonly ApplicationDbContext _db;
+    private readonly PlatformDbContext _platformDb;
 
-    public StudentReadService(ApplicationDbContext db)
+    public StudentReadService(ApplicationDbContext db, PlatformDbContext platformDb)
     {
         _db = db;
+        _platformDb = platformDb;
     }
 
     public async Task<PagedResult<StudentListDto>> GetStudentsAsync(
@@ -67,13 +69,40 @@ public class StudentReadService : IStudentReadService
             x.Student.StudentCode,
             x.Student.FirstName,
             x.Student.LastName,
+            null,
             x.Student.DateOfBirth,
             x.Enrollment?.Name,
             x.Enrollment?.Status.ToString()
         )).ToList();
 
+        var studentUserIds = students
+            .Where(s => itemsQuery.Any(x => x.Student.Id == s.Id && x.Student.ApplicationUserId != null))
+            .Select(s => s.Id)
+            .ToList();
+
+        var studentApplicationUserIds = await _db.Students
+            .AsNoTracking()
+            .Where(s => studentUserIds.Contains(s.Id) && s.ApplicationUserId != null)
+            .Select(s => new { s.Id, s.ApplicationUserId })
+            .ToListAsync(cancellationToken);
+
+        var userIdToStudentId = studentApplicationUserIds.ToDictionary(x => x.ApplicationUserId!.Value, x => x.Id);
+        var userIds = studentApplicationUserIds.Select(x => x.ApplicationUserId!.Value).ToList();
+        var emails = userIds.Count > 0
+            ? await _platformDb.Users
+                .Where(u => userIds.Contains(u.Id))
+                .Select(u => new { u.Id, u.Email })
+                .ToDictionaryAsync(u => u.Id, u => u.Email, cancellationToken)
+            : new Dictionary<Guid, string?>();
+
+        var finalStudents = students.Select(s => {
+            var appUserId = studentApplicationUserIds.FirstOrDefault(x => x.Id == s.Id)?.ApplicationUserId;
+            var email = appUserId.HasValue ? emails.GetValueOrDefault(appUserId.Value) : null;
+            return new StudentListDto(s.Id, s.StudentCode, s.FirstName, s.LastName, email, s.DateOfBirth, s.CurrentClass, s.EnrollmentStatus);
+        }).ToList();
+
         return new PagedResult<StudentListDto>(
-            students,
+            finalStudents,
             total,
             pagination.Page,
             pagination.PageSize);

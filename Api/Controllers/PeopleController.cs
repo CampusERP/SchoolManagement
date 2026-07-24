@@ -9,6 +9,8 @@ using Application.Features.People.Commands.UpdateTeacher;
 using Application.Features.People.Commands.UpdateParent;
 using Application.Features.People.Commands.StudentActivation;
 using Application.Features.People.Commands.TerminateTeacher;
+using Application.Features.People.Commands.DeleteTeacher;
+using Application.Features.People.Commands.DeleteStudent;
 using Microsoft.AspNetCore.Authorization;
 using Application.Features.People.Queries.GetStudents;
 using Application.Features.People.Queries.StudentDetails;
@@ -60,6 +62,12 @@ public class PeopleController : ApiControllerBase
         Guid enrollmentId, [FromQuery] Guid schoolId, CancellationToken ct) =>
         FromResult(await _mediator.Send(new WithdrawStudentCommand(schoolId, enrollmentId), ct));
 
+    [HttpDelete("students/{studentId:guid}")]
+    [Authorize(Policy = "Student.Update")]
+    public async Task<IActionResult> DeleteStudent(
+        Guid studentId, [FromQuery] Guid schoolId, CancellationToken ct) =>
+        FromResult(await _mediator.Send(new DeleteStudentCommand(schoolId, studentId), ct));
+
     // ── Teachers ──────────────────────────────────────────────────────
 
     [HttpPost("teachers")]
@@ -91,6 +99,12 @@ public class PeopleController : ApiControllerBase
     public async Task<IActionResult> TerminateTeacher(
         Guid teacherId, [FromQuery] Guid schoolId, CancellationToken ct) =>
         FromResult(await _mediator.Send(new TerminateTeacherCommand(schoolId, teacherId), ct));
+
+    [HttpDelete("teachers/{teacherId:guid}")]
+    [Authorize(Policy = "Teacher.Update")]
+    public async Task<IActionResult> DeleteTeacher(
+        Guid teacherId, [FromQuery] Guid schoolId, CancellationToken ct) =>
+        FromResult(await _mediator.Send(new DeleteTeacherCommand(schoolId, teacherId), ct));
 
     // ── Parents ───────────────────────────────────────────────────────
 

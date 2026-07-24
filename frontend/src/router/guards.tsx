@@ -16,9 +16,6 @@ export default function ProtectedRoute({ requiredRole }: ProtectedRouteProps) {
   }
 
   if (requiredRole && user.role !== requiredRole) {
-    if (user.role === "platform_admin") {
-      return <Outlet />;
-    }
     return <Navigate to={ROLE_HOME[user.role]} replace />;
   }
 
