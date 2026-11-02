@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { t } from "@/i18n";
 
 interface StatusBadgeProps {
   status: string;
@@ -6,19 +7,28 @@ interface StatusBadgeProps {
 }
 
 const STATUS_STYLES: Record<string, string> = {
-  Active: "bg-emerald-50 text-[var(--color-success)]",
-  Trial: "bg-emerald-50 text-[var(--color-success)]",
-  Healthy: "bg-emerald-50 text-[var(--color-success)]",
-  Expired: "bg-red-50 text-[var(--color-danger)]",
-  Inactive: "bg-red-50 text-[var(--color-danger)]",
-  Down: "bg-red-50 text-[var(--color-danger)]",
-  Pending: "bg-amber-50 text-[var(--color-warning)]",
-  Degraded: "bg-amber-50 text-[var(--color-warning)]",
+  Active: "bg-[var(--color-success-soft)] text-[var(--color-success)]",
+  Trial: "bg-[var(--color-success-soft)] text-[var(--color-success)]",
+  Healthy: "bg-[var(--color-success-soft)] text-[var(--color-success)]",
+  Paid: "bg-[var(--color-success-soft)] text-[var(--color-success)]",
+  Expired: "bg-[var(--color-danger-soft)] text-[var(--color-danger)]",
+  Inactive: "bg-[var(--color-danger-soft)] text-[var(--color-danger)]",
+  Suspended: "bg-[var(--color-danger-soft)] text-[var(--color-danger)]",
+  Overdue: "bg-[var(--color-danger-soft)] text-[var(--color-danger)]",
+  Cancelled: "bg-[var(--color-danger-soft)] text-[var(--color-danger)]",
+  Down: "bg-[var(--color-danger-soft)] text-[var(--color-danger)]",
+  Pending: "bg-[var(--color-warning-soft)] text-[var(--color-warning)]",
+  PendingPayment: "bg-[var(--color-warning-soft)] text-[var(--color-warning)]",
+  Issued: "bg-[var(--color-warning-soft)] text-[var(--color-warning)]",
+  Degraded: "bg-[var(--color-warning-soft)] text-[var(--color-warning)]",
+  Approved: "bg-[var(--color-success-soft)] text-[var(--color-success)]",
+  Rejected: "bg-[var(--color-danger-soft)] text-[var(--color-danger)]",
 };
 
 export default function StatusBadge({ status, className }: StatusBadgeProps) {
   const style =
-    STATUS_STYLES[status] ?? "bg-gray-50 text-[var(--color-text-secondary)]";
+    STATUS_STYLES[status] ??
+    "bg-[var(--color-neutral-soft)] text-[var(--color-text-secondary)]";
 
   return (
     <span
@@ -28,7 +38,7 @@ export default function StatusBadge({ status, className }: StatusBadgeProps) {
         className
       )}
     >
-      {status}
+      {t(status)}
     </span>
   );
 }

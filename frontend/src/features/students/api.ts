@@ -47,6 +47,9 @@ export const StudentsApi = {
   deleteStudent: (studentId: string, schoolId: string) =>
     api.delete(`/people/students/${studentId}`, { params: { schoolId } }).then((r) => r.data),
 
+  resetStudentPassword: (studentId: string, schoolId: string) =>
+    api.post(`/people/students/${studentId}/reset-password`, null, { params: { schoolId } }).then((r) => r.data),
+
   linkGuardian: (data: { studentId: string; parentId: string; relationshipType: string; isPrimaryContact: boolean; canViewGrades: boolean; canViewBilling: boolean; schoolId: string }) =>
     api.post(`/people/students/${data.studentId}/guardians`, data).then((r) => r.data),
 };

@@ -67,6 +67,13 @@ export const useDeleteStudent = () => {
   });
 };
 
+export const useResetStudentPassword = () => {
+  const schoolId = useAuthStore((s) => s.user?.schoolId);
+  return useMutation({
+    mutationFn: (studentId: string) => StudentsApi.resetStudentPassword(studentId, schoolId!),
+  });
+};
+
 export const useLinkStudentGuardian = () => {
   const queryClient = useQueryClient();
   const schoolId = useAuthStore((s) => s.user?.schoolId);

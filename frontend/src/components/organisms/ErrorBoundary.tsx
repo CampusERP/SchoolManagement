@@ -1,5 +1,6 @@
 import { Component, type ReactNode } from "react";
 import { AlertTriangle, RefreshCw } from "lucide-react";
+import { t } from "@/i18n";
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -39,10 +40,10 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
               </div>
             </div>
             <h2 className="text-xl font-semibold text-[var(--color-text-primary)]">
-              Something went wrong
+              {t("Something went wrong")}
             </h2>
             <p className="mt-2 text-sm text-[var(--color-text-secondary)]">
-              An unexpected error occurred. Please try again or contact support if the problem persists.
+              {t("An unexpected error occurred. Please try again or contact support if the problem persists.")}
             </p>
             {this.state.error && (
               <pre className="mt-4 max-h-32 overflow-auto rounded-lg bg-red-50 p-3 text-left text-xs text-red-700">
@@ -54,7 +55,7 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBo
               className="mt-6 inline-flex items-center gap-2 rounded-[var(--border-radius)] bg-[var(--color-primary)] px-4 py-2 text-sm font-medium text-white hover:bg-[var(--color-primary-hover)] transition-colors"
             >
               <RefreshCw className="h-4 w-4" />
-              Try Again
+              {t("Try Again")}
             </button>
           </div>
         </div>

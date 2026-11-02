@@ -20,6 +20,7 @@ using Application.Features.Academics.Commands.UpdateAcademicYear;
 using Application.Features.Academics.Commands.UpdateTerm;
 using Application.Features.Academics.Commands.DeleteTerm;
 using Application.Features.Academics.Commands.CloseAcademicYear;
+using Application.Features.Academics.Commands.DeleteAcademicYear;
 
 namespace Api.Controllers;
 
@@ -49,6 +50,12 @@ public class AcademicsController : ApiControllerBase
         Guid academicYearId,
         [FromBody] UpdateAcademicYearCommand command, CancellationToken ct) =>
         FromResult(await _mediator.Send(command with { AcademicYearId = academicYearId }, ct));
+
+    [HttpDelete("academic-years/{academicYearId:guid}")]
+    [Authorize(Policy = "AcademicYear.Update")]
+    public async Task<IActionResult> DeleteAcademicYear(
+        Guid academicYearId, [FromQuery] Guid schoolId, CancellationToken ct) =>
+        FromResult(await _mediator.Send(new DeleteAcademicYearCommand(schoolId, academicYearId), ct));
 
     [HttpPost("academic-years/{academicYearId:guid}/close")]
     [Authorize(Policy = "AcademicYear.Update")]

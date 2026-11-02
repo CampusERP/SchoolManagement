@@ -9,6 +9,7 @@ import StatusBadge from "@/components/molecules/StatusBadge";
 import Button from "@/components/atoms/Button";
 import Input from "@/components/atoms/Input";
 import type { School } from "@/types/dashboard.types";
+import { t } from "@/i18n";
 
 export default function SchoolsPage() {
   const [page, setPage] = useState(1);
@@ -20,7 +21,7 @@ export default function SchoolsPage() {
 
   const columns: TableProps<School>["columns"] = [
     {
-      title: "School Name",
+      title: t("School Name"),
       dataIndex: "name",
       key: "name",
       render: (name: string) => (
@@ -28,7 +29,7 @@ export default function SchoolsPage() {
       ),
     },
     {
-      title: "Subdomain",
+      title: t("Subdomain"),
       dataIndex: "subdomainCode",
       key: "subdomainCode",
       render: (code: string) => (
@@ -36,13 +37,13 @@ export default function SchoolsPage() {
       ),
     },
     {
-      title: "Status",
+      title: t("Status"),
       dataIndex: "status",
       key: "status",
       render: (status: string) => <StatusBadge status={status} />,
     },
     {
-      title: "Students",
+      title: t("Students"),
       dataIndex: "totalStudents",
       key: "totalStudents",
       align: "center",
@@ -51,7 +52,7 @@ export default function SchoolsPage() {
       ),
     },
     {
-      title: "Teachers",
+      title: t("Teachers"),
       dataIndex: "totalTeachers",
       key: "totalTeachers",
       align: "center",
@@ -60,23 +61,23 @@ export default function SchoolsPage() {
       ),
     },
     {
-      title: "Created",
+      title: t("Created"),
       dataIndex: "createdAt",
       key: "createdAt",
       render: (date: string) => dayjs(date).format("MMM D, YYYY"),
     },
     {
-      title: "Actions",
+      title: t("Actions"),
       key: "actions",
       align: "center",
       width: 120,
       render: (_: unknown, record: School) => (
         <div className="flex items-center justify-center gap-2">
           <Button variant="ghost" type="link" size="small" className="p-0" onClick={() => navigate(`/platform/schools/${record.id}`)}>
-            View
+            {t("View")}
           </Button>
           <Button variant="ghost" type="link" size="small" className="p-0" onClick={() => navigate(`/platform/schools/${record.id}/edit`)}>
-            Edit
+            {t("Edit")}
           </Button>
         </div>
       ),
@@ -85,21 +86,24 @@ export default function SchoolsPage() {
 
   return (
     <DashboardTemplate
-      title="Schools"
-      subtitle="Manage all schools in the platform"
+      title={t("Schools")}
+      subtitle={t("Manage all schools in the platform")}
       actions={
         <Button variant="primary" icon={<Plus className="h-4 w-4" />} onClick={() => navigate("/platform/schools/new")}>
-          Create School
+          {t("Create School")}
         </Button>
       }
     >
       <div className="mb-6 flex items-center gap-4">
         <Input
-          placeholder="Search schools..."
+          placeholder={t("Search schools...")}
           prefix={<Search className="h-4 w-4 text-[var(--color-text-muted)]" />}
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="max-w-md"
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
+          className="w-full sm:max-w-md"
           allowClear
         />
       </div>
@@ -109,13 +113,14 @@ export default function SchoolsPage() {
         dataSource={data?.items || []}
         rowKey="id"
         loading={isLoading}
+        scroll={{ x: "max-content" }}
         pagination={{
           current: page,
           pageSize,
           total: data?.totalCount || 0,
           onChange: setPage,
           showSizeChanger: false,
-          showTotal: (total) => `Total ${total} schools`,
+          showTotal: (total) => t("Total {count} schools", { count: total }),
         }}
       />
     </DashboardTemplate>

@@ -5,6 +5,7 @@ namespace Application.Common.Interfaces.Repositories;
 public interface ISubjectQueryRepository
 {
     Task<List<SubjectDto>> GetSubjectsAsync(
+        Guid schoolId,
         Guid? gradeLevelId,
         CancellationToken cancellationToken = default);
 }

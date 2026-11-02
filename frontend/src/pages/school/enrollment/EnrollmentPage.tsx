@@ -11,11 +11,13 @@ import { useStudents } from "@/features/students/hooks";
 import { useClassrooms, useAcademicYears } from "@/features/academics/hooks";
 import { useEnrollStudent } from "@/features/enrollment/hooks";
 import { useAuthStore } from "@/store/authStore";
+import { t } from "@/i18n";
+import { translateApiMessage } from "@/lib/errors";
 
 const schema = z.object({
-  studentId: z.string().min(1, "Student is required"),
-  academicYearId: z.string().min(1, "Academic year is required"),
-  classRoomId: z.string().min(1, "Classroom is required"),
+  studentId: z.string().min(1, t("Student is required")),
+  academicYearId: z.string().min(1, t("Academic year is required")),
+  classRoomId: z.string().min(1, t("Classroom is required")),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -45,15 +47,15 @@ export default function EnrollmentPage() {
   const onSubmit = async (values: FormData) => {
     try {
       await enrollStudent.mutateAsync({ schoolId, ...values });
-      toast.success("Student enrolled successfully");
+      toast.success(t("Student enrolled successfully"));
       navigate(`/people/students/${values.studentId}`);
     } catch (err: any) {
       const msg =
         err?.response?.data?.error ||
         err?.response?.data?.message ||
         err?.message ||
-        "Failed to enroll student";
-      toast.error(msg);
+        t("Failed to enroll student");
+      toast.error(translateApiMessage(msg));
     }
   };
 
@@ -65,10 +67,10 @@ export default function EnrollmentPage() {
   const classroomOptions = (classrooms ?? []).map((c) => ({ value: c.id, label: c.name }));
 
   return (
-    <DashboardTemplate title="Student Enrollment" subtitle="Enroll a student into a classroom">
-      <div className="mx-auto max-w-xl rounded-[var(--card-radius)] bg-[var(--color-surface-card)] p-8 shadow-[var(--shadow-card)]">
+    <DashboardTemplate title={t("Student Enrollment")} subtitle={t("Enroll a student into a classroom")}>
+      <div className="mx-auto max-w-xl rounded-[var(--card-radius)] bg-[var(--color-surface-card)] p-4 shadow-[var(--shadow-card)] sm:p-8">
         <Form layout="vertical" onFinish={handleSubmit(onSubmit)} requiredMark={false}>
-          <Form.Item label="Student" validateStatus={errors.studentId ? "error" : ""} help={errors.studentId?.message}>
+          <Form.Item label={t("Student")} validateStatus={errors.studentId ? "error" : ""} help={errors.studentId?.message}>
             <Controller
               name="studentId"
               control={control}
@@ -76,7 +78,7 @@ export default function EnrollmentPage() {
                 <Select
                   {...field}
                   showSearch
-                  placeholder="Search and select a student"
+                  placeholder={t("Search and select a student")}
                   filterOption={false}
                   onSearch={setStudentSearch}
                   options={studentOptions}
@@ -87,7 +89,7 @@ export default function EnrollmentPage() {
           </Form.Item>
 
           <Form.Item
-            label="Academic Year"
+            label={t("Academic Year")}
             validateStatus={errors.academicYearId ? "error" : ""}
             help={errors.academicYearId?.message}
           >
@@ -95,13 +97,13 @@ export default function EnrollmentPage() {
               name="academicYearId"
               control={control}
               render={({ field }) => (
-                <Select {...field} placeholder="Select academic year" options={yearOptions} size="large" />
+                <Select {...field} placeholder={t("Select academic year")} options={yearOptions} size="large" />
               )}
             />
           </Form.Item>
 
           <Form.Item
-            label="Classroom"
+            label={t("Classroom")}
             validateStatus={errors.classRoomId ? "error" : ""}
             help={errors.classRoomId?.message}
           >
@@ -111,11 +113,11 @@ export default function EnrollmentPage() {
               render={({ field }) => (
                 <Select
                   {...field}
-                  placeholder="Select classroom"
+                  placeholder={t("Select classroom")}
                   options={classroomOptions}
                   size="large"
                   disabled={!selectedYear}
-                  notFoundContent={selectedYear ? "No classrooms found" : "Select an academic year first"}
+                  notFoundContent={selectedYear ? t("No classrooms found") : t("Select an academic year first")}
                 />
               )}
             />
@@ -123,10 +125,10 @@ export default function EnrollmentPage() {
 
           <div className="mt-6 flex items-center justify-end gap-3">
             <Button variant="ghost" onClick={() => navigate("/school")}>
-              Cancel
+              {t("Cancel")}
             </Button>
             <Button variant="primary" htmlType="submit" loading={enrollStudent.isPending}>
-              Enroll
+              {t("Enroll")}
             </Button>
           </div>
         </Form>

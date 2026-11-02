@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { t } from "@/i18n";
 
 type SpinnerSize = "sm" | "md" | "lg";
 
@@ -17,7 +18,7 @@ export default function Spinner({ size = "md", className }: SpinnerProps) {
   return (
     <div
       role="status"
-      aria-label="Loading"
+      aria-label={t("Loading")}
       className={cn(
         "animate-spin rounded-full border-[var(--color-border)] border-t-[var(--color-primary)]",
         sizeStyles[size],

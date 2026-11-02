@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Application.Common.Interfaces.Services;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -14,11 +15,13 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
     where TRequest : notnull
 {
     private readonly ILogger<LoggingBehavior<TRequest, TResponse>> _logger;
+    private readonly IEmailNotifier _emailNotifier;
     private const int SlowRequestThresholdMs = 500;
 
-    public LoggingBehavior(ILogger<LoggingBehavior<TRequest, TResponse>> logger)
+    public LoggingBehavior(ILogger<LoggingBehavior<TRequest, TResponse>> logger, IEmailNotifier emailNotifier)
     {
         _logger = logger;
+        _emailNotifier = emailNotifier;
     }
 
     public async Task<TResponse> Handle(
@@ -33,6 +36,9 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
         {
             _logger.LogInformation("[START] {RequestName}", requestName);
             var response = await next();
+            // All transaction behaviors are inside this outer behavior, so email
+            // only leaves the process after command persistence succeeds.
+            await _emailNotifier.FlushAsync(cancellationToken);
             sw.Stop();
 
             if (sw.ElapsedMilliseconds > SlowRequestThresholdMs)

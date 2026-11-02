@@ -14,7 +14,7 @@ public class GetAllSchoolsQueryHandler
         GetAllSchoolsQuery request, CancellationToken ct)
     {
         var p = request.Pagination ?? new PaginationParams();
-        var result = await _schoolReadService.GetSchoolsAsync(p, ct);
+        var result = await _schoolReadService.GetSchoolsAsync(p, request.Search, ct);
         return Result.Success(result);
     }
 }

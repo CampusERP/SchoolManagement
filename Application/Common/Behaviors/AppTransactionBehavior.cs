@@ -32,6 +32,6 @@ public class AppTransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TRe
 }
 
 // Marker interfaces — every MediatR request used as a command implements one.
-public interface ICommand : IRequest<Models.Result> { }
-public interface ICommand<TResponse> : IRequest<Models.Result<TResponse>> { }
 public interface IBaseCommand { } // non-generic fallback
+public interface ICommand : IBaseCommand, IRequest<Models.Result> { }
+public interface ICommand<TResponse> : IBaseCommand, IRequest<Models.Result<TResponse>> { }

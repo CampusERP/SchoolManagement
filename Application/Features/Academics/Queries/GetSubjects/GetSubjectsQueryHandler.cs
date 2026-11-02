@@ -19,6 +19,7 @@ public class GetSubjectsQueryHandler
         CancellationToken cancellationToken)
     {
         var subjects = await _repository.GetSubjectsAsync(
+            request.SchoolId,
             request.GradeLevelId,
             cancellationToken);
 

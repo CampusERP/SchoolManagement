@@ -14,12 +14,17 @@ import {
   CalendarDays,
   ClipboardCheck,
   Link2,
+  CreditCard,
+  Library,
+  BookMarked,
 } from "lucide-react";
 import * as Separator from "@radix-ui/react-separator";
 import * as ScrollArea from "@radix-ui/react-scroll-area";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/authStore";
 import { useUiStore } from "@/store/uiStore";
+import Logo from "@/components/atoms/Logo";
+import { t } from "@/i18n";
 
 interface NavItem {
   label: string;
@@ -42,8 +47,10 @@ function getNavigationForRole(
       return [
         {
           items: [
-            { label: "Analytics", path: "/platform", icon: <LayoutDashboard className="h-5 w-5" /> },
-            { label: "Schools", path: "/platform/schools", icon: <Building2 className="h-5 w-5" /> },
+            { label: t("Analytics"), path: "/platform", icon: <LayoutDashboard className="h-5 w-5" /> },
+            { label: t("Schools"), path: "/platform/schools", icon: <Building2 className="h-5 w-5" /> },
+            { label: t("Billing"), path: "/platform/billing", icon: <CreditCard className="h-5 w-5" /> },
+            { label: t("Registration Requests"), path: "/platform/registration-requests", icon: <ClipboardList className="h-5 w-5" /> },
           ],
         },
       ];
@@ -51,36 +58,39 @@ function getNavigationForRole(
       return [
         {
           items: [
-            { label: "Dashboard", path: "/school", icon: <LayoutDashboard className="h-5 w-5" />, permission: "school.dashboard" },
+            { label: t("Dashboard"), path: "/school", icon: <LayoutDashboard className="h-5 w-5" />, permission: "school.dashboard" },
+            { label: t("Billing"), path: "/billing", icon: <CreditCard className="h-5 w-5" />, permission: "billing.read" },
           ],
         },
         {
-          label: "Academics",
+          label: t("Academics"),
           defaultOpen: true,
           items: [
-            { label: "Academic Years", path: "/academics/years", icon: <BookOpen className="h-5 w-5" />, permission: "academicyear.read" },
-            { label: "Classrooms", path: "/academics/classrooms", icon: <ClipboardList className="h-5 w-5" />, permission: "classroom.read" },
-            { label: "Grade Levels", path: "/academics/grade-levels", icon: <GraduationCap className="h-5 w-5" />, permission: "gradelevel.read" },
-            { label: "Education Stages", path: "/academics/education-stages", icon: <Layers className="h-5 w-5" />, permission: "educationstage.read" },
-            { label: "Rooms", path: "/academics/rooms", icon: <Building2 className="h-5 w-5" />, permission: "room.read" },
+            { label: t("Academic Years"), path: "/academics/years", icon: <BookOpen className="h-5 w-5" />, permission: "academicyear.read" },
+            { label: t("Classrooms"), path: "/academics/classrooms", icon: <ClipboardList className="h-5 w-5" />, permission: "classroom.read" },
+            { label: t("Grade Levels"), path: "/academics/grade-levels", icon: <GraduationCap className="h-5 w-5" />, permission: "gradelevel.read" },
+            { label: t("Education Stages"), path: "/academics/education-stages", icon: <Layers className="h-5 w-5" />, permission: "educationstage.read" },
+            { label: t("Rooms"), path: "/academics/rooms", icon: <Building2 className="h-5 w-5" />, permission: "room.read" },
+            { label: t("Subjects"), path: "/academics/subjects", icon: <Library className="h-5 w-5" />, permission: "academicyear.read" },
+            { label: t("Books"), path: "/academics/books", icon: <BookMarked className="h-5 w-5" />, permission: "academicyear.read" },
           ],
         },
         {
-          label: "People",
+          label: t("People"),
           defaultOpen: true,
           items: [
-            { label: "Students", path: "/people/students", icon: <Users className="h-5 w-5" />, permission: "student.read" },
-            { label: "Teachers", path: "/people/teachers", icon: <UserPlus className="h-5 w-5" />, permission: "teacher.read" },
-            { label: "Parents", path: "/people/parents", icon: <Users className="h-5 w-5" />, permission: "parent.read" },
-            { label: "Student Guardians", path: "/people/student-guardians", icon: <Link2 className="h-5 w-5" />, permission: "student.create" },
+            { label: t("Students"), path: "/people/students", icon: <Users className="h-5 w-5" />, permission: "student.read" },
+            { label: t("Teachers"), path: "/people/teachers", icon: <UserPlus className="h-5 w-5" />, permission: "teacher.read" },
+            { label: t("Parents"), path: "/people/parents", icon: <Users className="h-5 w-5" />, permission: "parent.read" },
+            { label: t("Student Guardians"), path: "/people/student-guardians", icon: <Link2 className="h-5 w-5" />, permission: "student.create" },
           ],
         },
         {
-          label: "Enrollment",
+          label: t("Enrollment"),
           defaultOpen: true,
           items: [
-            { label: "Enroll Student", path: "/enrollment", icon: <ClipboardList className="h-5 w-5" />, permission: "enrollment.create" },
-            { label: "Assign Teacher", path: "/enrollment/assign-teacher", icon: <UserPlus className="h-5 w-5" />, permission: "schedule.create" },
+            { label: t("Enroll Student"), path: "/enrollment", icon: <ClipboardList className="h-5 w-5" />, permission: "enrollment.create" },
+            { label: t("Assign Teacher"), path: "/enrollment/assign-teacher", icon: <UserPlus className="h-5 w-5" />, permission: "schedule.create" },
           ],
         },
       ];
@@ -88,11 +98,11 @@ function getNavigationForRole(
       return [
         {
           items: [
-            { label: "My Classes", path: "/teacher/classes", icon: <GraduationCap className="h-5 w-5" /> },
-            { label: "Take Attendance", path: "/teacher/attendance", icon: <ClipboardList className="h-5 w-5" /> },
-            { label: "Enter Grades", path: "/teacher/grades", icon: <PenLine className="h-5 w-5" /> },
-            { label: "Exams", path: "/teacher/exams", icon: <ClipboardCheck className="h-5 w-5" /> },
-            { label: "My Schedule", path: "/teacher/schedule", icon: <CalendarDays className="h-5 w-5" /> },
+            { label: t("My Classes"), path: "/teacher/classes", icon: <GraduationCap className="h-5 w-5" /> },
+            { label: t("Take Attendance"), path: "/teacher/attendance", icon: <ClipboardList className="h-5 w-5" /> },
+            { label: t("Enter Grades"), path: "/teacher/grades", icon: <PenLine className="h-5 w-5" /> },
+            { label: t("Exams"), path: "/teacher/exams", icon: <ClipboardCheck className="h-5 w-5" /> },
+            { label: t("My Schedule"), path: "/teacher/schedule", icon: <CalendarDays className="h-5 w-5" /> },
           ],
         },
       ];
@@ -101,7 +111,7 @@ function getNavigationForRole(
   }
 }
 
-function SidebarContent({ collapsed }: { collapsed: boolean }) {
+function SidebarContent({ collapsed, onNavigate }: { collapsed: boolean; onNavigate?: () => void }) {
   const location = useLocation();
   const user = useAuthStore((s) => s.user);
   const hasPermission = useAuthStore((s) => s.hasPermission);
@@ -123,10 +133,17 @@ function SidebarContent({ collapsed }: { collapsed: boolean }) {
   useEffect(() => {
     const initial: Record<number, boolean> = {};
     navigation.forEach((group, i) => {
-      initial[i] = group.defaultOpen ?? false;
+      const hasActiveItem = group.items.some(
+        (item) =>
+          item.path === "/"
+            ? location.pathname === "/"
+            : location.pathname === item.path ||
+              location.pathname.startsWith(item.path + "/")
+      );
+      initial[i] = hasActiveItem || (group.defaultOpen ?? false);
     });
     setOpenGroups(initial);
-  }, [user?.role]);
+  }, [user?.role, location.pathname]);
 
   const toggleGroup = (index: number) => {
     setOpenGroups((prev) => ({ ...prev, [index]: !prev[index] }));
@@ -135,12 +152,10 @@ function SidebarContent({ collapsed }: { collapsed: boolean }) {
   return (
     <div className="flex h-full flex-col">
       <div className="flex h-16 shrink-0 items-center gap-2 px-4">
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--color-primary)] text-white font-bold text-sm">
-          SM
-        </div>
+        <Logo className="h-8 w-8" />
         {!collapsed && (
           <span className="text-lg font-semibold text-[var(--color-text-primary)] whitespace-nowrap">
-            SchoolManager
+            {t("CampusERP")}
           </span>
         )}
       </div>
@@ -174,8 +189,11 @@ function SidebarContent({ collapsed }: { collapsed: boolean }) {
                 {(!group.label || collapsed || openGroups[groupIndex]) && (
                   <div className="space-y-0.5">
                     {group.items.map((item) => {
-                      const isActive =
-                        item.path === "/"
+                      // The platform dashboard is a leaf route; prefix matching it
+                      // would also highlight Analytics on Schools, Billing, etc.
+                      const isActive = item.path === "/platform"
+                        ? location.pathname === item.path
+                        : item.path === "/"
                           ? location.pathname === "/"
                           : location.pathname === item.path ||
                             location.pathname.startsWith(item.path + "/");
@@ -183,10 +201,12 @@ function SidebarContent({ collapsed }: { collapsed: boolean }) {
                         <Link
                           key={item.path}
                           to={item.path}
+                          onClick={onNavigate}
+                          aria-current={isActive ? "page" : undefined}
                           className={cn(
                             "flex items-center gap-3 rounded-[var(--border-radius)] px-3 py-2 text-sm font-medium transition-colors",
                             isActive
-                              ? "bg-[var(--color-primary-light)] text-[var(--color-primary)]"
+                              ? "bg-[var(--color-primary-light)] text-[var(--color-primary-soft-text)]"
                               : "text-[var(--color-text-secondary)] hover:bg-[var(--color-surface)] hover:text-[var(--color-text-primary)]",
                             collapsed && "justify-center px-0"
                           )}
@@ -234,7 +254,7 @@ export default function Sidebar() {
     <>
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-30 hidden bg-[var(--color-surface-card)] border-r border-[var(--color-border)] transition-[width] duration-200 md:block"
+          "fixed inset-y-0 start-0 z-30 hidden bg-[var(--color-surface-card)] border-e border-[var(--color-border)] transition-[width] duration-200 md:block"
         )}
         style={{ width: collapsed ? "var(--sidebar-collapsed-w)" : "var(--sidebar-width)" }}
       >
@@ -247,8 +267,8 @@ export default function Sidebar() {
             className="absolute inset-0 bg-black/50"
             onClick={() => setMobileSidebarOpen(false)}
           />
-          <aside className="absolute inset-y-0 left-0 w-[var(--sidebar-width)] bg-[var(--color-surface-card)] shadow-xl">
-            <SidebarContent collapsed={false} />
+          <aside className="absolute inset-y-0 start-0 bg-[var(--color-surface-card)] shadow-xl" style={{ width: "min(var(--sidebar-width), calc(100vw - 2rem))" }}>
+            <SidebarContent collapsed={false} onNavigate={() => setMobileSidebarOpen(false)} />
           </aside>
         </div>
       )}

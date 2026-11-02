@@ -16,19 +16,19 @@ import { useAuthStore } from "@/store/authStore";
 import { useStudents, useCreateStudent, useDeleteStudent } from "@/features/students/hooks";
 import ImportExportButtons from "@/components/importExport/ImportExportButtons";
 import type { StudentListDto } from "@/types/student.types";
+import { t } from "@/i18n";
 
 const schema = z
   .object({
-    studentCode: z.string().min(1, "Student code is required"),
-    firstName: z.string().min(1, "First name is required"),
-    lastName: z.string().min(1, "Last name is required"),
-    dateOfBirth: z.string().min(1, "Date of birth is required"),
+    firstName: z.string().min(1, t("First name is required")),
+    lastName: z.string().min(1, t("Last name is required")),
+    dateOfBirth: z.string().min(1, t("Date of birth is required")),
     nationalId: z.string().optional().or(z.literal("")),
-    email: z.string().email("Invalid email").optional().or(z.literal("")),
+    email: z.string().email(t("Invalid email")).optional().or(z.literal("")),
     password: z.string().optional().or(z.literal("")),
   })
   .refine((d) => !d.email || (d.password && d.password.length >= 6), {
-    message: "Password must be at least 6 characters when email is provided",
+    message: t("Password must be at least 6 characters when email is provided"),
     path: ["password"],
   });
 
@@ -55,7 +55,6 @@ export default function StudentsPage() {
   } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
-      studentCode: "",
       firstName: "",
       lastName: "",
       dateOfBirth: "",
@@ -67,7 +66,6 @@ export default function StudentsPage() {
 
   const openCreate = () => {
     reset({
-      studentCode: "",
       firstName: "",
       lastName: "",
       dateOfBirth: "",
@@ -82,7 +80,6 @@ export default function StudentsPage() {
     try {
       await createStudent.mutateAsync({
         schoolId,
-        studentCode: values.studentCode,
         firstName: values.firstName,
         lastName: values.lastName,
         dateOfBirth: values.dateOfBirth,
@@ -90,16 +87,16 @@ export default function StudentsPage() {
         email: values.email || undefined,
         password: values.password || undefined,
       });
-      toast.success("Student created");
+      toast.success(t("Student created"));
       setModalOpen(false);
     } catch {
-      toast.error("Failed to create student");
+      toast.error(t("Failed to create student"));
     }
   };
 
   const columns: TableProps<StudentListDto>["columns"] = [
     {
-      title: "Student Code",
+      title: t("Student Code"),
       dataIndex: "studentCode",
       key: "studentCode",
       render: (code: string) => (
@@ -107,7 +104,7 @@ export default function StudentsPage() {
       ),
     },
     {
-      title: "Name",
+      title: t("Name"),
       key: "name",
       render: (_, record) => (
         <span className="font-medium text-[var(--color-text-primary)]">
@@ -116,7 +113,7 @@ export default function StudentsPage() {
       ),
     },
     {
-      title: "Email",
+      title: t("Email"),
       dataIndex: "email",
       key: "email",
       render: (email: string) => (
@@ -126,13 +123,13 @@ export default function StudentsPage() {
       ),
     },
     {
-      title: "Date of Birth",
+      title: t("Date of Birth"),
       dataIndex: "dateOfBirth",
       key: "dateOfBirth",
       render: (d: string) => (d ? dayjs(d).format("MMM D, YYYY") : "—"),
     },
     {
-      title: "Has Login",
+      title: t("Has Login"),
       dataIndex: "hasLogin",
       key: "hasLogin",
       align: "center",
@@ -144,12 +141,12 @@ export default function StudentsPage() {
               : "inline-flex items-center rounded-full bg-gray-50 px-2.5 py-0.5 text-xs font-medium text-[var(--color-text-secondary)]"
           }
         >
-          {hasLogin ? "Yes" : "No"}
+          {hasLogin ? t("Yes") : t("No")}
         </span>
       ),
     },
     {
-      title: "Actions",
+      title: t("Actions"),
       key: "actions",
       align: "center",
       width: 140,
@@ -162,7 +159,7 @@ export default function StudentsPage() {
             className="p-0"
             onClick={() => navigate(`/people/students/${record.id}`)}
           >
-            View
+            {t("View")}
           </Button>
           <Button
             variant="ghost"
@@ -171,16 +168,16 @@ export default function StudentsPage() {
             className="p-0 text-[var(--color-danger)]"
             onClick={() => {
               Modal.confirm({
-                title: "Delete Student",
-                content: `Are you sure you want to delete ${record.firstName} ${record.lastName}?`,
-                okText: "Delete",
+                title: t("Delete Student"),
+                content: t("Are you sure you want to delete {name}?", { name: `${record.firstName} ${record.lastName}` }),
+                okText: t("Delete"),
                 okType: "danger",
                 onOk: async () => {
                   try {
                     await deleteStudent.mutateAsync(record.id);
-                    toast.success("Student deleted");
+                    toast.success(t("Student deleted"));
                   } catch {
-                    toast.error("Failed to delete student");
+                    toast.error(t("Failed to delete student"));
                   }
                 },
               });
@@ -195,8 +192,8 @@ export default function StudentsPage() {
 
   return (
     <DashboardTemplate
-      title="Students"
-      subtitle="Manage student records"
+      title={t("Students")}
+      subtitle={t("Manage student records")}
       actions={
         <>
           <ImportExportButtons
@@ -214,7 +211,7 @@ export default function StudentsPage() {
             ]}
           />
           <Button variant="primary" icon={<Plus className="h-4 w-4" />} onClick={openCreate}>
-            Add Student
+            {t("Add Student")}
           </Button>
         </>
       }
@@ -226,23 +223,23 @@ export default function StudentsPage() {
             setSearch(v);
             setPage(1);
           }}
-          placeholder="Search students..."
+          placeholder={t("Search students...")}
           className="max-w-md"
         />
       </div>
 
       {isError ? (
         <div className="flex items-center justify-center py-24">
-          <p className="text-[var(--color-text-secondary)]">Failed to load students.</p>
+          <p className="text-[var(--color-text-secondary)]">{t("Failed to load students.")}</p>
         </div>
       ) : !isLoading && (data?.items.length ?? 0) === 0 ? (
         <EmptyState
           icon={<Users className="h-6 w-6" />}
-          title="No students found"
-          description="Add your first student to get started."
+          title={t("No students found")}
+          description={t("Add your first student to get started.")}
           action={
             <Button variant="primary" icon={<Plus className="h-4 w-4" />} onClick={openCreate}>
-              Add Student
+              {t("Add Student")}
             </Button>
           }
         />
@@ -258,50 +255,43 @@ export default function StudentsPage() {
             total: data?.totalCount ?? 0,
             onChange: setPage,
             showSizeChanger: false,
-            showTotal: (total) => `Total ${total} students`,
+            showTotal: (total) => t("Total {count} students", { count: total }),
           }}
+          scroll={{ x: "max-content" }}
         />
       )}
 
-      <Modal title="Add Student" open={modalOpen} onCancel={() => setModalOpen(false)} footer={null} destroyOnHidden>
+      <Modal title={t("Add Student")} open={modalOpen} onCancel={() => setModalOpen(false)} footer={null} destroyOnHidden>
         <Form layout="vertical" onFinish={handleSubmit(onSubmit)} requiredMark={false}>
-          <Form.Item
-            label="Student Code"
-            validateStatus={errors.studentCode ? "error" : ""}
-            help={errors.studentCode?.message}
-          >
-            <Controller
-              name="studentCode"
-              control={control}
-              render={({ field }) => <Input {...field} placeholder="e.g. STU-001" />}
-            />
-          </Form.Item>
-          <div className="grid grid-cols-2 gap-4">
+          <p className="mb-3 text-xs text-[var(--color-text-muted)]">
+            {t("A unique student code starting with STU- will be generated automatically.")}
+          </p>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4">
             <Form.Item
-              label="First Name"
+              label={t("First Name")}
               validateStatus={errors.firstName ? "error" : ""}
               help={errors.firstName?.message}
             >
               <Controller
                 name="firstName"
                 control={control}
-                render={({ field }) => <Input {...field} placeholder="First name" />}
+                render={({ field }) => <Input {...field} placeholder={t("First name")} />}
               />
             </Form.Item>
             <Form.Item
-              label="Last Name"
+              label={t("Last Name")}
               validateStatus={errors.lastName ? "error" : ""}
               help={errors.lastName?.message}
             >
               <Controller
                 name="lastName"
                 control={control}
-                render={({ field }) => <Input {...field} placeholder="Last name" />}
+                render={({ field }) => <Input {...field} placeholder={t("Last name")} />}
               />
             </Form.Item>
           </div>
           <Form.Item
-            label="Date of Birth"
+            label={t("Date of Birth")}
             validateStatus={errors.dateOfBirth ? "error" : ""}
             help={errors.dateOfBirth?.message}
           >
@@ -312,45 +302,45 @@ export default function StudentsPage() {
                 <DatePicker
                   className="w-full"
                   value={field.value ? dayjs(field.value) : null}
-                  onChange={(d) => field.onChange(d ? d.toISOString() : "")}
+                  onChange={(d) => field.onChange(d ? d.format("YYYY-MM-DD") : "")}
                 />
               )}
             />
           </Form.Item>
           <Form.Item
-            label="National ID"
+            label={t("National ID")}
             validateStatus={errors.nationalId ? "error" : ""}
             help={errors.nationalId?.message}
           >
             <Controller
               name="nationalId"
               control={control}
-              render={({ field }) => <Input {...field} placeholder="e.g. 1234567890" />}
+              render={({ field }) => <Input {...field} placeholder={t("e.g. 1234567890")} />}
             />
           </Form.Item>
           <p className="mb-3 text-xs text-[var(--color-text-muted)]">
-            Optionally create a login account for this student.
+            {t("Optionally create a login account for this student.")}
           </p>
-          <Form.Item label="Email" validateStatus={errors.email ? "error" : ""} help={errors.email?.message}>
+          <Form.Item label={t("Email")} validateStatus={errors.email ? "error" : ""} help={errors.email?.message}>
             <Controller
               name="email"
               control={control}
-              render={({ field }) => <Input {...field} placeholder="student@school.com" />}
+              render={({ field }) => <Input {...field} placeholder={t("student@school.com")} />}
             />
           </Form.Item>
-          <Form.Item label="Password" validateStatus={errors.password ? "error" : ""} help={errors.password?.message}>
+          <Form.Item label={t("Password")} validateStatus={errors.password ? "error" : ""} help={errors.password?.message}>
             <Controller
               name="password"
               control={control}
-              render={({ field }) => <InputPassword {...field} placeholder="Temporary password" />}
+              render={({ field }) => <InputPassword {...field} placeholder={t("Temporary password")} />}
             />
           </Form.Item>
           <div className="mt-4 flex items-center justify-end gap-3">
             <Button variant="ghost" onClick={() => setModalOpen(false)}>
-              Cancel
+              {t("Cancel")}
             </Button>
             <Button variant="primary" htmlType="submit" loading={createStudent.isPending}>
-              Create
+              {t("Create")}
             </Button>
           </div>
         </Form>

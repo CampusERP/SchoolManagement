@@ -20,11 +20,11 @@ export default function StatCard({
   return (
     <div
       className={cn(
-        "flex items-center gap-4 bg-[var(--color-surface-card)] rounded-[var(--card-radius)] shadow-[var(--shadow-card)] p-6",
+        "flex items-center gap-2 rounded-[var(--card-radius)] bg-[var(--color-surface-card)] p-3 shadow-[var(--shadow-card)] sm:gap-4 sm:p-6",
         className
       )}
     >
-      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[var(--color-primary-light)] text-[var(--color-primary)]">
+      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--color-primary-light)] text-[var(--color-primary-soft-text)] sm:h-12 sm:w-12">
         {icon}
       </div>
 
@@ -32,7 +32,7 @@ export default function StatCard({
         <p className="truncate text-sm font-medium text-[var(--color-text-secondary)]">
           {title}
         </p>
-        <p className="mt-0.5 text-2xl font-semibold text-[var(--color-text-primary)]">
+        <p className="mt-0.5 text-xl font-semibold text-[var(--color-text-primary)] sm:text-2xl">
           {value}
         </p>
       </div>
@@ -42,8 +42,8 @@ export default function StatCard({
           className={cn(
             "inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium",
             trend.isPositive
-              ? "bg-emerald-50 text-[var(--color-success)]"
-              : "bg-red-50 text-[var(--color-danger)]"
+              ? "bg-[var(--color-success-soft)] text-[var(--color-success)]"
+              : "bg-[var(--color-danger-soft)] text-[var(--color-danger)]"
           )}
         >
           {trend.isPositive ? (

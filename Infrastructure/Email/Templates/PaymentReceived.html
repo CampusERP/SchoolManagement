@@ -1,0 +1,19 @@
+<!-- subject: Payment received for {{SchoolName}} -->
+<h1 style="margin:0 0 16px;font-size:22px;color:#111827;">Payment received</h1>
+<p style="margin:0 0 12px;">Hi {{ContactName}},</p>
+<p style="margin:0 0 16px;">
+  We have recorded your payment for <strong>{{SchoolName}}</strong>. Thank you!
+</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 20px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;">
+  <tr>
+    <td style="padding:16px;">
+      <p style="margin:0 0 8px;"><strong>Amount:</strong> {{Amount}}</p>
+      <p style="margin:0 0 8px;"><strong>Method:</strong> {{Method}}</p>
+      <p style="margin:0 0 8px;"><strong>Reference:</strong> {{Reference}}</p>
+      <p style="margin:0 0 8px;"><strong>Invoice:</strong> {{InvoiceNumber}}</p>
+      <p style="margin:0;"><strong>Remaining balance:</strong> {{BalanceDue}}</p>
+    </td>
+  </tr>
+</table>
+<p style="margin:0 0 12px;">{{StatusMessage}}</p>
+<p style="margin:0;color:#6b7280;">You can review your invoices and subscription any time from the billing page.</p>

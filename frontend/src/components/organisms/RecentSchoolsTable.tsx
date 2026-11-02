@@ -5,6 +5,7 @@ import { Eye } from "lucide-react";
 import StatusBadge from "@/components/molecules/StatusBadge";
 import SearchInput from "@/components/molecules/SearchInput";
 import type { School } from "@/types/dashboard.types";
+import { t } from "@/i18n";
 
 interface RecentSchoolsTableProps {
   data: School[];
@@ -26,7 +27,7 @@ export default function RecentSchoolsTable({
 
   const columns: TableProps<School>["columns"] = [
     {
-      title: "School",
+      title: t("School"),
       dataIndex: "name",
       key: "name",
       render: (name: string) => (
@@ -34,36 +35,36 @@ export default function RecentSchoolsTable({
       ),
     },
     {
-      title: "Subdomain",
+      title: t("Subdomain"),
       dataIndex: "subdomainCode",
       key: "subdomainCode",
     },
     {
-      title: "Students",
+      title: t("Students"),
       dataIndex: "totalStudents",
       key: "totalStudents",
       align: "center",
     },
     {
-      title: "Teachers",
+      title: t("Teachers"),
       dataIndex: "totalTeachers",
       key: "totalTeachers",
       align: "center",
     },
     {
-      title: "Status",
+      title: t("Status"),
       dataIndex: "status",
       key: "status",
       render: (status: string) => <StatusBadge status={status} />,
     },
     {
-      title: "Created",
+      title: t("Created"),
       dataIndex: "createdAt",
       key: "createdAt",
       render: (date: string) => dayjs(date).format("MMM D, YYYY"),
     },
     {
-      title: "Actions",
+      title: t("Actions"),
       key: "actions",
       align: "center",
       width: 60,
@@ -78,13 +79,14 @@ export default function RecentSchoolsTable({
   return (
     <div className="space-y-4">
       {onSearch && (
-        <SearchInput placeholder="Search schools..." value={searchValue} onChange={handleSearchChange} />
+        <SearchInput placeholder={t("Search schools...")} value={searchValue} onChange={handleSearchChange} />
       )}
       <Table<School>
         columns={columns}
         dataSource={data}
         rowKey="id"
         loading={loading}
+        scroll={{ x: "max-content" }}
         pagination={{ pageSize: 10, showSizeChanger: false }}
       />
     </div>

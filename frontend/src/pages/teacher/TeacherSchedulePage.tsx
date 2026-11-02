@@ -5,6 +5,7 @@ import { useTeacherDashboard } from "@/features/dashboard/hooks";
 import { useTeacherSchedule } from "@/features/teacher/hooks";
 import type { ScheduleSlot } from "@/features/teacher/api";
 import { cn } from "@/lib/utils";
+import { t } from "@/i18n";
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const DAY_COLORS = [
@@ -22,7 +23,7 @@ function formatTime(ts: string) {
   const parts = ts.split(":");
   const h = parseInt(parts[0] ?? "0", 10);
   const m = parts[1] ?? "00";
-  const ampm = h >= 12 ? "PM" : "AM";
+  const ampm = h >= 12 ? t("PM") : t("AM");
   const h12 = h % 12 || 12;
   return `${h12}:${m} ${ampm}`;
 }
@@ -48,14 +49,14 @@ export default function TeacherSchedulePage() {
 
   return (
     <DashboardTemplate
-      title="My Schedule"
-      subtitle="Your weekly class timetable"
+      title={t("My Schedule")}
+      subtitle={t("Your weekly class timetable")}
       loading={dashLoading || slotsLoading}
     >
       {!hasSchedule && !slotsLoading ? (
         <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-card)] p-8 text-center">
           <p className="text-sm text-[var(--color-text-secondary)]">
-            No schedule data available. Contact your administrator to set up your class timetable.
+            {t("No schedule data available. Contact your administrator to set up your class timetable.")}
           </p>
         </div>
       ) : (
@@ -72,7 +73,7 @@ export default function TeacherSchedulePage() {
                 </div>
                 <div className="p-3 space-y-2">
                   {daySlots.length === 0 ? (
-                    <p className="py-4 text-center text-xs text-[var(--color-text-muted)]">No classes</p>
+                    <p className="py-4 text-center text-xs text-[var(--color-text-muted)]">{t("No classes")}</p>
                   ) : (
                     daySlots.map((slot, i) => (
                       <div

@@ -16,17 +16,20 @@ public class RegisterSchoolAdminCommandHandler
     private readonly ISchoolRepository _schools;
     private readonly IUserSchoolMembershipRepository _memberships;
     private readonly IOutboxService _outbox;
+    private readonly IEmailNotifier _emailNotifier;
 
     public RegisterSchoolAdminCommandHandler(
         IIdentityService identity,
         ISchoolRepository schools,
         IUserSchoolMembershipRepository memberships,
-        IOutboxService outbox)
+        IOutboxService outbox,
+        IEmailNotifier emailNotifier)
     {
         _identity = identity;
         _schools = schools;
         _memberships = memberships;
         _outbox = outbox;
+        _emailNotifier = emailNotifier;
     }
 
     public async Task<Result<Guid>> Handle(
@@ -54,6 +57,20 @@ public class RegisterSchoolAdminCommandHandler
 
             _outbox.Publish(new CreateSchoolAdminProfileMessage(
                 userId, request.SchoolId, request.FirstName, request.LastName));
+
+            await _emailNotifier.SendAsync(
+                userId,
+                EmailTemplate.Welcome,
+                new Dictionary<string, string?>
+                {
+                    ["Name"] = $"{request.FirstName} {request.LastName}".Trim(),
+                    ["Role"] = "School Administrator",
+                    ["SchoolName"] = school.Name,
+                    ["Email"] = request.Email,
+                    ["Password"] = request.Password,
+                    ["LoginUrl"] = $"{_emailNotifier.AppBaseUrl}/auth/login"
+                },
+                ct);
 
             return Result.Success(userId);
         }

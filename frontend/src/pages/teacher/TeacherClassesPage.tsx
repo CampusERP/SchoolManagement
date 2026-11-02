@@ -6,6 +6,7 @@ import { useAuthStore } from "@/store/authStore";
 import { useTeacherDashboard } from "@/features/dashboard/hooks";
 import { useTeacherRoster } from "@/features/teacher/hooks";
 import type { RosterStudent } from "@/features/teacher/api";
+import { t } from "@/i18n";
 
 export default function TeacherClassesPage() {
   const { data: dashboard, isLoading: dashLoading } = useTeacherDashboard();
@@ -18,14 +19,14 @@ export default function TeacherClassesPage() {
     return (
       <DashboardTemplate
         title={selectedClassName}
-        subtitle="Student roster"
+        subtitle={t("Student roster")}
         loading={rosterLoading}
         actions={
           <button
             onClick={() => setSelectedClassRoomId(null)}
             className="flex items-center gap-2 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm text-[var(--color-text-secondary)] hover:bg-[var(--color-surface)]"
           >
-            <ArrowLeft className="h-4 w-4" /> Back to classes
+            <ArrowLeft className="h-4 w-4" /> {t("Back to classes")}
           </button>
         }
       >
@@ -42,16 +43,16 @@ export default function TeacherClassesPage() {
     gradeLevel: string;
   }>["columns"] = [
     {
-      title: "Class Name",
+      title: t("Class Name"),
       dataIndex: "name",
       key: "name",
       render: (name: string) => (
         <span className="font-medium text-[var(--color-text-primary)]">{name}</span>
       ),
     },
-    { title: "Subject", dataIndex: "subject", key: "subject" },
-    { title: "Grade Level", dataIndex: "gradeLevel", key: "gradeLevel" },
-    { title: "Students", dataIndex: "studentCount", key: "studentCount", align: "center" },
+    { title: t("Subject"), dataIndex: "subject", key: "subject" },
+    { title: t("Grade Level"), dataIndex: "gradeLevel", key: "gradeLevel" },
+    { title: t("Students"), dataIndex: "studentCount", key: "studentCount", align: "center" },
     {
       title: "",
       key: "action",
@@ -64,7 +65,7 @@ export default function TeacherClassesPage() {
           }}
           className="rounded-lg bg-[var(--color-primary)] px-3 py-1.5 text-xs font-medium text-white hover:opacity-90"
         >
-          View roster
+          {t("View roster")}
         </button>
       ),
     },
@@ -79,7 +80,7 @@ export default function TeacherClassesPage() {
   }));
 
   return (
-    <DashboardTemplate title="My Classes" subtitle="Classes you teach and their student rosters" loading={dashLoading}>
+    <DashboardTemplate title={t("My Classes")} subtitle={t("Classes you teach and their student rosters")} loading={dashLoading}>
       <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-card)] p-1">
         <Table
           columns={classColumns}
@@ -95,7 +96,7 @@ export default function TeacherClassesPage() {
 function RosterTable({ data }: { data: RosterStudent[] }) {
   const columns: TableProps<RosterStudent>["columns"] = [
     {
-      title: "Student Code",
+      title: t("Student Code"),
       dataIndex: "studentCode",
       key: "studentCode",
       render: (code: string) => (
@@ -103,7 +104,7 @@ function RosterTable({ data }: { data: RosterStudent[] }) {
       ),
     },
     {
-      title: "First Name",
+      title: t("First Name"),
       dataIndex: "firstName",
       key: "firstName",
       render: (name: string) => (
@@ -111,7 +112,7 @@ function RosterTable({ data }: { data: RosterStudent[] }) {
       ),
     },
     {
-      title: "Last Name",
+      title: t("Last Name"),
       dataIndex: "lastName",
       key: "lastName",
       render: (name: string) => (
@@ -119,7 +120,7 @@ function RosterTable({ data }: { data: RosterStudent[] }) {
       ),
     },
     {
-      title: "Status",
+      title: t("Status"),
       dataIndex: "enrollmentStatus",
       key: "status",
       render: (status: string) => (
@@ -130,7 +131,7 @@ function RosterTable({ data }: { data: RosterStudent[] }) {
               : "bg-gray-100 text-gray-600"
           }`}
         >
-          {status}
+          {t(status)}
         </span>
       ),
     },
@@ -141,7 +142,7 @@ function RosterTable({ data }: { data: RosterStudent[] }) {
       {data.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <Users className="mb-3 h-8 w-8 text-[var(--color-text-muted)]" />
-          <p className="text-sm text-[var(--color-text-secondary)]">No students enrolled in this class.</p>
+          <p className="text-sm text-[var(--color-text-secondary)]">{t("No students enrolled in this class.")}</p>
         </div>
       ) : (
         <Table<RosterStudent>

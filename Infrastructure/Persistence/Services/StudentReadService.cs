@@ -31,12 +31,21 @@ public class StudentReadService : IStudentReadService
 
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
-            searchTerm = searchTerm.Trim().ToLower();
+            var terms = searchTerm
+                .Trim()
+                .ToLower()
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Distinct()
+                .Take(5)
+                .ToArray();
 
-            query = query.Where(s =>
-                s.FirstName.ToLower().Contains(searchTerm) ||
-                s.LastName.ToLower().Contains(searchTerm) ||
-                s.StudentCode.ToLower().Contains(searchTerm));
+            foreach (var term in terms)
+            {
+                query = query.Where(s =>
+                    s.FirstName.ToLower().Contains(term) ||
+                    s.LastName.ToLower().Contains(term) ||
+                    s.StudentCode.ToLower().Contains(term));
+            }
         }
 
         if (gradeLevelId.HasValue || classRoomId.HasValue)

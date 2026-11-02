@@ -17,6 +17,7 @@ import {
 } from "@/features/teacher/hooks";
 import type { ExamListItem, ExamScheduleItem } from "@/features/teacher/api";
 import { useTeacherRoster } from "@/features/teacher/hooks";
+import { t } from "@/i18n";
 
 export default function TeacherExamsPage() {
   const schoolId = useAuthStore((s) => s.user?.schoolId) ?? "";
@@ -70,11 +71,11 @@ export default function TeacherExamsPage() {
         name: values.name,
         maxScore: values.maxScore,
       });
-      message.success("Exam created");
+      message.success(t("Exam created"));
       setCreateOpen(false);
       createForm.resetFields();
     } catch {
-      message.error("Failed to create exam");
+      message.error(t("Failed to create exam"));
     }
   };
 
@@ -88,45 +89,45 @@ export default function TeacherExamsPage() {
         roomId: values.roomId,
         examDate: values.examDate.format("YYYY-MM-DDT00:00:00"),
       });
-      message.success("Exam schedule added");
+      message.success(t("Exam schedule added"));
       setScheduleOpen(false);
       scheduleForm.resetFields();
     } catch {
-      message.error("Failed to add schedule");
+      message.error(t("Failed to add schedule"));
     }
   };
 
   const columns: TableProps<ExamListItem>["columns"] = [
     {
-      title: "Exam Name",
+      title: t("Exam Name"),
       dataIndex: "name",
       key: "name",
       render: (name: string) => <span className="font-medium text-[var(--color-text-primary)]">{name}</span>,
     },
-    { title: "Subject", dataIndex: "subjectName", key: "subjectName" },
+    { title: t("Subject"), dataIndex: "subjectName", key: "subjectName" },
     {
-      title: "Max Score",
+      title: t("Max Score"),
       dataIndex: "maxScore",
       key: "maxScore",
       align: "center",
       render: (v: number) => <span className="font-medium">{v}</span>,
     },
     {
-      title: "Schedules",
+      title: t("Schedules"),
       dataIndex: "scheduleCount",
       key: "scheduleCount",
       align: "center",
       render: (v: number) => <Tag color={v > 0 ? "green" : "default"}>{v}</Tag>,
     },
     {
-      title: "Status",
+      title: t("Status"),
       dataIndex: "isLocked",
       key: "isLocked",
       render: (locked: boolean) =>
         locked ? (
-          <Tag icon={<Lock className="h-3 w-3" />} color="default">Locked</Tag>
+          <Tag icon={<Lock className="h-3 w-3" />} color="default">{t("Locked")}</Tag>
         ) : (
-          <Tag color="processing">Open</Tag>
+          <Tag color="processing">{t("Open")}</Tag>
         ),
     },
     {
@@ -145,20 +146,20 @@ export default function TeacherExamsPage() {
                 }}
                 className="rounded-lg border border-[var(--color-border)] px-2.5 py-1 text-xs text-[var(--color-text-secondary)] hover:bg-[var(--color-surface)]"
               >
-                Add schedule
+                {t("Add schedule")}
               </button>
               <button
                 onClick={async () => {
                   try {
                     await lockExam.mutateAsync({ examId: record.id, schoolId });
-                    message.success("Exam locked");
+                    message.success(t("Exam locked"));
                   } catch {
-                    message.error("Failed to lock exam. Make sure results are recorded.");
+                    message.error(t("Failed to lock exam. Make sure results are recorded."));
                   }
                 }}
                 className="rounded-lg border border-red-200 text-red-600 px-2.5 py-1 text-xs hover:bg-red-50"
               >
-                Lock
+                {t("Lock")}
               </button>
             </>
           )}
@@ -172,8 +173,8 @@ export default function TeacherExamsPage() {
 
   return (
     <DashboardTemplate
-      title="Exams"
-      subtitle="Create and manage exams for your classes"
+      title={t("Exams")}
+      subtitle={t("Create and manage exams for your classes")}
       loading={dashLoading}
       actions={
         <Button
@@ -182,7 +183,7 @@ export default function TeacherExamsPage() {
           onClick={() => setCreateOpen(true)}
           disabled={!termId}
         >
-          Create Exam
+          {t("Create Exam")}
         </Button>
       }
     >
@@ -197,19 +198,19 @@ export default function TeacherExamsPage() {
       </div>
 
       <Modal
-        title="Create Exam"
+        title={t("Create Exam")}
         open={createOpen}
         onOk={handleCreateExam}
         onCancel={() => setCreateOpen(false)}
         confirmLoading={createExam.isPending}
-        okText="Create"
+        okText={t("Create")}
       >
         <Form form={createForm} layout="vertical">
-          <Form.Item name="name" label="Exam Name" rules={[{ required: true, message: "Required" }]}>
-            <Input placeholder="e.g., Midterm Examination" />
+          <Form.Item name="name" label={t("Exam Name")} rules={[{ required: true, message: t("Required") }]}>
+            <Input placeholder={t("e.g., Midterm Examination")} />
           </Form.Item>
-          <Form.Item name="subjectId" label="Subject" rules={[{ required: true, message: "Required" }]}>
-            <Select placeholder="Select subject" showSearch optionFilterProp="label">
+          <Form.Item name="subjectId" label={t("Subject")} rules={[{ required: true, message: t("Required") }]}>
+            <Select placeholder={t("Select subject")} showSearch optionFilterProp="label">
               {filteredSubjects.map((s) => (
                 <Select.Option key={s.id} value={s.id} label={s.name}>
                   {s.name} ({s.code})
@@ -217,23 +218,23 @@ export default function TeacherExamsPage() {
               ))}
             </Select>
           </Form.Item>
-          <Form.Item name="maxScore" label="Max Score" rules={[{ required: true, message: "Required" }]}>
+          <Form.Item name="maxScore" label={t("Max Score")} rules={[{ required: true, message: t("Required") }]}>
             <InputNumber min={1} max={1000} className="w-full" placeholder="100" />
           </Form.Item>
         </Form>
       </Modal>
 
       <Modal
-        title={`Add Schedule — ${selectedExamName}`}
+        title={t("Add Schedule — {exam}", { exam: selectedExamName })}
         open={scheduleOpen}
         onOk={handleAddSchedule}
         onCancel={() => setScheduleOpen(false)}
         confirmLoading={addSchedule.isPending}
-        okText="Add"
+        okText={t("Add")}
       >
         <Form form={scheduleForm} layout="vertical">
-          <Form.Item name="classRoomId" label="Classroom" rules={[{ required: true, message: "Required" }]}>
-            <Select placeholder="Select classroom">
+          <Form.Item name="classRoomId" label={t("Classroom")} rules={[{ required: true, message: t("Required") }]}>
+            <Select placeholder={t("Select classroom")}>
               {filteredClassesForSchedule.map((c) => (
                 <Select.Option key={c.classRoomId} value={c.classRoomId}>
                   {c.name} ({c.subject})
@@ -241,16 +242,16 @@ export default function TeacherExamsPage() {
               ))}
             </Select>
           </Form.Item>
-          <Form.Item name="roomId" label="Room" rules={[{ required: true, message: "Required" }]}>
-            <Select placeholder="Select room" showSearch optionFilterProp="label">
+          <Form.Item name="roomId" label={t("Room")} rules={[{ required: true, message: t("Required") }]}>
+            <Select placeholder={t("Select room")} showSearch optionFilterProp="label">
               {(rooms ?? []).map((r) => (
                 <Select.Option key={r.id} value={r.id} label={r.name}>
-                  {r.name} (cap: {r.capacity})
+                  {r.name} {t("(cap:")} {r.capacity})
                 </Select.Option>
               ))}
             </Select>
           </Form.Item>
-          <Form.Item name="examDate" label="Exam Date" rules={[{ required: true, message: "Required" }]}>
+          <Form.Item name="examDate" label={t("Exam Date")} rules={[{ required: true, message: t("Required") }]}>
             <DatePicker className="w-full" />
           </Form.Item>
         </Form>
@@ -277,7 +278,7 @@ function ExamResultsButton({
         onClick={() => setOpen(true)}
         className="rounded-lg bg-[var(--color-primary)] px-2.5 py-1 text-xs font-medium text-white hover:opacity-90"
       >
-        Results
+        {t("Results")}
       </button>
       <ExamResultsModal
         examId={examId}
@@ -343,7 +344,7 @@ function ExamResultsModal({
 
   const handleSave = async () => {
     if (!resolvedScheduleId) {
-      message.warning("No exam schedule found for this classroom. Add a schedule first.");
+      message.warning(t("No exam schedule found for this classroom. Add a schedule first."));
       return;
     }
     const results = (rosterData?.items ?? [])
@@ -354,7 +355,7 @@ function ExamResultsModal({
       }));
 
     if (results.length === 0) {
-      message.warning("No scores to save");
+      message.warning(t("No scores to save"));
       return;
     }
 
@@ -365,30 +366,30 @@ function ExamResultsModal({
         examScheduleId: resolvedScheduleId,
         results,
       });
-      message.success("Results recorded");
+      message.success(t("Results recorded"));
       onClose();
       setScores({});
     } catch {
-      message.error("Failed to record results");
+      message.error(t("Failed to record results"));
     }
   };
 
   return (
     <Modal
-      title={`${examName} — Results`}
+      title={t("{exam} — Results", { exam: examName })}
       open={open}
       onOk={handleSave}
       onCancel={onClose}
       confirmLoading={recordResults.isPending}
-      okText="Save Results"
+      okText={t("Save Results")}
       width={700}
     >
       <div className="space-y-4">
         <div>
-          <label className="mb-1 block text-sm font-medium">Select classroom</label>
+          <label className="mb-1 block text-sm font-medium">{t("Select classroom")}</label>
           <Select
             className="w-full"
-            placeholder="Choose a class..."
+            placeholder={t("Choose a class...")}
             value={selectedClassRoomId}
             onChange={(val) => {
               setSelectedClassRoomId(val);
@@ -403,7 +404,7 @@ function ExamResultsModal({
           </Select>
           {selectedClassRoomId && !resolvedScheduleId && (
             <p className="mt-1 text-xs text-amber-600">
-              No exam schedule exists for this classroom. Go back and add one first.
+              {t("No exam schedule exists for this classroom. Go back and add one first.")}
             </p>
           )}
         </div>
@@ -413,15 +414,15 @@ function ExamResultsModal({
             <table className="w-full text-sm">
               <thead className="sticky top-0 bg-[var(--color-surface-card)]">
                 <tr>
-                  <th className="border-b p-2 text-left">Student</th>
-                  <th className="border-b p-2 text-right">Score</th>
+                  <th className="border-b p-2 text-start">{t("Student")}</th>
+                  <th className="border-b p-2 text-end">{t("Score")}</th>
                 </tr>
               </thead>
               <tbody>
                 {rosterData.items.map((s) => (
                   <tr key={s.enrollmentId}>
                     <td className="border-b p-2">{s.firstName} {s.lastName}</td>
-                    <td className="border-b p-2 text-right">
+                    <td className="border-b p-2 text-end">
                       <InputNumber
                         size="small"
                         min={0}

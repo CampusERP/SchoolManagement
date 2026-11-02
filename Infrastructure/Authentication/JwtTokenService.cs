@@ -1,3 +1,4 @@
+using Application.Common.Constants;
 using Application.Common.Interfaces;
 using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Services;
@@ -69,6 +70,10 @@ public class JwtTokenService : IJwtTokenService
         if (user is null)
             throw new UnauthorizedAccessException("User no longer exists.");
 
+        // A refresh token must not outlive a suspension: refuse to mint new
+        // access tokens for a school the platform administrator has blocked.
+        await EnsureSchoolIsActiveAsync(existing.SchoolId, ct);
+
         var (role, permissionList) = await ResolveRoleAndPermissionsAsync(user, ct);
 
         var (newAccessToken, expiry) = GenerateAccessToken(
@@ -103,6 +108,8 @@ public class JwtTokenService : IJwtTokenService
         if (membership is null || !membership.IsActive)
             throw new UnauthorizedAccessException("No active membership in the requested school.");
 
+        await EnsureSchoolIsActiveAsync(requestedSchoolId, ct);
+
         var (role, permissionList) = await ResolveRoleAndPermissionsAsync(user, ct);
 
         var (newAccessToken, expiry) = GenerateAccessToken(
@@ -118,6 +125,18 @@ public class JwtTokenService : IJwtTokenService
         await _platformDb.SaveChangesAsync(ct);
 
         return new TokenResult(newAccessToken, newRefreshTokenValue, expiry);
+    }
+
+    private async Task EnsureSchoolIsActiveAsync(Guid? schoolId, CancellationToken ct)
+    {
+        if (!schoolId.HasValue)
+            return;
+
+        var school = await _platformDb.Schools.AsNoTracking()
+            .FirstOrDefaultAsync(s => s.Id == schoolId.Value, ct);
+
+        if (school is null || !school.IsActive)
+            throw new UnauthorizedAccessException(SchoolAccessMessages.Suspended);
     }
 
     private async Task<(string role, List<string> permissions)> ResolveRoleAndPermissionsAsync(

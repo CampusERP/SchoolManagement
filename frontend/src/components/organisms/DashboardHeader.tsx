@@ -15,9 +15,9 @@ export default function DashboardHeader({
   className,
 }: DashboardHeaderProps) {
   return (
-    <div className={cn("flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between", className)}>
-      <div>
-        <h1 className="text-2xl font-semibold text-[var(--color-text-primary)]">
+    <div className={cn("flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4", className)}>
+      <div className="min-w-0">
+        <h1 className="text-xl font-semibold text-[var(--color-text-primary)] sm:text-2xl">
           {title}
         </h1>
         {subtitle && (
@@ -26,7 +26,7 @@ export default function DashboardHeader({
           </p>
         )}
       </div>
-      {actions && <div className="mt-3 flex items-center gap-2 sm:mt-0">{actions}</div>}
+      {actions && <div className="flex w-full flex-wrap items-center gap-2 sm:mt-0 sm:w-auto">{actions}</div>}
     </div>
   );
 }

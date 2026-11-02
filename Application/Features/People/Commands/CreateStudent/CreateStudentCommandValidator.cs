@@ -7,7 +7,7 @@ public class CreateStudentCommandValidator : AbstractValidator<CreateStudentComm
     public CreateStudentCommandValidator()
     {
         RuleFor(x => x.SchoolId).NotEmpty();
-        RuleFor(x => x.StudentCode).NotEmpty().MaximumLength(50);
+        RuleFor(x => x.StudentCode).MaximumLength(50);
         RuleFor(x => x.FirstName).NotEmpty().MaximumLength(100);
         RuleFor(x => x.LastName).NotEmpty().MaximumLength(100);
         RuleFor(x => x.DateOfBirth).NotEmpty().LessThan(DateTime.Today)

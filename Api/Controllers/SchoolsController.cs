@@ -1,6 +1,8 @@
 using Application.Features.Schools.Commands.CreateSchool;
 using Application.Features.Schools.Commands.UpdateSchool;
 using Application.Features.Schools.Commands.AddCampus;
+using Application.Features.Schools.Commands.UpdateCampus;
+using Application.Features.Schools.Commands.DeleteCampus;
 using Application.Features.Schools.Commands.SchoolActivation;
 using Application.Features.Schools.Queries.GetAllSchools;
 using Application.Features.Schools.Queries.GetPlatformAnalytics;
@@ -25,9 +27,12 @@ public class SchoolsController : ApiControllerBase
     public async Task<IActionResult> GetAllSchools(
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20,
+        [FromQuery] string? search = null,
         CancellationToken ct = default) =>
         FromResult(await _mediator.Send(
-            new GetAllSchoolsQuery(new Application.Common.Models.PaginationParams(page, pageSize)), ct));
+            new GetAllSchoolsQuery(
+                new Application.Common.Models.PaginationParams(page, pageSize),
+                search), ct));
 
     [HttpGet("analytics")]
     [Authorize(Policy = "Platform.Analytics")]
@@ -66,13 +71,28 @@ public class SchoolsController : ApiControllerBase
         Guid schoolId, [FromBody] AddCampusCommand command, CancellationToken ct) =>
         Created(await _mediator.Send(command with { SchoolId = schoolId }, ct));
 
-    [HttpPost("{schoolId:guid}/suspend")]
+    [HttpPut("{schoolId:guid}/campuses/{campusId:guid}")]
     [Authorize(Policy = "School.Update")]
+    public async Task<IActionResult> UpdateCampus(
+        Guid schoolId, Guid campusId, [FromBody] UpdateCampusCommand command, CancellationToken ct) =>
+        FromResult(await _mediator.Send(command with { SchoolId = schoolId, CampusId = campusId }, ct));
+
+    [HttpDelete("{schoolId:guid}/campuses/{campusId:guid}")]
+    [Authorize(Policy = "School.Update")]
+    public async Task<IActionResult> DeleteCampus(
+        Guid schoolId, Guid campusId, CancellationToken ct) =>
+        FromResult(await _mediator.Send(new DeleteCampusCommand(schoolId, campusId), ct));
+
+    // Suspending a school locks out every account that belongs to it. Only a
+    // platform administrator may do that, so this deliberately uses
+    // School.Manage instead of School.Update (which school admins also have).
+    [HttpPost("{schoolId:guid}/suspend")]
+    [Authorize(Policy = "School.Manage")]
     public async Task<IActionResult> SuspendSchool(Guid schoolId, CancellationToken ct) =>
         FromResult(await _mediator.Send(new SuspendSchoolCommand(schoolId), ct));
 
     [HttpPost("{schoolId:guid}/reactivate")]
-    [Authorize(Policy = "School.Update")]
+    [Authorize(Policy = "School.Manage")]
     public async Task<IActionResult> ReactivateSchool(Guid schoolId, CancellationToken ct) =>
         FromResult(await _mediator.Send(new ReactivateSchoolCommand(schoolId), ct));
 }

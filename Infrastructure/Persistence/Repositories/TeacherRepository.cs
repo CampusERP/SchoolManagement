@@ -32,9 +32,9 @@ public class TeacherRepository : ITeacherRepository
     public async Task AddAsync(Teacher teacher, CancellationToken ct = default) =>
         await _context.Teachers.AddAsync(teacher, ct);
 
-    public async Task RemoveAsync(Teacher teacher, CancellationToken ct = default)
+    public Task RemoveAsync(Teacher teacher, CancellationToken ct = default)
     {
-        teacher.IsDeleted = true;
-        teacher.DeletedAtUtc = DateTime.UtcNow;
+        _context.Teachers.Remove(teacher);
+        return Task.CompletedTask;
     }
 }

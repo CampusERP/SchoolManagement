@@ -11,10 +11,13 @@ import { AuthApi } from "@/features/auth/api";
 import { ROLE_HOME } from "@/lib/constants";
 import Button from "@/components/atoms/Button";
 import { Input, InputPassword } from "@/components/atoms/Input";
+import Logo from "@/components/atoms/Logo";
+import { t } from "@/i18n";
+import { translateApiMessage } from "@/lib/errors";
 
 const loginSchema = z.object({
-  email: z.string().min(1, "Email is required").email("Invalid email address"),
-  password: z.string().min(1, "Password is required"),
+  email: z.string().min(1, t("Email is required")).email(t("Invalid email address")),
+  password: z.string().min(1, t("Password is required")),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -38,15 +41,15 @@ export default function LoginPage() {
       const response = await AuthApi.login(data);
       setAuth(response);
       const role = useAuthStore.getState().user?.role;
-      toast.success("Welcome back!");
+      toast.success(t("Welcome back!"));
       navigate(role ? ROLE_HOME[role] : "/auth/login");
     } catch (err: unknown) {
       const message =
         err && typeof err === "object" && "response" in err
           ? ((err as { response?: { data?: { error?: string; message?: string } } }).response?.data?.error ||
              (err as { response?: { data?: { message?: string } } }).response?.data?.message)
-          : err instanceof Error ? err.message : "Login failed. Please try again.";
-      toast.error(message);
+          : err instanceof Error ? err.message : t("Login failed. Please try again.");
+      toast.error(translateApiMessage(message ?? t("Login failed. Please try again.")));
     } finally {
       setLoading(false);
     }
@@ -55,20 +58,18 @@ export default function LoginPage() {
   return (
     <div className="rounded-2xl bg-[var(--color-surface-card)] p-8 shadow-[var(--shadow-elevated)]">
       <div className="mb-8 text-center">
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--color-primary-light)] text-[var(--color-primary)] font-bold text-lg md:hidden">
-          SM
-        </div>
+        <Logo className="mx-auto mb-4 h-12 w-12 md:hidden" />
         <h2 className="text-2xl font-semibold text-[var(--color-text-primary)]">
-          Welcome back
+          {t("Welcome back")}
         </h2>
         <p className="mt-1 text-sm text-[var(--color-text-secondary)]">
-          Sign in to your account
+          {t("Sign in to your account")}
         </p>
       </div>
 
       <Form layout="vertical" onFinish={handleSubmit(onSubmit)} requiredMark={false}>
         <Form.Item
-          label="Email"
+          label={t("Email")}
           validateStatus={errors.email ? "error" : ""}
           help={errors.email?.message}
         >
@@ -79,7 +80,7 @@ export default function LoginPage() {
               <Input
                 {...field}
                 prefix={<Mail className="h-4 w-4 text-[var(--color-text-muted)]" />}
-                placeholder="you@example.com"
+                placeholder={t("you@example.com")}
                 size="large"
               />
             )}
@@ -87,7 +88,7 @@ export default function LoginPage() {
         </Form.Item>
 
         <Form.Item
-          label="Password"
+          label={t("Password")}
           validateStatus={errors.password ? "error" : ""}
           help={errors.password?.message}
         >
@@ -98,7 +99,7 @@ export default function LoginPage() {
               <InputPassword
                 {...field}
                 prefix={<Lock className="h-4 w-4 text-[var(--color-text-muted)]" />}
-                placeholder="Enter your password"
+                placeholder={t("Enter your password")}
                 size="large"
               />
             )}
@@ -113,7 +114,7 @@ export default function LoginPage() {
             loading={loading}
             block
           >
-            Sign In
+            {t("Sign In")}
           </Button>
         </Form.Item>
       </Form>

@@ -73,6 +73,11 @@ public static class DataSeeder
             await platformDb.Database.MigrateAsync();
             await appDb.Database.MigrateAsync();
 
+            // The plan catalogue is configuration, not demo data, so it is always
+            // ensured. Without it the public pricing page and registration flow
+            // would have nothing to offer on a fresh production database.
+            await SeedSubscriptionPlansAsync(platformDb, logger);
+
             // Demo data must be explicitly requested.  Running this on every startup
             // can recreate records that were intentionally removed or modified by a
             // user, and the demo data has relationships that only make sense together.
@@ -86,7 +91,6 @@ public static class DataSeeder
 
             await SeedRolesAsync(roleManager, logger);
             await SeedEducationStagesAsync(appDb, logger);
-            await SeedSubscriptionPlansAsync(platformDb, logger);
             await SeedSubjectsAsync(appDb, logger);
 
             foreach (var school in Schools)
@@ -152,16 +156,151 @@ public static class DataSeeder
 
     private static async Task SeedSubscriptionPlansAsync(PlatformDbContext db, ILogger logger)
     {
-        if (await db.SubscriptionPlans.AnyAsync()) return;
-        db.SubscriptionPlans.AddRange(
-            SubscriptionPlan.Create("Free", 0, 100, 10,
-                parentPortal: false, examModule: false, analytics: false),
-            SubscriptionPlan.Create("Standard", 49, 500, 50,
-                parentPortal: true, examModule: true, analytics: false),
-            SubscriptionPlan.Create("Premium", 99, 2000, 200,
-                parentPortal: true, examModule: true, analytics: true));
-        await db.SaveChangesAsync();
-        logger.LogInformation("Seeded subscription plans.");
+        var defaults = new[]
+        {
+            new
+            {
+                Name = "Free",
+                PriceMonthly = 0m,
+                MaxStudents = 100,
+                MaxTeachers = 10,
+                HasParentPortal = false,
+                HasExamModule = false,
+                HasAnalytics = false,
+                DescriptionEn = "Get started with core student, teacher, and classroom management.",
+                DescriptionAr = "ابدأ بإدارة الطلاب والمعلمين والفصول الدراسية الأساسية.",
+                Benefits = new[]
+                {
+                    (DescriptionEn: (string?)"Core student and teacher management",
+                        DescriptionAr: (string?)"إدارة أساسية للطلاب والمعلمين"),
+                    (DescriptionEn: (string?)"Classroom and attendance tools",
+                        DescriptionAr: (string?)"أدوات الفصول الدراسية والحضور"),
+                    (DescriptionEn: (string?)"Essential reports for your school",
+                        DescriptionAr: (string?)"تقارير أساسية لمدرستك"),
+                },
+            },
+            new
+            {
+                Name = "Standard",
+                PriceMonthly = 49m,
+                MaxStudents = 500,
+                MaxTeachers = 50,
+                HasParentPortal = true,
+                HasExamModule = true,
+                HasAnalytics = false,
+                DescriptionEn = "Everything in Free plus the parent portal and exam module.",
+                DescriptionAr = "كل ما في الباقة المجانية مع بوابة أولياء الأمور ووحدة الاختبارات.",
+                Benefits = new[]
+                {
+                    (DescriptionEn: (string?)"Everything in the Free plan",
+                        DescriptionAr: (string?)"كل ما في الباقة المجانية"),
+                    (DescriptionEn: (string?)"Parent portal access",
+                        DescriptionAr: (string?)"الوصول إلى بوابة أولياء الأمور"),
+                    (DescriptionEn: (string?)"Exam scheduling and results",
+                        DescriptionAr: (string?)"جدولة الاختبارات والنتائج"),
+                },
+            },
+            new
+            {
+                Name = "Premium",
+                PriceMonthly = 99m,
+                MaxStudents = 2000,
+                MaxTeachers = 200,
+                HasParentPortal = true,
+                HasExamModule = true,
+                HasAnalytics = true,
+                DescriptionEn = "Full platform access with advanced analytics and higher limits.",
+                DescriptionAr = "وصول كامل إلى المنصة مع تحليلات متقدمة وحدود أعلى.",
+                Benefits = new[]
+                {
+                    (DescriptionEn: (string?)"Everything in the Standard plan",
+                        DescriptionAr: (string?)"كل ما في الباقة القياسية"),
+                    (DescriptionEn: (string?)"Advanced analytics and insights",
+                        DescriptionAr: (string?)"تحليلات ورؤى متقدمة"),
+                    (DescriptionEn: (string?)"Priority support",
+                        DescriptionAr: (string?)"دعم ذو أولوية"),
+                },
+            },
+        };
+
+        if (!await db.SubscriptionPlans.AnyAsync())
+        {
+            var plans = defaults.Select(defaultPlan =>
+            {
+                var plan = SubscriptionPlan.Create(
+                    defaultPlan.Name, defaultPlan.PriceMonthly,
+                    defaultPlan.MaxStudents, defaultPlan.MaxTeachers,
+                    defaultPlan.HasParentPortal, defaultPlan.HasExamModule,
+                    defaultPlan.HasAnalytics, defaultPlan.DescriptionEn,
+                    defaultPlan.DescriptionAr);
+
+                plan.ReplaceBenefits(defaultPlan.Benefits);
+                return plan;
+            });
+
+            db.SubscriptionPlans.AddRange(plans);
+            await db.SaveChangesAsync();
+            logger.LogInformation("Seeded subscription plans.");
+            return;
+        }
+
+        // Older databases were seeded before plans had localized descriptions and
+        // benefits. Fill only missing values so platform edits are never overwritten.
+        // Update plan scalars with ExecuteUpdate so a stale tracked entity cannot
+        // turn a harmless catalogue backfill into a startup concurrency failure.
+        var existing = await db.SubscriptionPlans
+            .AsNoTracking()
+            .Include(plan => plan.Benefits)
+            .ToListAsync();
+
+        var addedBenefits = 0;
+        var updatedPlans = 0;
+        foreach (var plan in existing)
+        {
+            var fallback = defaults.FirstOrDefault(d =>
+                string.Equals(d.Name, plan.Name, StringComparison.OrdinalIgnoreCase));
+            if (fallback is null)
+                continue;
+
+            var descriptionsChanged =
+                string.IsNullOrWhiteSpace(plan.DescriptionEn) ||
+                string.IsNullOrWhiteSpace(plan.DescriptionAr);
+            if (descriptionsChanged)
+            {
+                var matchedRows = await db.SubscriptionPlans
+                    .Where(current => current.Id == plan.Id)
+                    .ExecuteUpdateAsync(setters => setters
+                        .SetProperty(current => current.DescriptionEn,
+                            current => current.DescriptionEn == null || current.DescriptionEn.Trim() == ""
+                                ? fallback.DescriptionEn
+                                : current.DescriptionEn)
+                        .SetProperty(current => current.DescriptionAr,
+                            current => current.DescriptionAr == null || current.DescriptionAr.Trim() == ""
+                                ? fallback.DescriptionAr
+                                : current.DescriptionAr));
+
+                if (matchedRows > 0)
+                    updatedPlans++;
+            }
+
+            if (plan.Benefits.Count == 0 &&
+                await db.SubscriptionPlans.AnyAsync(current => current.Id == plan.Id) &&
+                !await db.Set<SubscriptionPlanBenefit>()
+                    .AnyAsync(benefit => benefit.SubscriptionPlanId == plan.Id))
+            {
+                plan.ReplaceBenefits(fallback.Benefits);
+                db.Set<SubscriptionPlanBenefit>().AddRange(plan.Benefits);
+                addedBenefits += fallback.Benefits.Length;
+            }
+        }
+
+        if (db.ChangeTracker.HasChanges())
+            await db.SaveChangesAsync();
+
+        if (updatedPlans > 0 || addedBenefits > 0)
+            logger.LogInformation(
+                "Backfilled subscription plan catalogue: {PlanCount} plans and {BenefitCount} benefits.",
+                updatedPlans, addedBenefits);
     }
 
     // ── Per-school seeding ──────────────────────────────────────────────
@@ -802,6 +941,7 @@ public static class DataSeeder
             .FirstOrDefaultAsync(s => s.SchoolId == schoolId && s.ApplicationUserId != null);
         var parent = await db.Parents.IgnoreQueryFilters()
             .FirstOrDefaultAsync(p => p.SchoolId == schoolId);
+        if (parent is null) return;
 
         var batch = NotificationBatch.Create(schoolId, null, teacher.ApplicationUserId,
             "Welcome to the portal", "Your timetable, attendance, assignments, and grades are ready to view.",

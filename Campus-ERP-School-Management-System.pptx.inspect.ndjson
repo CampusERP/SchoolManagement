@@ -1,0 +1,417 @@
+{"kind":"deck","id":"pr/p9fzvb","name":"Deck"}
+{"kind":"layout","layoutId":"c6153b82-63cc-4235-9e60-e5679d03bf2d","name":"Master","type":"master"}
+{"kind":"layout","layoutId":"68c908ff-de5a-4a29-9856-43e72eea58c0","name":"Title Slide","type":"title"}
+{"kind":"slide","id":"sl/vbj6g0","slide":1,"title":"SOFTWARE ENGINEERING PROJECT","textShapes":11}
+{"kind":"textbox","id":"sh/bqxov2x8","slide":1,"text":"SOFTWARE ENGINEERING PROJECT","textPreview":"SOFTWARE ENGINEERING PROJECT","textChars":28,"textLines":1,"bbox":[72,58,260,32]}
+{"kind":"textbox","id":"sh/cr6p47yt","slide":1,"text":"Campus ERP - School\nManagement System","textPreview":"Campus ERP - School | Management System","textChars":37,"textLines":2,"bbox":[72,118,650,140]}
+{"kind":"textbox","id":"sh/dsz6xsfe","slide":1,"text":"A Multi-Tenant SaaS Platform for Complete School Management","textPreview":"A Multi-Tenant SaaS Platform for Complete School Management","textChars":59,"textLines":1,"bbox":[76,276,560,70]}
+{"kind":"textbox","id":"sh/yt876xgz","slide":1,"text":"Logo placeholder","textPreview":"Logo placeholder","textChars":16,"textLines":1,"bbox":[74,392,250,72]}
+{"kind":"textbox","id":"sh/zuhoz2x4","slide":1,"text":"Team / project information","textPreview":"Team / project information","textChars":26,"textLines":1,"bbox":[94,478,340,28]}
+{"kind":"shape","id":"sh/0vqp87yp","slide":1,"bbox":[690,90,500,405]}
+{"kind":"shape","id":"sh/lwz61cfa","slide":1,"bbox":[690,90,500,38]}
+{"kind":"shape","id":"sh/mx87ahgv","slide":1,"bbox":[706,103,10,10]}
+{"kind":"shape","id":"sh/nyho3mxg","slide":1,"bbox":[724,103,10,10]}
+{"kind":"shape","id":"sh/rip0vm94","slide":1,"bbox":[742,103,10,10]}
+{"kind":"textbox","id":"sh/6hgzmh8j","slide":1,"text":"Modern school dashboard","textPreview":"Modern school dashboard","textChars":23,"textLines":1,"bbox":[710,142,460,28]}
+{"kind":"shape","id":"sh/tkrixwru","slide":1,"bbox":[712,188,456,30]}
+{"kind":"textbox","id":"sh/sjyhorq9","slide":1,"text":"Students by grade","textPreview":"Students by grade","textChars":17,"textLines":1,"bbox":[726,194,428,22]}
+{"kind":"shape","id":"sh/jep0r29s","slide":1,"bbox":[712,233,456,30]}
+{"kind":"textbox","id":"sh/idgzix87","slide":1,"text":"Attendance today","textPreview":"Attendance today","textChars":16,"textLines":1,"bbox":[726,239,428,22]}
+{"kind":"shape","id":"sh/5g7itcry","slide":1,"bbox":[712,278,456,30]}
+{"kind":"textbox","id":"sh/4fyhk7qd","slide":1,"text":"Upcoming exams","textPreview":"Upcoming exams","textChars":14,"textLines":1,"bbox":[726,284,428,22]}
+{"kind":"shape","id":"sh/3a90n69c","slide":1,"bbox":[712,323,456,30]}
+{"kind":"textbox","id":"sh/290ju18r","slide":1,"text":"Billing status","textPreview":"Billing status","textChars":14,"textLines":1,"bbox":[726,329,428,22]}
+{"kind":"textbox","id":"sh/yhob2pwv","slide":1,"text":"Demo: campuserpt.vercel.app","textPreview":"Demo: campuserpt.vercel.app","textChars":27,"textLines":1,"bbox":[735,540,370,54]}
+{"kind":"notes","id":"nt/vbj6g0","slide":1,"text":"Open by positioning Campus ERP as both a product and an engineering project.\nThe key promise: one SaaS platform can serve many schools while keeping each school isolated and manageable.\n\n[Sources]\n- User-provided presentation brief in pasted-text.txt.\n- Project demo URL provided by user: https://campuserpt.vercel.app/.\n- Local repository analysis: README.md and docs/project-understanding-report.md."}
+{"kind":"slide","id":"sl/9yhx2o","slide":2,"title":"PROBLEM","textShapes":16}
+{"kind":"textbox","id":"sh/p8zyd4v2","slide":2,"text":"PROBLEM","textPreview":"PROBLEM","textChars":7,"textLines":1,"bbox":[70,45,360,26]}
+{"kind":"textbox","id":"sh/2l8f2pcr","slide":2,"text":"Schools need one source of truth","textPreview":"Schools need one source of truth","textChars":32,"textLines":1,"bbox":[70,82,930,52]}
+{"kind":"textbox","id":"sh/nmhgbudc","slide":2,"text":"Traditional processes create duplicated work, delayed decisions, and poor communication.","textPreview":"Traditional processes create duplicated work, delayed decisions, and poor communication.","textChars":88,"textLines":1,"bbox":[72,138,790,58]}
+{"kind":"shape","id":"sh/0jqx0ful","slide":2,"bbox":[85,230,430,280]}
+{"kind":"shape","id":"sh/1kzy9kv6","slide":2,"bbox":[765,230,430,280]}
+{"kind":"textbox","id":"sh/ehofypwf","slide":2,"text":"Traditional workflow","textPreview":"Traditional workflow","textChars":20,"textLines":1,"bbox":[115,250,300,32]}
+{"kind":"shape","id":"sh/fixg7ad0","slide":2,"bbox":[120,318,10,10]}
+{"kind":"textbox","id":"sh/kfahcjup","slide":2,"text":"Paper records","textPreview":"Paper records","textChars":13,"textLines":1,"bbox":[142,310,320,34]}
+{"kind":"shape","id":"sh/lgjylova","slide":2,"bbox":[120,360,10,10]}
+{"kind":"textbox","id":"sh/tw7qdcba","slide":2,"text":"Separated departments","textPreview":"Separated departments","textChars":21,"textLines":1,"bbox":[142,352,320,34]}
+{"kind":"shape","id":"sh/svy9k7ap","slide":2,"bbox":[120,402,10,10]}
+{"kind":"textbox","id":"sh/7u58b2t4","slide":2,"text":"Slow reporting","textPreview":"Slow reporting","textChars":14,"textLines":1,"bbox":[142,394,320,34]}
+{"kind":"shape","id":"sh/6twrihsz","slide":2,"bbox":[120,444,10,10]}
+{"kind":"textbox","id":"sh/5snq9cbe","slide":2,"text":"Hard to scale","textPreview":"Hard to scale","textChars":13,"textLines":1,"bbox":[142,436,320,34]}
+{"kind":"textbox","id":"sh/kre9g7ut","slide":2,"text":"Digital ERP platform","textPreview":"Digital ERP platform","textChars":20,"textLines":1,"bbox":[795,250,330,32]}
+{"kind":"shape","id":"sh/jq5872t8","slide":2,"bbox":[800,318,10,10]}
+{"kind":"textbox","id":"sh/ipwrexcn","slide":2,"text":"Shared data model","textPreview":"Shared data model","textChars":17,"textLines":1,"bbox":[822,310,330,34]}
+{"kind":"shape","id":"sh/poralwbi","slide":2,"bbox":[800,360,10,10]}
+{"kind":"textbox","id":"sh/4ni9srax","slide":2,"text":"Role-based access","textPreview":"Role-based access","textChars":17,"textLines":1,"bbox":[822,352,330,34]}
+{"kind":"shape","id":"sh/o3q14zml","slide":2,"bbox":[800,402,10,10]}
+{"kind":"textbox","id":"sh/94j2d4nq","slide":2,"text":"Live academic operations","textPreview":"Live academic operations","textChars":24,"textLines":1,"bbox":[822,394,330,34]}
+{"kind":"shape","id":"sh/m18j2p4f","slide":2,"bbox":[800,444,10,10]}
+{"kind":"textbox","id":"sh/n2hkbu50","slide":2,"text":"Multi-school scale","textPreview":"Multi-school scale","textChars":18,"textLines":1,"bbox":[822,436,330,34]}
+{"kind":"textbox","id":"sh/0fq10zm9","slide":2,"text":"Transform","textPreview":"Transform","textChars":9,"textLines":1,"bbox":[560,340,160,70]}
+{"kind":"textbox","id":"sh/1gz294nu","slide":2,"text":"Campus ERP","textPreview":"Campus ERP","textChars":10,"textLines":1,"bbox":[70,675,160,24]}
+{"kind":"textbox","id":"sh/ed8jyp43","slide":2,"text":"02","textPreview":"02","textChars":2,"textLines":1,"bbox":[1170,675,40,24]}
+{"kind":"notes","id":"nt/9yhx2o","slide":2,"text":"Frame the pain clearly: school data exists, but it is often fragmented across manual records, spreadsheets, and disconnected tools.\nThe product argument is that operations become faster and more scalable when school workflows share one secure platform.\n\n[Sources]\n- User-provided presentation brief in pasted-text.txt."}
+{"kind":"slide","id":"sl/i7vr59","slide":3,"title":"OVERVIEW","textShapes":16}
+{"kind":"textbox","id":"sh/svu9wrid","slide":3,"text":"OVERVIEW","textPreview":"OVERVIEW","textChars":8,"textLines":1,"bbox":[70,45,360,26]}
+{"kind":"textbox","id":"sh/7ulsnm1s","slide":3,"text":"Campus ERP unifies the school operating model","textPreview":"Campus ERP unifies the school operating model","textChars":45,"textLines":1,"bbox":[70,82,930,52]}
+{"kind":"textbox","id":"sh/6tcruh0n","slide":3,"text":"A complete SaaS layer for academic, people, communication, and billing workflows.","textPreview":"A complete SaaS layer for academic, people, communication, and billing workflows.","textChars":81,"textLines":1,"bbox":[72,138,790,58]}
+{"kind":"textbox","id":"sh/h0natwja","slide":3,"text":"Campus ERP\nMulti-tenant core","textPreview":"Campus ERP | Multi-tenant core","textChars":28,"textLines":2,"bbox":[470,270,340,120]}
+{"kind":"textbox","id":"sh/gze90bip","slide":3,"text":"Students","textPreview":"Students","textChars":8,"textLines":1,"bbox":[95,230,150,62]}
+{"kind":"shape","id":"sh/fy5sr614","slide":3,"bbox":[245,261,225,69]}
+{"kind":"textbox","id":"sh/uxwry10j","slide":3,"text":"Teachers","textPreview":"Teachers","textChars":8,"textLines":1,"bbox":[290,180,150,62]}
+{"kind":"shape","id":"sh/po7axgj6","slide":3,"bbox":[440,211,30,119]}
+{"kind":"textbox","id":"sh/43y94bil","slide":3,"text":"Parents","textPreview":"Parents","textChars":7,"textLines":1,"bbox":[895,180,150,62]}
+{"kind":"shape","id":"sh/6dwfmh0r","slide":3,"bbox":[810,211,85,119]}
+{"kind":"textbox","id":"sh/re5gvm1c","slide":3,"text":"Academic years","textPreview":"Academic years","textChars":14,"textLines":1,"bbox":[1035,230,150,62]}
+{"kind":"shape","id":"sh/sfexo7ix","slide":3,"bbox":[810,261,225,69]}
+{"kind":"textbox","id":"sh/tgnyxcji","slide":3,"text":"Classes","textPreview":"Classes","textChars":7,"textLines":1,"bbox":[125,465,150,62]}
+{"kind":"shape","id":"sh/ehwfqh0n","slide":3,"bbox":[275,330,195,166]}
+{"kind":"textbox","id":"sh/fi5gzm18","slide":3,"text":"Attendance","textPreview":"Attendance","textChars":10,"textLines":1,"bbox":[335,520,150,62]}
+{"kind":"shape","id":"sh/gjyxsrit","slide":3,"bbox":[410,330,60,190]}
+{"kind":"textbox","id":"sh/1k7y1wze","slide":3,"text":"Assignments","textPreview":"Assignments","textChars":11,"textLines":1,"bbox":[770,520,150,62]}
+{"kind":"shape","id":"sh/ulcfex0j","slide":3,"bbox":[810,330,35,190]}
+{"kind":"textbox","id":"sh/vmlwn214","slide":3,"text":"Billing","textPreview":"Billing","textChars":7,"textLines":1,"bbox":[990,465,150,62]}
+{"kind":"shape","id":"sh/zqhcfyhw","slide":3,"bbox":[810,330,180,166]}
+{"kind":"textbox","id":"sh/yp8vmtgb","slide":3,"text":"Exams","textPreview":"Exams","textChars":5,"textLines":1,"bbox":[110,345,150,62]}
+{"kind":"shape","id":"sh/lsjuhoz2","slide":3,"bbox":[260,330,210,46]}
+{"kind":"textbox","id":"sh/krqdo3yh","slide":3,"text":"Reports","textPreview":"Reports","textChars":7,"textLines":1,"bbox":[1040,345,150,62]}
+{"kind":"shape","id":"sh/bmhcbehk","slide":3,"bbox":[810,330,230,46]}
+{"kind":"textbox","id":"sh/al8bi9gf","slide":3,"text":"Campus ERP","textPreview":"Campus ERP","textChars":10,"textLines":1,"bbox":[70,675,160,24]}
+{"kind":"textbox","id":"sh/xozudozq","slide":3,"text":"03","textPreview":"03","textChars":2,"textLines":1,"bbox":[1170,675,40,24]}
+{"kind":"notes","id":"nt/i7vr59","slide":3,"text":"This slide explains the product scope without listing every endpoint.\nHighlight that Campus ERP is not only a school admin tool; it connects the platform operator, the school, teachers, students, and parents.\n\n[Sources]\n- User-provided presentation brief in pasted-text.txt.\n- Local repository analysis: README.md and docs/project-understanding-report.md."}
+{"kind":"slide","id":"sl/yv47jd","slide":4,"title":"GOALS","textShapes":21}
+{"kind":"textbox","id":"sh/qx4fqpwz","slide":4,"text":"GOALS","textPreview":"GOALS","textChars":5,"textLines":1,"bbox":[70,45,360,26]}
+{"kind":"textbox","id":"sh/d0fe1kfa","slide":4,"text":"The system is built for secure growth","textPreview":"The system is built for secure growth","textChars":37,"textLines":1,"bbox":[70,82,930,52]}
+{"kind":"textbox","id":"sh/cz6xszep","slide":4,"text":"The design targets SaaS scale while preserving school-level privacy and operational completeness.","textPreview":"The design targets SaaS scale while preserving school-level privacy and operational completeness.","textChars":97,"textLines":1,"bbox":[72,138,790,58]}
+{"kind":"textbox","id":"sh/3udwvax8","slide":4,"text":"Sc","textPreview":"Sc","textChars":2,"textLines":1,"bbox":[150,250,62,62]}
+{"kind":"textbox","id":"sh/2t4fm5wn","slide":4,"text":"Scale","textPreview":"Scale","textChars":5,"textLines":1,"bbox":[90,340,180,30]}
+{"kind":"textbox","id":"sh/pwvexkfe","slide":4,"text":"Support many schools on one platform","textPreview":"Support many schools on one platform","textChars":36,"textLines":1,"bbox":[90,380,180,90]}
+{"kind":"textbox","id":"sh/ovmxofet","slide":4,"text":"Is","textPreview":"Is","textChars":2,"textLines":1,"bbox":[375,250,62,62]}
+{"kind":"textbox","id":"sh/f6twraxc","slide":4,"text":"Isolation","textPreview":"Isolation","textChars":9,"textLines":1,"bbox":[315,340,180,30]}
+{"kind":"textbox","id":"sh/e5kvi5wr","slide":4,"text":"Keep tenant data separated by design","textPreview":"Keep tenant data separated by design","textChars":36,"textLines":1,"bbox":[315,380,180,90]}
+{"kind":"textbox","id":"sh/s3ydcf2d","slide":4,"text":"Ac","textPreview":"Ac","textChars":2,"textLines":1,"bbox":[600,250,62,62]}
+{"kind":"textbox","id":"sh/t47ulkji","slide":4,"text":"Access","textPreview":"Access","textChars":6,"textLines":1,"bbox":[540,340,180,30]}
+{"kind":"textbox","id":"sh/61gva5k7","slide":4,"text":"Use roles and permissions for every workflow","textPreview":"Use roles and permissions for every workflow","textChars":44,"textLines":1,"bbox":[540,380,180,90]}
+{"kind":"textbox","id":"sh/72pcja1s","slide":4,"text":"Li","textPreview":"Li","textChars":2,"textLines":1,"bbox":[825,250,62,62]}
+{"kind":"textbox","id":"sh/kzyd8v21","slide":4,"text":"Lifecycle","textPreview":"Lifecycle","textChars":9,"textLines":1,"bbox":[765,340,180,30]}
+{"kind":"textbox","id":"sh/507uh0jm","slide":4,"text":"Manage the academic year from setup to reports","textPreview":"Manage the academic year from setup to reports","textChars":46,"textLines":1,"bbox":[765,380,180,90]}
+{"kind":"textbox","id":"sh/idwb6lkv","slide":4,"text":"Fu","textPreview":"Fu","textChars":2,"textLines":1,"bbox":[1050,250,62,62]}
+{"kind":"textbox","id":"sh/jepcfq1g","slide":4,"text":"Future","textPreview":"Future","textChars":6,"textLines":1,"bbox":[990,340,180,30]}
+{"kind":"textbox","id":"sh/4vidkz25","slide":4,"text":"Leave room for mobile apps and analytics","textPreview":"Leave room for mobile apps and analytics","textChars":40,"textLines":1,"bbox":[990,380,180,90]}
+{"kind":"textbox","id":"sh/pwret4jq","slide":4,"text":"Engineering objective: one product foundation that can grow across tenants, modules, and devices.","textPreview":"Engineering objective: one product foundation that can grow across tenants, modules, and devices.","textChars":97,"textLines":1,"bbox":[185,540,910,42]}
+{"kind":"textbox","id":"sh/xs7uxkbu","slide":4,"text":"Campus ERP","textPreview":"Campus ERP","textChars":10,"textLines":1,"bbox":[70,675,160,24]}
+{"kind":"textbox","id":"sh/cred4zup","slide":4,"text":"04","textPreview":"04","textChars":2,"textLines":1,"bbox":[1170,675,40,24]}
+{"kind":"notes","id":"nt/yv47jd","slide":4,"text":"Connect the goals to review criteria: scalability, security, maintainability, and clear user value.\nThe strongest engineering goal is tenant isolation because every later feature depends on it.\n\n[Sources]\n- User-provided presentation brief in pasted-text.txt.\n- Local repository analysis: README.md and docs/project-understanding-report.md."}
+{"kind":"slide","id":"sl/y7vhfg","slide":5,"title":"USERS","textShapes":21}
+{"kind":"textbox","id":"sh/10ry18nm","slide":5,"text":"USERS","textPreview":"USERS","textChars":5,"textLines":1,"bbox":[70,45,360,26]}
+{"kind":"textbox","id":"sh/exgf6tov","slide":5,"text":"Five roles cover platform, school, classroom, and family needs","textPreview":"Five roles cover platform, school, classroom, and family needs","textChars":62,"textLines":1,"bbox":[70,82,930,52]}
+{"kind":"textbox","id":"sh/zypgzy5g","slide":5,"text":"Each actor sees only the workflows and data they are allowed to access.","textPreview":"Each actor sees only the workflows and data they are allowed to access.","textChars":71,"textLines":1,"bbox":[72,138,790,58]}
+{"kind":"textbox","id":"sh/cvyx4j6p","slide":5,"text":"Role + permission guarded SaaS platform","textPreview":"Role + permission guarded SaaS platform","textChars":39,"textLines":1,"bbox":[455,500,370,70]}
+{"kind":"shape","id":"sh/dw7yxona","slide":5,"bbox":[95,210,170,205]}
+{"kind":"textbox","id":"sh/qtgf2toz","slide":5,"text":"PA","textPreview":"PA","textChars":2,"textLines":1,"bbox":[149,232,62,62]}
+{"kind":"textbox","id":"sh/rupgvy5k","slide":5,"text":"Platform Admin","textPreview":"Platform Admin","textChars":14,"textLines":1,"bbox":[109,304,142,28]}
+{"kind":"textbox","id":"sh/4rex0j6t","slide":5,"text":"Schools\nSubscriptions\nAnalytics","textPreview":"Schools | Subscriptions | Analytics","textChars":31,"textLines":3,"bbox":[117,342,126,70]}
+{"kind":"shape","id":"sh/ps7etone","slide":5,"bbox":[180,415,275,120]}
+{"kind":"shape","id":"sh/p0r6lgj2","slide":5,"bbox":[325,210,170,205]}
+{"kind":"textbox","id":"sh/ozipcbih","slide":5,"text":"SA","textPreview":"SA","textChars":2,"textLines":1,"bbox":[379,232,62,62]}
+{"kind":"textbox","id":"sh/ny9ojq1w","slide":5,"text":"School Admin","textPreview":"School Admin","textChars":12,"textLines":1,"bbox":[339,304,142,28]}
+{"kind":"textbox","id":"sh/2d07al0b","slide":5,"text":"People\nAcademics\nEnrollment","textPreview":"People | Academics | Enrollment","textChars":27,"textLines":3,"bbox":[347,342,126,70]}
+{"kind":"shape","id":"sh/1c76hgjq","slide":5,"bbox":[410,415,45,120]}
+{"kind":"shape","id":"sh/0byp8bi5","slide":5,"bbox":[555,210,170,205]}
+{"kind":"textbox","id":"sh/fapof610","slide":5,"text":"T","textPreview":"T","textChars":1,"textLines":1,"bbox":[609,232,62,62]}
+{"kind":"textbox","id":"sh/e9g7610f","slide":5,"text":"Teacher","textPreview":"Teacher","textChars":7,"textLines":1,"bbox":[569,304,142,28]}
+{"kind":"textbox","id":"sh/d876dwju","slide":5,"text":"Classes\nAttendance\nGrades","textPreview":"Classes | Attendance | Grades","textChars":25,"textLines":3,"bbox":[577,342,126,70]}
+{"kind":"shape","id":"sh/s7yp4ri9","slide":5,"bbox":[640,415,0,85]}
+{"kind":"shape","id":"sh/432xgvuh","slide":5,"bbox":[785,210,170,205]}
+{"kind":"textbox","id":"sh/54vy90v2","slide":5,"text":"S","textPreview":"S","textChars":1,"textLines":1,"bbox":[839,232,62,62]}
+{"kind":"textbox","id":"sh/i1kfelcb","slide":5,"text":"Student","textPreview":"Student","textChars":7,"textLines":1,"bbox":[799,304,142,28]}
+{"kind":"textbox","id":"sh/32tg7qdw","slide":5,"text":"Grades\nAttendance\nAssignments","textPreview":"Grades | Attendance | Assignments","textChars":29,"textLines":3,"bbox":[807,342,126,70]}
+{"kind":"shape","id":"sh/gz2xcve5","slide":5,"bbox":[825,415,45,120]}
+{"kind":"shape","id":"sh/h0by50vq","slide":5,"bbox":[1015,210,170,205]}
+{"kind":"textbox","id":"sh/uxkfalwf","slide":5,"text":"P","textPreview":"P","textChars":1,"textLines":1,"bbox":[1069,232,62,62]}
+{"kind":"textbox","id":"sh/vytg3qdk","slide":5,"text":"Parent","textPreview":"Parent","textChars":6,"textLines":1,"bbox":[1029,304,142,28]}
+{"kind":"textbox","id":"sh/0v6hofup","slide":5,"text":"Children\nProgress\nBilling","textPreview":"Children | Progress | Billing","textChars":25,"textLines":3,"bbox":[1037,342,126,70]}
+{"kind":"shape","id":"sh/1wfyhkvu","slide":5,"bbox":[825,415,275,120]}
+{"kind":"textbox","id":"sh/bqh07exc","slide":5,"text":"Campus ERP","textPreview":"Campus ERP","textChars":10,"textLines":1,"bbox":[70,675,160,24]}
+{"kind":"textbox","id":"sh/ap8je9wr","slide":5,"text":"05","textPreview":"05","textChars":2,"textLines":1,"bbox":[1170,675,40,24]}
+{"kind":"notes","id":"nt/y7vhfg","slide":5,"text":"Use this as the use-case slide.\nStress that role separation is a product requirement and an engineering requirement: different users need different scopes.\n\n[Sources]\n- User-provided presentation brief in pasted-text.txt.\n- Local generated diagram source: docs/use-case-diagram.md.\n- Local repository analysis: README.md and docs/project-understanding-report.md."}
+{"kind":"slide","id":"sl/628lt6","slide":6,"title":"ARCHITECTURE","textShapes":14}
+{"kind":"textbox","id":"sh/cnepo7ux","slide":6,"text":"ARCHITECTURE","textPreview":"ARCHITECTURE","textChars":12,"textLines":1,"bbox":[70,45,360,26]}
+{"kind":"textbox","id":"sh/rm58f2ds","slide":6,"text":"Clean Architecture keeps business logic independent","textPreview":"Clean Architecture keeps business logic independent","textChars":51,"textLines":1,"bbox":[70,82,930,52]}
+{"kind":"textbox","id":"sh/q1w7mxc7","slide":6,"text":"Controllers stay thin while application handlers coordinate domain rules and infrastructure.","textPreview":"Controllers stay thin while application handlers coordinate domain rules and infrastructure.","textChars":92,"textLines":1,"bbox":[72,138,790,58]}
+{"kind":"shape","id":"sh/p0n6dsvm","slide":6,"bbox":[140,205,580,72]}
+{"kind":"textbox","id":"sh/4zepknu1","slide":6,"text":"API Layer","textPreview":"API Layer","textChars":9,"textLines":1,"bbox":[164,221,240,26]}
+{"kind":"textbox","id":"sh/3y5obidg","slide":6,"text":"Controllers, authentication, authorization","textPreview":"Controllers, authentication, authorization","textChars":42,"textLines":1,"bbox":[420,225,270,24]}
+{"kind":"shape","id":"sh/2xw7ixcv","slide":6,"bbox":[210,315,580,72]}
+{"kind":"textbox","id":"sh/9wrqpwvq","slide":6,"text":"Application Layer","textPreview":"Application Layer","textChars":17,"textLines":1,"bbox":[234,331,240,26]}
+{"kind":"textbox","id":"sh/8vipwru5","slide":6,"text":"CQRS, MediatR, validation, workflows","textPreview":"CQRS, MediatR, validation, workflows","textChars":36,"textLines":1,"bbox":[490,335,270,24]}
+{"kind":"shape","id":"sh/qhgvutkv","slide":6,"bbox":[430,277,70,38]}
+{"kind":"shape","id":"sh/ripcnylg","slide":6,"bbox":[280,425,580,72]}
+{"kind":"textbox","id":"sh/sjydw321","slide":6,"text":"Domain Layer","textPreview":"Domain Layer","textChars":12,"textLines":1,"bbox":[304,441,240,26]}
+{"kind":"textbox","id":"sh/dk7up83m","slide":6,"text":"Entities, business rules, domain events","textPreview":"Entities, business rules, domain events","textChars":39,"textLines":1,"bbox":[560,445,270,24]}
+{"kind":"shape","id":"sh/idwbqtkz","slide":6,"bbox":[500,387,70,38]}
+{"kind":"shape","id":"sh/3e5cjylk","slide":6,"bbox":[350,535,580,72]}
+{"kind":"textbox","id":"sh/4fyds325","slide":6,"text":"Infrastructure Layer","textPreview":"Infrastructure Layer","textChars":20,"textLines":1,"bbox":[374,551,240,26]}
+{"kind":"textbox","id":"sh/5g7ul83q","slide":6,"text":"EF Core, databases, services, outbox","textPreview":"EF Core, databases, services, outbox","textChars":36,"textLines":1,"bbox":[630,555,270,24]}
+{"kind":"shape","id":"sh/m90v2dk3","slide":6,"bbox":[570,497,70,38]}
+{"kind":"textbox","id":"sh/na9cvilo","slide":6,"text":"Tech stack\n\nASP.NET Core\nEF Core + SQL Server\nMediatR\nFluentValidation\nJWT","textPreview":"Tech stack |  | ASP.NET Core | EF Core + SQL Server | MediatR | FluentValidation | JWT","textChars":74,"textLines":7,"bbox":[920,238,230,245]}
+{"kind":"textbox","id":"sh/ju1sna10","slide":6,"text":"Campus ERP","textPreview":"Campus ERP","textChars":10,"textLines":1,"bbox":[70,675,160,24]}
+{"kind":"textbox","id":"sh/ytsrup0v","slide":6,"text":"06","textPreview":"06","textChars":2,"textLines":1,"bbox":[1170,675,40,24]}
+{"kind":"notes","id":"nt/628lt6","slide":6,"text":"Walk top-down through the layers.\nThe main reviewer takeaway: business rules are not tied directly to controllers or database details.\n\n[Sources]\n- User-provided presentation brief in pasted-text.txt.\n- Local repository analysis: README.md and docs/project-understanding-report.md."}
+{"kind":"slide","id":"sl/u9cj0l","slide":7,"title":"MULTI-TENANCY","textShapes":12}
+{"kind":"textbox","id":"sh/b25s7epk","slide":7,"text":"MULTI-TENANCY","textPreview":"MULTI-TENANCY","textChars":13,"textLines":1,"bbox":[70,45,360,26]}
+{"kind":"textbox","id":"sh/c3e9gj65","slide":7,"text":"One SaaS platform securely serves many schools","textPreview":"One SaaS platform securely serves many schools","textChars":46,"textLines":1,"bbox":[70,82,930,52]}
+{"kind":"textbox","id":"sh/d4na9o7q","slide":7,"text":"A shared schema uses SchoolId and query filters to isolate tenant data.","textPreview":"A shared schema uses SchoolId and query filters to isolate tenant data.","textChars":71,"textLines":1,"bbox":[72,138,790,58]}
+{"kind":"textbox","id":"sh/y5writob","slide":7,"text":"Campus ERP SaaS application","textPreview":"Campus ERP SaaS application","textChars":27,"textLines":1,"bbox":[460,210,360,78]}
+{"kind":"textbox","id":"sh/z65sbypw","slide":7,"text":"Single database\nShared schema + SchoolId","textPreview":"Single database | Shared schema + SchoolId","textChars":40,"textLines":2,"bbox":[485,500,310,80]}
+{"kind":"shape","id":"sh/07e9k36h","slide":7,"bbox":[640,288,0,212]}
+{"kind":"textbox","id":"sh/l8nad87m","slide":7,"text":"School A","textPreview":"School A","textChars":8,"textLines":1,"bbox":[120,335,145,68]}
+{"kind":"shape","id":"sh/e9sr6po7","slide":7,"bbox":[265,249,195,120]}
+{"kind":"shape","id":"sh/fal8zupc","slide":7,"bbox":[265,369,220,171]}
+{"kind":"textbox","id":"sh/nyhsbu5k","slide":7,"text":"School B","textPreview":"School B","textChars":8,"textLines":1,"bbox":[330,335,145,68]}
+{"kind":"shape","id":"sh/mx8rip4z","slide":7,"bbox":[402.5,249,57.5,86]}
+{"kind":"shape","id":"sh/90zad4nq","slide":7,"bbox":[473,369,14,171]}
+{"kind":"textbox","id":"sh/ozq9kzm5","slide":7,"text":"School C","textPreview":"School C","textChars":8,"textLines":1,"bbox":[850,335,145,68]}
+{"kind":"shape","id":"sh/zux87u5o","slide":7,"bbox":[820,249,30,120]}
+{"kind":"shape","id":"sh/etorep43","slide":7,"bbox":[795,369,55,171]}
+{"kind":"textbox","id":"sh/1wzq9kne","slide":7,"text":"School N","textPreview":"School N","textChars":8,"textLines":1,"bbox":[1060,335,145,68]}
+{"kind":"shape","id":"sh/0vq9gfm9","slide":7,"bbox":[820,249,240,120]}
+{"kind":"shape","id":"sh/r6x83a5c","slide":7,"bbox":[795,369,265,171]}
+{"kind":"textbox","id":"sh/q5ora54r","slide":7,"text":"Isolation controls: JWT tenant context + tenant authorization behavior + EF Core global query filters","textPreview":"Isolation controls: JWT tenant context + tenant authorization behavior + EF Core global query filters","textChars":101,"textLines":1,"bbox":[180,620,920,34]}
+{"kind":"textbox","id":"sh/u14rm58z","slide":7,"text":"Campus ERP","textPreview":"Campus ERP","textChars":10,"textLines":1,"bbox":[70,675,160,24]}
+{"kind":"textbox","id":"sh/f2dsvapk","slide":7,"text":"07","textPreview":"07","textChars":2,"textLines":1,"bbox":[1170,675,40,24]}
+{"kind":"notes","id":"nt/u9cj0l","slide":7,"text":"This is the most important architecture decision.\nExplain that the platform is shared, but each school's operational records are scoped by SchoolId and enforced in the backend pipeline and EF filters.\n\n[Sources]\n- User-provided presentation brief in pasted-text.txt.\n- Local repository analysis: README.md and docs/project-understanding-report.md."}
+{"kind":"slide","id":"sl/objxkw","slide":8,"title":"DATA MODEL","textShapes":28}
+{"kind":"textbox","id":"sh/twnilo7y","slide":8,"text":"DATA MODEL","textPreview":"DATA MODEL","textChars":10,"textLines":1,"bbox":[70,45,360,26]}
+{"kind":"textbox","id":"sh/69wzq987","slide":8,"text":"The ERD separates platform ownership from school operations","textPreview":"The ERD separates platform ownership from school operations","textChars":59,"textLines":1,"bbox":[70,82,930,52]}
+{"kind":"textbox","id":"sh/7a50jeps","slide":8,"text":"Platform entities manage tenants and billing; application entities manage academic workflows.","textPreview":"Platform entities manage tenants and billing; application entities manage academic workflows.","textChars":93,"textLines":1,"bbox":[72,138,790,58]}
+{"kind":"textbox","id":"sh/k7ehozq1","slide":8,"text":"Platform","textPreview":"Platform","textChars":8,"textLines":1,"bbox":[90,180,190,30]}
+{"kind":"textbox","id":"sh/l8nih47m","slide":8,"text":"School","textPreview":"School","textChars":6,"textLines":1,"bbox":[90,225,190,36]}
+{"kind":"textbox","id":"sh/y5czm98b","slide":8,"text":"Campus","textPreview":"Campus","textChars":6,"textLines":1,"bbox":[90,272,190,36]}
+{"kind":"textbox","id":"sh/j65gfupg","slide":8,"text":"Subscription","textPreview":"Subscription","textChars":12,"textLines":1,"bbox":[90,319,190,36]}
+{"kind":"textbox","id":"sh/w3uhkzq5","slide":8,"text":"Invoice","textPreview":"Invoice","textChars":7,"textLines":1,"bbox":[90,366,190,36]}
+{"kind":"textbox","id":"sh/x43yd47q","slide":8,"text":"Payment","textPreview":"Payment","textChars":7,"textLines":1,"bbox":[90,413,190,36]}
+{"kind":"textbox","id":"sh/t0b2tc7q","slide":8,"text":"People","textPreview":"People","textChars":6,"textLines":1,"bbox":[375,180,190,30]}
+{"kind":"textbox","id":"sh/8f210r65","slide":8,"text":"Student","textPreview":"Student","textChars":7,"textLines":1,"bbox":[375,225,190,36]}
+{"kind":"textbox","id":"sh/7etkrmpk","slide":8,"text":"Teacher","textPreview":"Teacher","textChars":7,"textLines":1,"bbox":[375,272,190,36]}
+{"kind":"textbox","id":"sh/6dkjyhof","slide":8,"text":"Parent","textPreview":"Parent","textChars":6,"textLines":1,"bbox":[375,319,190,36]}
+{"kind":"textbox","id":"sh/lcb2pc7u","slide":8,"text":"School Admin","textPreview":"School Admin","textChars":12,"textLines":1,"bbox":[375,366,190,36]}
+{"kind":"textbox","id":"sh/kb21w769","slide":8,"text":"Academic","textPreview":"Academic","textChars":8,"textLines":1,"bbox":[660,180,190,30]}
+{"kind":"textbox","id":"sh/jatkn2po","slide":8,"text":"Academic Year","textPreview":"Academic Year","textChars":13,"textLines":1,"bbox":[660,225,190,36]}
+{"kind":"textbox","id":"sh/y90juxo3","slide":8,"text":"Term","textPreview":"Term","textChars":4,"textLines":1,"bbox":[660,272,190,36]}
+{"kind":"textbox","id":"sh/x8rils7i","slide":8,"text":"Classroom","textPreview":"Classroom","textChars":9,"textLines":1,"bbox":[660,319,190,36]}
+{"kind":"textbox","id":"sh/w7i1sn6x","slide":8,"text":"Subject","textPreview":"Subject","textChars":7,"textLines":1,"bbox":[660,366,190,36]}
+{"kind":"textbox","id":"sh/orm187et","slide":8,"text":"Operations","textPreview":"Operations","textChars":10,"textLines":1,"bbox":[945,180,190,30]}
+{"kind":"textbox","id":"sh/psv2hcfe","slide":8,"text":"Enrollment","textPreview":"Enrollment","textChars":10,"textLines":1,"bbox":[945,225,190,36]}
+{"kind":"textbox","id":"sh/2p4j6xw3","slide":8,"text":"Attendance","textPreview":"Attendance","textChars":10,"textLines":1,"bbox":[945,272,190,36]}
+{"kind":"textbox","id":"sh/nqdkf2x8","slide":8,"text":"Assignments","textPreview":"Assignments","textChars":11,"textLines":1,"bbox":[945,319,190,36]}
+{"kind":"textbox","id":"sh/0nm14nex","slide":8,"text":"Exams","textPreview":"Exams","textChars":5,"textLines":1,"bbox":[945,366,190,36]}
+{"kind":"textbox","id":"sh/1ov2dsfi","slide":8,"text":"Results","textPreview":"Results","textChars":7,"textLines":1,"bbox":[945,413,190,36]}
+{"kind":"textbox","id":"sh/elkj2dwr","slide":8,"text":"ERD reference: app.eraser.io/workspace/wsKQPubwZL5qvcdTG50x","textPreview":"ERD reference: app.eraser.io/workspace/wsKQPubwZL5qvcdTG50x","textChars":59,"textLines":1,"bbox":[190,612,900,30]}
+{"kind":"textbox","id":"sh/fmtkbixc","slide":8,"text":"Campus ERP","textPreview":"Campus ERP","textChars":10,"textLines":1,"bbox":[70,675,160,24]}
+{"kind":"textbox","id":"sh/kj6lgre1","slide":8,"text":"08","textPreview":"08","textChars":2,"textLines":1,"bbox":[1170,675,40,24]}
+{"kind":"notes","id":"nt/objxkw","slide":8,"text":"Use this as a readable ERD summary slide.\nThe full ERD is available through the provided Eraser workspace; this slide abstracts the major entity groups for presentation clarity.\n\n[Sources]\n- User-provided presentation brief in pasted-text.txt.\n- ERD URL provided by user: https://app.eraser.io/workspace/wsKQPubwZL5qvcdTG50x?origin=share.\n- Local repository analysis: README.md and docs/project-understanding-report.md."}
+{"kind":"slide","id":"sl/mc3o7h","slide":9,"title":"FEATURES","textShapes":17}
+{"kind":"textbox","id":"sh/pcfmdkj2","slide":9,"text":"FEATURES","textPreview":"FEATURES","textChars":8,"textLines":1,"bbox":[70,45,360,26]}
+{"kind":"textbox","id":"sh/29o3i50b","slide":9,"text":"Core modules cover the daily school lifecycle","textPreview":"Core modules cover the daily school lifecycle","textChars":45,"textLines":1,"bbox":[70,82,930,52]}
+{"kind":"textbox","id":"sh/nax4ba1w","slide":9,"text":"The platform connects secure access, management data, academic setup, and daily operations.","textPreview":"The platform connects secure access, management data, academic setup, and daily operations.","textChars":91,"textLines":1,"bbox":[72,138,790,58]}
+{"kind":"shape","id":"sh/07mlgvil","slide":9,"bbox":[80,220,530,120]}
+{"kind":"textbox","id":"sh/18vm90jq","slide":9,"text":"AU","textPreview":"AU","textChars":2,"textLines":1,"bbox":[98,240,62,62]}
+{"kind":"textbox","id":"sh/e543e50f","slide":9,"text":"Authentication","textPreview":"Authentication","textChars":14,"textLines":1,"bbox":[172,238,420,28]}
+{"kind":"textbox","id":"sh/f6d47q10","slide":9,"text":"JWT login, refresh tokens, role and permission claims.","textPreview":"JWT login, refresh tokens, role and permission claims.","textChars":54,"textLines":1,"bbox":[172,274,418,58]}
+{"kind":"shape","id":"sh/s3mlcvi9","slide":9,"bbox":[670,220,530,120]}
+{"kind":"textbox","id":"sh/d4vm50ju","slide":9,"text":"SC","textPreview":"SC","textChars":2,"textLines":1,"bbox":[688,240,62,62]}
+{"kind":"textbox","id":"sh/hcvulg3m","slide":9,"text":"School Management","textPreview":"School Management","textChars":17,"textLines":1,"bbox":[762,238,420,28]}
+{"kind":"textbox","id":"sh/wb2dcvm1","slide":9,"text":"Student, teacher, parent, guardian, and school records.","textPreview":"Student, teacher, parent, guardian, and school records.","textChars":55,"textLines":1,"bbox":[762,274,418,58]}
+{"kind":"shape","id":"sh/vatcjqlg","slide":9,"bbox":[80,390,530,120]}
+{"kind":"textbox","id":"sh/a9kbal4v","slide":9,"text":"AC","textPreview":"AC","textChars":2,"textLines":1,"bbox":[98,410,62,62]}
+{"kind":"textbox","id":"sh/98buhg3a","slide":9,"text":"Academic Management","textPreview":"Academic Management","textChars":19,"textLines":1,"bbox":[172,408,420,28]}
+{"kind":"textbox","id":"sh/8n2t8bmp","slide":9,"text":"Academic years, terms, grades, rooms, classrooms, schedules.","textPreview":"Academic years, terms, grades, rooms, classrooms, schedules.","textChars":60,"textLines":1,"bbox":[172,444,418,58]}
+{"kind":"shape","id":"sh/nmtcf6lk","slide":9,"bbox":[670,390,530,120]}
+{"kind":"textbox","id":"sh/mlkb614z","slide":9,"text":"DA","textPreview":"DA","textChars":2,"textLines":1,"bbox":[688,410,62,62]}
+{"kind":"textbox","id":"sh/lkrudw3e","slide":9,"text":"Daily Operations","textPreview":"Daily Operations","textChars":16,"textLines":1,"bbox":[762,408,420,28]}
+{"kind":"textbox","id":"sh/0jit4bmt","slide":9,"text":"Attendance, assignments, exams, report cards, notifications.","textPreview":"Attendance, assignments, exams, report cards, notifications.","textChars":60,"textLines":1,"bbox":[762,444,418,58]}
+{"kind":"textbox","id":"sh/cnmdkbup","slide":9,"text":"Campus ERP","textPreview":"Campus ERP","textChars":10,"textLines":1,"bbox":[70,675,160,24]}
+{"kind":"textbox","id":"sh/dovutgba","slide":9,"text":"09","textPreview":"09","textChars":2,"textLines":1,"bbox":[1170,675,40,24]}
+{"kind":"notes","id":"nt/mc3o7h","slide":9,"text":"Keep this slide concise: it is a product module map, not a specification.\nEmphasize that these modules share the same security, tenant, and data model foundations.\n\n[Sources]\n- User-provided presentation brief in pasted-text.txt.\n- Local repository analysis: README.md and docs/project-understanding-report.md."}
+{"kind":"slide","id":"sl/7tkgoa","slide":10,"title":"SECURITY","textShapes":23}
+{"kind":"textbox","id":"sh/5gvyx4re","slide":10,"text":"SECURITY","textPreview":"SECURITY","textChars":8,"textLines":1,"bbox":[70,45,360,26]}
+{"kind":"textbox","id":"sh/itkzmp8n","slide":10,"text":"Security is layered across identity, authorization, and data access","textPreview":"Security is layered across identity, authorization, and data access","textChars":67,"textLines":1,"bbox":[70,82,930,52]}
+{"kind":"textbox","id":"sh/3udgvu98","slide":10,"text":"The design protects both user identity and tenant boundaries.","textPreview":"The design protects both user identity and tenant boundaries.","textChars":61,"textLines":1,"bbox":[72,138,790,58]}
+{"kind":"textbox","id":"sh/sjmhsjqp","slide":10,"text":"1","textPreview":"1","textChars":1,"textLines":1,"bbox":[120,197,62,62]}
+{"kind":"textbox","id":"sh/dkvy14ra","slide":10,"text":"JWT authentication","textPreview":"JWT authentication","textChars":18,"textLines":1,"bbox":[205,201,320,28]}
+{"kind":"textbox","id":"sh/qh4zq98z","slide":10,"text":"Signed access tokens and refresh tokens","textPreview":"Signed access tokens and refresh tokens","textChars":39,"textLines":1,"bbox":[535,205,560,26]}
+{"kind":"textbox","id":"sh/ridgze9k","slide":10,"text":"2","textPreview":"2","textChars":1,"textLines":1,"bbox":[120,259,62,62]}
+{"kind":"textbox","id":"sh/0n6hwjq1","slide":10,"text":"Role-based authorization","textPreview":"Role-based authorization","textChars":24,"textLines":1,"bbox":[205,263,320,28]}
+{"kind":"textbox","id":"sh/1ofy5orm","slide":10,"text":"Platform admin, school admin, teacher, student, parent","textPreview":"Platform admin, school admin, teacher, student, parent","textChars":54,"textLines":1,"bbox":[535,267,560,26]}
+{"kind":"textbox","id":"sh/lw7yhgje","slide":10,"text":"3","textPreview":"3","textChars":1,"textLines":1,"bbox":[120,321,62,62]}
+{"kind":"textbox","id":"sh/kvyh8v29","slide":10,"text":"Permission policies","textPreview":"Permission policies","textChars":19,"textLines":1,"bbox":[205,325,320,28]}
+{"kind":"textbox","id":"sh/zupgfq1o","slide":10,"text":"Fine-grained claims guard API endpoints","textPreview":"Fine-grained claims guard API endpoints","textChars":39,"textLines":1,"bbox":[535,329,560,26]}
+{"kind":"textbox","id":"sh/ytgz6lk3","slide":10,"text":"4","textPreview":"4","textChars":1,"textLines":1,"bbox":[120,383,62,62]}
+{"kind":"textbox","id":"sh/90ryl0jq","slide":10,"text":"Tenant isolation","textPreview":"Tenant isolation","textChars":16,"textLines":1,"bbox":[205,387,320,28]}
+{"kind":"textbox","id":"sh/8zihcvi5","slide":10,"text":"SchoolId context and EF global query filters","textPreview":"SchoolId context and EF global query filters","textChars":44,"textLines":1,"bbox":[535,391,560,26]}
+{"kind":"textbox","id":"sh/7y9gjq1k","slide":10,"text":"5","textPreview":"5","textChars":1,"textLines":1,"bbox":[120,445,62,62]}
+{"kind":"textbox","id":"sh/mx0zal0z","slide":10,"text":"Audit + soft delete","textPreview":"Audit + soft delete","textChars":19,"textLines":1,"bbox":[205,449,320,28]}
+{"kind":"textbox","id":"sh/p4ny9wj6","slide":10,"text":"Track changes and preserve operational history","textPreview":"Track changes and preserve operational history","textChars":46,"textLines":1,"bbox":[535,453,560,26]}
+{"kind":"textbox","id":"sh/o3ex0b21","slide":10,"text":"6","textPreview":"6","textChars":1,"textLines":1,"bbox":[120,507,62,62]}
+{"kind":"textbox","id":"sh/gnihgbax","slide":10,"text":"Concurrency protection","textPreview":"Concurrency protection","textChars":22,"textLines":1,"bbox":[205,511,320,28]}
+{"kind":"textbox","id":"sh/18rypgr2","slide":10,"text":"Protect writes in multi-user workflows","textPreview":"Protect writes in multi-user workflows","textChars":38,"textLines":1,"bbox":[535,515,560,26]}
+{"kind":"textbox","id":"sh/el0ze1sr","slide":10,"text":"Campus ERP","textPreview":"Campus ERP","textChars":10,"textLines":1,"bbox":[70,675,160,24]}
+{"kind":"textbox","id":"sh/fm9gn69c","slide":10,"text":"10","textPreview":"10","textChars":2,"textLines":1,"bbox":[1170,675,40,24]}
+{"kind":"notes","id":"nt/7tkgoa","slide":10,"text":"Describe this as defense in depth.\nA user must be authenticated, authorized by policy, and in the correct tenant context before reaching data.\n\n[Sources]\n- User-provided presentation brief in pasted-text.txt.\n- Local repository analysis: README.md and docs/project-understanding-report.md."}
+{"kind":"slide","id":"sl/qeg129","slide":11,"title":"TECHNOLOGY","textShapes":24}
+{"kind":"textbox","id":"sh/fmhw32pw","slide":11,"text":"TECHNOLOGY","textPreview":"TECHNOLOGY","textChars":10,"textLines":1,"bbox":[70,45,360,26]}
+{"kind":"textbox","id":"sh/gnqxc76h","slide":11,"text":"The stack balances modern frontend UX with enterprise backend patterns","textPreview":"The stack balances modern frontend UX with enterprise backend patterns","textChars":70,"textLines":1,"bbox":[70,82,930,52]}
+{"kind":"textbox","id":"sh/hozy5c72","slide":11,"text":"Each layer uses mainstream tools that fit the SaaS architecture.","textPreview":"Each layer uses mainstream tools that fit the SaaS architecture.","textChars":64,"textLines":1,"bbox":[72,138,790,58]}
+{"kind":"shape","id":"sh/6xof6doz","slide":11,"bbox":[110,230,300,310]}
+{"kind":"textbox","id":"sh/7yxwzipk","slide":11,"text":"BA","textPreview":"BA","textChars":2,"textLines":1,"bbox":[138,258,62,62]}
+{"kind":"textbox","id":"sh/szqx8n65","slide":11,"text":"Backend","textPreview":"Backend","textChars":7,"textLines":1,"bbox":[216,272,160,30]}
+{"kind":"shape","id":"sh/t0ze1s7q","slide":11,"bbox":[152,350,10,10]}
+{"kind":"textbox","id":"sh/ytof2do3","slide":11,"text":"ASP.NET Core","textPreview":"ASP.NET Core","textChars":12,"textLines":1,"bbox":[174,342,220,34]}
+{"kind":"shape","id":"sh/juxwbipo","slide":11,"bbox":[152,388,10,10]}
+{"kind":"textbox","id":"sh/jq9ojy5w","slide":11,"text":"Entity Framework Core","textPreview":"Entity Framework Core","textChars":21,"textLines":1,"bbox":[174,380,220,34]}
+{"kind":"shape","id":"sh/yp0nat4b","slide":11,"bbox":[152,426,10,10]}
+{"kind":"textbox","id":"sh/lsr6lon2","slide":11,"text":"SQL Server","textPreview":"SQL Server","textChars":10,"textLines":1,"bbox":[174,418,220,34]}
+{"kind":"shape","id":"sh/kri5cjmh","slide":11,"bbox":[152,464,10,10]}
+{"kind":"textbox","id":"sh/7u9ony58","slide":11,"text":"MediatR","textPreview":"MediatR","textChars":7,"textLines":1,"bbox":[174,456,220,34]}
+{"kind":"shape","id":"sh/6t07et4n","slide":11,"bbox":[152,502,10,10]}
+{"kind":"textbox","id":"sh/tgb6p8ny","slide":11,"text":"FluentValidation","textPreview":"FluentValidation","textChars":16,"textLines":1,"bbox":[174,494,220,34]}
+{"kind":"shape","id":"sh/8v2pg3mt","slide":11,"bbox":[465,230,300,310]}
+{"kind":"textbox","id":"sh/nypobu5o","slide":11,"text":"FR","textPreview":"FR","textChars":2,"textLines":1,"bbox":[493,258,62,62]}
+{"kind":"textbox","id":"sh/mxgn29oj","slide":11,"text":"Frontend","textPreview":"Frontend","textChars":8,"textLines":1,"bbox":[571,272,160,30]}
+{"kind":"shape","id":"sh/qd4rahor","slide":11,"bbox":[507,350,10,10]}
+{"kind":"textbox","id":"sh/rex8j2pc","slide":11,"text":"React","textPreview":"React","textChars":5,"textLines":1,"bbox":[529,342,220,34]}
+{"kind":"shape","id":"sh/cf69c76x","slide":11,"bbox":[507,388,10,10]}
+{"kind":"textbox","id":"sh/dgfalc7i","slide":11,"text":"TypeScript","textPreview":"TypeScript","textChars":10,"textLines":1,"bbox":[529,380,220,34]}
+{"kind":"shape","id":"sh/2p4r6xov","slide":11,"bbox":[507,426,10,10]}
+{"kind":"textbox","id":"sh/3ad8f2pg","slide":11,"text":"Tailwind CSS","textPreview":"Tailwind CSS","textChars":12,"textLines":1,"bbox":[529,418,220,34]}
+{"kind":"shape","id":"sh/4bm98761","slide":11,"bbox":[507,464,10,10]}
+{"kind":"textbox","id":"sh/pcvqhc76","slide":11,"text":"Ant Design","textPreview":"Ant Design","textChars":10,"textLines":1,"bbox":[529,456,220,34]}
+{"kind":"shape","id":"sh/ulkr2x8j","slide":11,"bbox":[820,230,300,310]}
+{"kind":"textbox","id":"sh/fmt8bip4","slide":11,"text":"IN","textPreview":"IN","textChars":2,"textLines":1,"bbox":[848,258,62,62]}
+{"kind":"textbox","id":"sh/x0juh0rm","slide":11,"text":"Infrastructure","textPreview":"Infrastructure","textChars":14,"textLines":1,"bbox":[926,272,160,30]}
+{"kind":"shape","id":"sh/wzat8vq1","slide":11,"bbox":[862,350,10,10]}
+{"kind":"textbox","id":"sh/be1cfq9w","slide":11,"text":"Docker","textPreview":"Docker","textChars":6,"textLines":1,"bbox":[884,342,220,34]}
+{"kind":"shape","id":"sh/adsb6l8b","slide":11,"bbox":[862,388,10,10]}
+{"kind":"textbox","id":"sh/9czudgrq","slide":11,"text":"Cloud deployment","textPreview":"Cloud deployment","textChars":16,"textLines":1,"bbox":[884,380,220,34]}
+{"kind":"shape","id":"sh/obqt4bq5","slide":11,"bbox":[862,426,10,10]}
+{"kind":"textbox","id":"sh/nahcb69k","slide":11,"text":"Email services","textPreview":"Email services","textChars":14,"textLines":1,"bbox":[884,418,220,34]}
+{"kind":"shape","id":"sh/m98b218z","slide":11,"bbox":[862,464,10,10]}
+{"kind":"textbox","id":"sh/18zu9gre","slide":11,"text":"Outbox processing","textPreview":"Outbox processing","textChars":17,"textLines":1,"bbox":[884,456,220,34]}
+{"kind":"textbox","id":"sh/07qt0bq9","slide":11,"text":"Campus ERP","textPreview":"Campus ERP","textChars":10,"textLines":1,"bbox":[70,675,160,24]}
+{"kind":"textbox","id":"sh/0bilgfq5","slide":11,"text":"11","textPreview":"11","textChars":2,"textLines":1,"bbox":[1170,675,40,24]}
+{"kind":"notes","id":"nt/qeg129","slide":11,"text":"This slide helps technical reviewers place the project in familiar tooling.\nDo not over-explain each technology; connect each stack choice to maintainability and SaaS readiness.\n\n[Sources]\n- User-provided presentation brief in pasted-text.txt.\n- Local repository analysis: README.md and docs/project-understanding-report.md."}
+{"kind":"slide","id":"sl/p7sjx5","slide":12,"title":"DEMO","textShapes":24}
+{"kind":"textbox","id":"sh/jmpsnado","slide":12,"text":"DEMO","textPreview":"DEMO","textChars":4,"textLines":1,"bbox":[70,45,360,26]}
+{"kind":"textbox","id":"sh/kni9wfu9","slide":12,"text":"The demo walkthrough follows real school workflows","textPreview":"The demo walkthrough follows real school workflows","textChars":50,"textLines":1,"bbox":[70,82,930,52]}
+{"kind":"textbox","id":"sh/5orap0vu","slide":12,"text":"Screenshots can be dropped into these frames from the deployed application.","textPreview":"Screenshots can be dropped into these frames from the deployed application.","textChars":75,"textLines":1,"bbox":[72,138,790,58]}
+{"kind":"shape","id":"sh/6p0ry5cf","slide":12,"bbox":[82,220,250,160]}
+{"kind":"shape","id":"sh/7q9srad0","slide":12,"bbox":[82,220,250,38]}
+{"kind":"shape","id":"sh/sri90ful","slide":12,"bbox":[98,233,10,10]}
+{"kind":"shape","id":"sh/tsratkvq","slide":12,"bbox":[116,233,10,10]}
+{"kind":"shape","id":"sh/ud0r2pcb","slide":12,"bbox":[134,233,10,10]}
+{"kind":"textbox","id":"sh/fe9svudw","slide":12,"text":"1. Login","textPreview":"1. Login","textChars":8,"textLines":1,"bbox":[102,272,210,28]}
+{"kind":"shape","id":"sh/fepgn29k","slide":12,"bbox":[104,318,206,30]}
+{"kind":"textbox","id":"sh/udgfeh8z","slide":12,"text":"Email / password","textPreview":"Email / password","textChars":16,"textLines":1,"bbox":[118,324,178,22]}
+{"kind":"shape","id":"sh/hg7ypcrq","slide":12,"bbox":[104,363,206,30]}
+{"kind":"textbox","id":"sh/gfyxg7q5","slide":12,"text":"School selector","textPreview":"School selector","textChars":15,"textLines":1,"bbox":[118,369,178,22]}
+{"kind":"shape","id":"sh/7qpgj29o","slide":12,"bbox":[352,220,250,160]}
+{"kind":"shape","id":"sh/6pwfax83","slide":12,"bbox":[352,220,250,38]}
+{"kind":"shape","id":"sh/tc7ylcre","slide":12,"bbox":[368,233,10,10]}
+{"kind":"shape","id":"sh/sbyxc7q9","slide":12,"bbox":[386,233,10,10]}
+{"kind":"shape","id":"sh/rm9gvm9s","slide":12,"bbox":[404,233,10,10]}
+{"kind":"textbox","id":"sh/ql0zm187","slide":12,"text":"2. Dashboard","textPreview":"2. Dashboard","textChars":12,"textLines":1,"bbox":[372,272,210,28]}
+{"kind":"shape","id":"sh/mdorapwr","slide":12,"bbox":[374,318,206,30]}
+{"kind":"textbox","id":"sh/7exs3uxc","slide":12,"text":"KPIs","textPreview":"KPIs","textChars":4,"textLines":1,"bbox":[388,324,178,22]}
+{"kind":"shape","id":"sh/8f69czex","slide":12,"bbox":[374,363,206,30]}
+{"kind":"textbox","id":"sh/9gfa54fi","slide":12,"text":"Recent activity","textPreview":"Recent activity","textChars":15,"textLines":1,"bbox":[388,369,178,22]}
+{"kind":"shape","id":"sh/uhore9wn","slide":12,"bbox":[622,220,250,160]}
+{"kind":"shape","id":"sh/vixs7ux8","slide":12,"bbox":[622,220,250,38]}
+{"kind":"shape","id":"sh/wj6tgzet","slide":12,"bbox":[638,233,10,10]}
+{"kind":"shape","id":"sh/hkfa94fe","slide":12,"bbox":[656,233,10,10]}
+{"kind":"shape","id":"sh/alkr25wj","slide":12,"bbox":[674,233,10,10]}
+{"kind":"textbox","id":"sh/bmdsvax4","slide":12,"text":"3. Student management","textPreview":"3. Student management","textChars":21,"textLines":1,"bbox":[642,272,210,28]}
+{"kind":"shape","id":"sh/tgju18zm","slide":12,"bbox":[644,318,206,30]}
+{"kind":"textbox","id":"sh/sfad83y1","slide":12,"text":"Roster","textPreview":"Roster","textChars":6,"textLines":1,"bbox":[658,324,178,22]}
+{"kind":"shape","id":"sh/re1czyhg","slide":12,"bbox":[644,363,206,30]}
+{"kind":"textbox","id":"sh/6dsv6tgv","slide":12,"text":"Profile details","textPreview":"Profile details","textChars":15,"textLines":1,"bbox":[658,369,178,22]}
+{"kind":"shape","id":"sh/143u5szi","slide":12,"bbox":[892,220,250,160]}
+{"kind":"shape","id":"sh/g3adcnyd","slide":12,"bbox":[892,220,250,38]}
+{"kind":"shape","id":"sh/f21c3ihs","slide":12,"bbox":[908,233,10,10]}
+{"kind":"shape","id":"sh/ehsvadg7","slide":12,"bbox":[926,233,10,10]}
+{"kind":"shape","id":"sh/h8zutoze","slide":12,"bbox":[944,233,10,10]}
+{"kind":"textbox","id":"sh/w7qd0jyt","slide":12,"text":"4. Teacher portal","textPreview":"4. Teacher portal","textChars":17,"textLines":1,"bbox":[912,272,210,28]}
+{"kind":"shape","id":"sh/k3yx8rih","slide":12,"bbox":[914,318,206,30]}
+{"kind":"textbox","id":"sh/l47y1wj2","slide":12,"text":"Classes","textPreview":"Classes","textChars":7,"textLines":1,"bbox":[928,324,178,22]}
+{"kind":"shape","id":"sh/y1wf6h0b","slide":12,"bbox":[914,363,206,30]}
+{"kind":"textbox","id":"sh/z25gzm1w","slide":12,"text":"Attendance","textPreview":"Attendance","textChars":10,"textLines":1,"bbox":[928,369,178,22]}
+{"kind":"shape","id":"sh/czex4ril","slide":12,"bbox":[218,455,250,160]}
+{"kind":"shape","id":"sh/x0nyxwjq","slide":12,"bbox":[218,455,250,38]}
+{"kind":"shape","id":"sh/qxwf2h0f","slide":12,"bbox":[234,468,10,10]}
+{"kind":"shape","id":"sh/by5gvm10","slide":12,"bbox":[252,468,10,10]}
+{"kind":"shape","id":"sh/obux07i9","slide":12,"bbox":[270,468,10,10]}
+{"kind":"textbox","id":"sh/pwnytcju","slide":12,"text":"5. Parent portal","textPreview":"5. Parent portal","textChars":16,"textLines":1,"bbox":[238,507,210,28]}
+{"kind":"shape","id":"sh/r6lgj2lg","slide":12,"bbox":[240,553,206,30]}
+{"kind":"textbox","id":"sh/65czaxkb","slide":12,"text":"Children","textPreview":"Children","textChars":8,"textLines":1,"bbox":[254,559,178,22]}
+{"kind":"shape","id":"sh/t83ylc3m","slide":12,"bbox":[240,598,206,30]}
+{"kind":"textbox","id":"sh/s7uhc721","slide":12,"text":"Progress","textPreview":"Progress","textChars":8,"textLines":1,"bbox":[254,604,178,22]}
+{"kind":"shape","id":"sh/fulgnmls","slide":12,"bbox":[758,455,250,160]}
+{"kind":"shape","id":"sh/e9czehk7","slide":12,"bbox":[758,455,250,38]}
+{"kind":"shape","id":"sh/1wnypc3y","slide":12,"bbox":[774,468,10,10]}
+{"kind":"shape","id":"sh/gvuhgr2d","slide":12,"bbox":[792,468,10,10]}
+{"kind":"shape","id":"sh/3y5grmlo","slide":12,"bbox":[810,468,10,10]}
+{"kind":"textbox","id":"sh/2xwzihk3","slide":12,"text":"6. Reports","textPreview":"6. Reports","textChars":10,"textLines":1,"bbox":[778,507,210,28]}
+{"kind":"shape","id":"sh/ytgjal4b","slide":12,"bbox":[780,553,206,30]}
+{"kind":"textbox","id":"sh/zupkjq5w","slide":12,"text":"Grades","textPreview":"Grades","textChars":6,"textLines":1,"bbox":[794,559,178,22]}
+{"kind":"shape","id":"sh/kvi1cvmh","slide":12,"bbox":[780,598,206,30]}
+{"kind":"textbox","id":"sh/lwr2l0n2","slide":12,"text":"Report cards","textPreview":"Report cards","textChars":12,"textLines":1,"bbox":[794,604,178,22]}
+{"kind":"textbox","id":"sh/apgj6l4f","slide":12,"text":"Demo URL: https://campuserpt.vercel.app/","textPreview":"Demo URL: https://campuserpt.vercel.app/","textChars":40,"textLines":1,"bbox":[375,650,530,28]}
+{"kind":"textbox","id":"sh/bqpkfq50","slide":12,"text":"Campus ERP","textPreview":"Campus ERP","textChars":10,"textLines":1,"bbox":[70,675,160,24]}
+{"kind":"textbox","id":"sh/cry18bml","slide":12,"text":"12","textPreview":"12","textChars":2,"textLines":1,"bbox":[1170,675,40,24]}
+{"kind":"notes","id":"nt/p7sjx5","slide":12,"text":"Use this slide during the live walkthrough.\nThe frames are placeholders: replace them with live screenshots when preparing the final defense/demo version.\n\n[Sources]\n- User-provided presentation brief in pasted-text.txt.\n- Project demo URL provided by user: https://campuserpt.vercel.app/."}
+{"kind":"slide","id":"sl/jz0qtv","slide":13,"title":"ROADMAP","textShapes":17}
+{"kind":"textbox","id":"sh/xobet0vq","slide":13,"text":"ROADMAP","textPreview":"ROADMAP","textChars":7,"textLines":1,"bbox":[70,45,360,26]}
+{"kind":"textbox","id":"sh/alkfylwz","slide":13,"text":"The roadmap expands from foundation to scale","textPreview":"The roadmap expands from foundation to scale","textChars":44,"textLines":1,"bbox":[70,82,930,52]}
+{"kind":"textbox","id":"sh/vmtwrqxk","slide":13,"text":"Each phase adds a product layer on top of the secure SaaS core.","textPreview":"Each phase adds a product layer on top of the secure SaaS core.","textChars":63,"textLines":1,"bbox":[72,138,790,58]}
+{"kind":"textbox","id":"sh/kb2x4feh","slide":13,"text":"1","textPreview":"1","textChars":1,"textLines":1,"bbox":[120,322,62,62]}
+{"kind":"textbox","id":"sh/5cvex0vm","slide":13,"text":"Phase 1","textPreview":"Phase 1","textChars":7,"textLines":1,"bbox":[70,410,160,30]}
+{"kind":"textbox","id":"sh/ipkf25wb","slide":13,"text":"Core SaaS foundation","textPreview":"Core SaaS foundation","textChars":20,"textLines":1,"bbox":[40,450,220,60]}
+{"kind":"textbox","id":"sh/jatwvadw","slide":13,"text":"2","textPreview":"2","textChars":1,"textLines":1,"bbox":[400,322,62,62]}
+{"kind":"textbox","id":"sh/sfmx8fed","slide":13,"text":"Phase 2","textPreview":"Phase 2","textChars":7,"textLines":1,"bbox":[350,410,160,30]}
+{"kind":"textbox","id":"sh/tgve1kvy","slide":13,"text":"Attendance and daily operations","textPreview":"Attendance and daily operations","textChars":31,"textLines":1,"bbox":[320,450,220,60]}
+{"kind":"shape","id":"sh/l8ji5cbu","slide":13,"bbox":[182,353,218,0]}
+{"kind":"textbox","id":"sh/07ahw7a9","slide":13,"text":"3","textPreview":"3","textChars":1,"textLines":1,"bbox":[680,322,62,62]}
+{"kind":"textbox","id":"sh/z61032to","slide":13,"text":"Phase 3","textPreview":"Phase 3","textChars":7,"textLines":1,"bbox":[630,410,160,30]}
+{"kind":"textbox","id":"sh/y5szuxs3","slide":13,"text":"Exams, reports, notifications","textPreview":"Exams, reports, notifications","textChars":29,"textLines":1,"bbox":[600,450,220,60]}
+{"kind":"shape","id":"sh/9w3i9wbq","slide":13,"bbox":[462,353,218,0]}
+{"kind":"textbox","id":"sh/8vah0ral","slide":13,"text":"4","textPreview":"4","textChars":1,"textLines":1,"bbox":[960,322,62,62]}
+{"kind":"textbox","id":"sh/nu107mt0","slide":13,"text":"Phase 4","textPreview":"Phase 4","textChars":7,"textLines":1,"bbox":[910,410,160,30]}
+{"kind":"textbox","id":"sh/mtszyhsf","slide":13,"text":"Billing system and scaling","textPreview":"Billing system and scaling","textChars":26,"textLines":1,"bbox":[880,450,220,60]}
+{"kind":"shape","id":"sh/p0zyxsbm","slide":13,"bbox":[742,353,218,0]}
+{"kind":"textbox","id":"sh/4zqhona1","slide":13,"text":"Campus ERP","textPreview":"Campus ERP","textChars":10,"textLines":1,"bbox":[70,675,160,24]}
+{"kind":"textbox","id":"sh/gjuh4nix","slide":13,"text":"13","textPreview":"13","textChars":2,"textLines":1,"bbox":[1170,675,40,24]}
+{"kind":"notes","id":"nt/jz0qtv","slide":13,"text":"Present the roadmap as cumulative capability, not as disconnected tasks.\nThe system already has many backend foundations; future work can focus on product depth, UI coverage, mobile, and scaling.\n\n[Sources]\n- User-provided presentation brief in pasted-text.txt.\n- Local repository analysis: README.md and docs/project-understanding-report.md."}
+{"kind":"slide","id":"sl/0czcvc","slide":14,"title":"VISION","textShapes":11}
+{"kind":"textbox","id":"sh/hsjqhgj6","slide":14,"text":"VISION","textPreview":"VISION","textChars":6,"textLines":1,"bbox":[70,45,360,26]}
+{"kind":"textbox","id":"sh/ups7ml0v","slide":14,"text":"Campus ERP can grow into an intelligent school platform","textPreview":"Campus ERP can grow into an intelligent school platform","textChars":55,"textLines":1,"bbox":[70,82,930,52]}
+{"kind":"textbox","id":"sh/vq18fq1g","slide":14,"text":"The same architecture can support larger datasets, mobile apps, analytics, and subscription growth.","textPreview":"The same architecture can support larger datasets, mobile apps, analytics, and subscription growth.","textChars":99,"textLines":1,"bbox":[72,138,790,58]}
+{"kind":"textbox","id":"sh/8napkbip","slide":14,"text":"Scalable school operating system","textPreview":"Scalable school operating system","textChars":32,"textLines":1,"bbox":[450,280,380,110]}
+{"kind":"textbox","id":"sh/tojqdgja","slide":14,"text":"Hundreds of schools","textPreview":"Hundreds of schools","textChars":19,"textLines":1,"bbox":[100,220,270,70]}
+{"kind":"shape","id":"sh/6l87i10j","slide":14,"bbox":[370,255,80,80]}
+{"kind":"textbox","id":"sh/7m18b614","slide":14,"text":"Large academic datasets","textPreview":"Large academic datasets","textChars":23,"textLines":1,"bbox":[105,470,270,70]}
+{"kind":"shape","id":"sh/kzqpgbit","slide":14,"bbox":[375,335,75,170]}
+{"kind":"textbox","id":"sh/l0zq9wjy","slide":14,"text":"Mobile app integration","textPreview":"Mobile app integration","textChars":22,"textLines":1,"bbox":[915,220,270,70]}
+{"kind":"shape","id":"sh/9gvu5wnm","slide":14,"bbox":[830,255,85,80]}
+{"kind":"textbox","id":"sh/8fmtwb61","slide":14,"text":"Advanced analytics","textPreview":"Advanced analytics","textChars":18,"textLines":1,"bbox":[905,470,270,70]}
+{"kind":"shape","id":"sh/7etc365g","slide":14,"bbox":[830,335,75,170]}
+{"kind":"textbox","id":"sh/mdkbu1ov","slide":14,"text":"Payment subscriptions","textPreview":"Payment subscriptions","textChars":21,"textLines":1,"bbox":[510,520,270,70]}
+{"kind":"shape","id":"sh/lcba1wna","slide":14,"bbox":[640,390,5,130]}
+{"kind":"textbox","id":"sh/kb2tsr6p","slide":14,"text":"Campus ERP","textPreview":"Campus ERP","textChars":10,"textLines":1,"bbox":[70,675,160,24]}
+{"kind":"textbox","id":"sh/zatszm54","slide":14,"text":"14","textPreview":"14","textChars":2,"textLines":1,"bbox":[1170,675,40,24]}
+{"kind":"notes","id":"nt/0czcvc","slide":14,"text":"Close the technical argument by showing what the architecture enables next.\nThe vision is credible because the system already separates tenants, roles, modules, and data contexts.\n\n[Sources]\n- User-provided presentation brief in pasted-text.txt.\n- Local repository analysis: README.md and docs/project-understanding-report.md."}
+{"kind":"slide","id":"sl/ykhpw0","slide":15,"title":"Campus ERP transforms school management into a secure, scalable, and intellig...","textShapes":4}
+{"kind":"textbox","id":"sh/zet0balw","slide":15,"text":"Campus ERP transforms school management into a secure, scalable, and intelligent digital platform.","textPreview":"Campus ERP transforms school management into a secure, scalable, and intelligent digital platform.","textChars":98,"textLines":1,"bbox":[115,130,1040,155]}
+{"kind":"textbox","id":"sh/0f2hkfmh","slide":15,"text":"Demo: https://campuserpt.vercel.app/","textPreview":"Demo: https://campuserpt.vercel.app/","textChars":36,"textLines":1,"bbox":[345,340,590,36]}
+{"kind":"textbox","id":"sh/1gbid032","slide":15,"text":"Thank you","textPreview":"Thank you","textChars":9,"textLines":1,"bbox":[480,445,320,48]}
+{"kind":"textbox","id":"sh/mh4zm54n","slide":15,"text":"Questions","textPreview":"Questions","textChars":9,"textLines":1,"bbox":[515,505,250,38]}
+{"kind":"notes","id":"nt/ykhpw0","slide":15,"text":"End by connecting product value and technical quality.\nInvite questions about architecture, database design, tenant isolation, or the live demo.\n\n[Sources]\n- User-provided presentation brief in pasted-text.txt.\n- Project demo URL provided by user: https://campuserpt.vercel.app/.\n- Local repository analysis: README.md and docs/project-understanding-report.md."}

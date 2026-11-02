@@ -10,5 +10,6 @@ public class CreateClassRoomCommandValidator : AbstractValidator<CreateClassRoom
         RuleFor(x => x.GradeLevelId).NotEmpty();
         RuleFor(x => x.AcademicYearId).NotEmpty();
         RuleFor(x => x.Name).NotEmpty().MaximumLength(100);
+        When(x => x.RoomId.HasValue, () => RuleFor(x => x.RoomId).NotEmpty());
     }
 }

@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces;
+﻿using Application.Common.Constants;
+using Application.Common.Interfaces;
 using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Services;
 using Application.Common.Models;
@@ -10,17 +11,20 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<LoginRes
 {
     private readonly IIdentityService _identityService;
     private readonly IUserSchoolMembershipRepository _memberships;
+    private readonly ISchoolRepository _schools;
     private readonly IJwtTokenService _jwtService;
     private readonly IPermissionProvider _permissions;
 
     public LoginCommandHandler(
             IIdentityService identityService,
             IUserSchoolMembershipRepository memberships,
+            ISchoolRepository schools,
             IJwtTokenService jwtService,
             IPermissionProvider permissions)
     {
         _identityService = identityService;
         _memberships = memberships;
+        _schools = schools;
         _jwtService = jwtService;
         _permissions = permissions;
     }
@@ -52,12 +56,31 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<LoginRes
         {
             var activeMemberships = await _memberships.GetActiveMembershipsAsync(user.Id, ct);
 
+            // Suspended schools keep their memberships, but no user may sign in
+            // to them. Resolve which schools are usable in a single query so a
+            // user with memberships at several schools can still sign in to an
+            // active one.
+            var schoolIds = activeMemberships.Select(m => m.SchoolId).Distinct().ToList();
+            var activeSchoolIds = (await _schools.GetActiveSchoolIdsAsync(schoolIds, ct)).ToHashSet();
+
+            if (request.SchoolId.HasValue && !activeSchoolIds.Contains(request.SchoolId.Value))
+            {
+                var requestedMembership = activeMemberships
+                    .FirstOrDefault(m => m.SchoolId == request.SchoolId.Value);
+
+                return Result.Failure<LoginResponse>(requestedMembership is null
+                    ? "No active school membership found."
+                    : SchoolAccessMessages.Suspended);
+            }
+
             var membership = request.SchoolId.HasValue
                 ? activeMemberships.FirstOrDefault(m => m.SchoolId == request.SchoolId.Value)
-                : activeMemberships.FirstOrDefault();
+                : activeMemberships.FirstOrDefault(m => activeSchoolIds.Contains(m.SchoolId));
 
             if (membership is null)
-                return Result.Failure<LoginResponse>("No active school membership found.");
+                return Result.Failure<LoginResponse>(activeMemberships.Count > 0
+                    ? SchoolAccessMessages.Suspended
+                    : "No active school membership found.");
 
             schoolId = membership.SchoolId;
 

@@ -52,11 +52,14 @@ public class AcademicReadService : IAcademicReadService
         return await (from c in query
                       join g in _db.GradeLevels.AsNoTracking() on c.GradeLevelId equals g.Id
                       join y in _db.AcademicYears.AsNoTracking() on c.AcademicYearId equals y.Id
+                      join r in _db.Rooms.AsNoTracking() on c.RoomId equals (Guid?)r.Id into rooms
+                      from r in rooms.DefaultIfEmpty()
                       orderby g.Sequence, c.Name
                       select new ClassRoomDetailDto(
-                          c.Id, c.Name, g.Name, y.Name,
+                          c.Id, c.Name, g.Id, g.Name, y.Name,
                           _db.StudentEnrollments.Count(e => e.ClassRoomId == c.Id && e.Status == Domain.Enums.EnrollmentStatus.Active),
-                          _db.TeachingAssignments.Count(a => a.ClassRoomId == c.Id)))
+                          _db.TeachingAssignments.Count(a => a.ClassRoomId == c.Id),
+                          c.RoomId, r == null ? null : r.Name))
                      .ToListAsync(ct);
     }
 

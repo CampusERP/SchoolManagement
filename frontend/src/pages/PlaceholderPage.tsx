@@ -1,6 +1,7 @@
 import { Construction } from "lucide-react";
 import { ParentChildrenPage, ParentDashboardPage, ParentResourcePage, StudentDashboardPage, StudentResourcePage } from "@/pages/portal/PortalPages";
 import { useAuthStore } from "@/store/authStore";
+import { t } from "@/i18n";
 
 interface PlaceholderPageProps {
   title?: string;
@@ -15,19 +16,19 @@ export default function PlaceholderPage({
 
   if (role === "student") {
     if (title === "Student Dashboard") return <StudentDashboardPage />;
-    if (title === "My Classes") return <StudentResourcePage title="My classes" resource="classes" />;
-    if (title === "My Grades") return <StudentResourcePage title="My grades" resource="exams" />;
-    if (title === "My Schedule") return <StudentResourcePage title="My timetable" resource="schedule" />;
-    if (title === "My Attendance") return <StudentResourcePage title="My attendance" resource="attendance" />;
-    if (title === "My Profile") return <StudentResourcePage title="My profile" resource="profile" />;
+    if (title === "My Classes") return <StudentResourcePage title={t("My classes")} resource="classes" />;
+    if (title === "My Grades") return <StudentResourcePage title={t("My grades")} resource="exams" />;
+    if (title === "My Schedule") return <StudentResourcePage title={t("My timetable")} resource="schedule" />;
+    if (title === "My Attendance") return <StudentResourcePage title={t("My attendance")} resource="attendance" />;
+    if (title === "My Profile") return <StudentResourcePage title={t("My profile")} resource="profile" />;
   }
 
   if (role === "parent") {
     if (title === "Parent Dashboard") return <ParentDashboardPage />;
     if (title === "My Children") return <ParentChildrenPage />;
-    if (title === "Children's Grades") return <ParentResourcePage title="Children's grades" resource="grades" />;
-    if (title === "Children's Attendance") return <ParentResourcePage title="Children's attendance" resource="attendance" />;
-    if (title === "My Profile") return <ParentResourcePage title="My profile" resource="profile" />;
+    if (title === "Children's Grades") return <ParentResourcePage title={t("Children's grades")} resource="grades" />;
+    if (title === "Children's Attendance") return <ParentResourcePage title={t("Children's attendance")} resource="attendance" />;
+    if (title === "My Profile") return <ParentResourcePage title={t("My profile")} resource="profile" />;
   }
 
   return (
@@ -35,8 +36,8 @@ export default function PlaceholderPage({
       <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[var(--color-primary-light)] text-[var(--color-primary)]">
         <Construction className="h-8 w-8" />
       </div>
-      <h2 className="text-xl font-semibold text-[var(--color-text-primary)]">{title}</h2>
-      <p className="mt-1 text-sm text-[var(--color-text-secondary)]">{description}</p>
+      <h2 className="text-xl font-semibold text-[var(--color-text-primary)]">{t(title)}</h2>
+      <p className="mt-1 text-sm text-[var(--color-text-secondary)]">{t(description)}</p>
     </div>
   );
 }

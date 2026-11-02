@@ -5,16 +5,26 @@ import ProtectedRoute from "@/router/guards";
 import RequirePermission from "@/router/RequirePermission";
 import AppLayout from "@/layouts/AppLayout";
 import AuthLayout from "@/layouts/AuthLayout";
+import PublicLayout from "@/layouts/public/PublicLayout";
 import PortalLayout from "@/layouts/PortalLayout";
 import { ParentChildrenPage, ParentDashboardPage, ParentResourcePage, StudentDashboardPage, StudentResourcePage } from "@/pages/portal/PortalPages";
+import { t } from "@/i18n";
 
+const LandingPage = lazy(() => import("@/pages/public/LandingPage"));
+const SchoolRegistrationPage = lazy(() => import("@/pages/public/SchoolRegistrationPage"));
 const LoginPage = lazy(() => import("@/pages/auth/LoginPage"));
 const PlatformDashboardPage = lazy(() => import("@/pages/platform/PlatformDashboardPage"));
 const SchoolsPage = lazy(() => import("@/pages/platform/SchoolsPage"));
 const CreateSchoolPage = lazy(() => import("@/pages/platform/CreateSchoolPage"));
 const RegisterAdminPage = lazy(() => import("@/pages/platform/RegisterAdminPage"));
+const RegistrationRequestsPage = lazy(() => import("@/pages/platform/RegistrationRequestsPage"));
+const RegistrationRequestDetailPage = lazy(() => import("@/pages/platform/RegistrationRequestDetailPage"));
 const SchoolDetailPage = lazy(() => import("@/pages/platform/SchoolDetailPage"));
 const EditSchoolPage = lazy(() => import("@/pages/platform/EditSchoolPage"));
+const PlatformBillingPage = lazy(() => import("@/pages/platform/BillingPage"));
+const SchoolBillingPage = lazy(() => import("@/pages/school/BillingPage"));
+const SubscriptionExpiredPage = lazy(() => import("@/pages/public/SubscriptionExpiredPage"));
+const SchoolSuspendedPage = lazy(() => import("@/pages/public/SchoolSuspendedPage"));
 const SchoolDashboardPage = lazy(() => import("@/pages/school/SchoolDashboardPage"));
 const TeacherDashboardPage = lazy(() => import("@/pages/teacher/TeacherDashboardPage"));
 const TeacherClassesPage = lazy(() => import("@/pages/teacher/TeacherClassesPage"));
@@ -31,6 +41,8 @@ const ClassroomDetailPage = lazy(() => import("@/pages/school/academic/Classroom
 const GradeLevelsPage = lazy(() => import("@/pages/school/academic/GradeLevelsPage"));
 const EducationStagesPage = lazy(() => import("@/pages/school/academic/EducationStagesPage"));
 const RoomsPage = lazy(() => import("@/pages/school/academic/RoomsPage"));
+const SubjectsPage = lazy(() => import("@/pages/school/academic/SubjectsPage"));
+const BooksPage = lazy(() => import("@/pages/school/academic/BooksPage"));
 
 // School admin — People
 const StudentsPage = lazy(() => import("@/pages/school/people/StudentsPage"));
@@ -46,6 +58,14 @@ const EnrollmentPage = lazy(() => import("@/pages/school/enrollment/EnrollmentPa
 const AssignTeacherPage = lazy(() => import("@/pages/school/enrollment/AssignTeacherPage"));
 
 export const routes: RouteObject[] = [
+  {
+    path: "/",
+    element: <PublicLayout />,
+    children: [
+      { index: true, element: <LandingPage /> },
+      { path: "register-school", element: <SchoolRegistrationPage /> },
+    ],
+  },
   {
     path: "/auth",
     element: <AuthLayout />,
@@ -66,6 +86,9 @@ export const routes: RouteObject[] = [
           { path: "schools/:id", element: <SchoolDetailPage /> },
           { path: "schools/:id/edit", element: <EditSchoolPage /> },
           { path: "admins/new", element: <RegisterAdminPage /> },
+          { path: "billing", element: <PlatformBillingPage /> },
+          { path: "registration-requests", element: <RegistrationRequestsPage /> },
+          { path: "registration-requests/:id", element: <RegistrationRequestDetailPage /> },
         ],
       },
     ],
@@ -95,6 +118,8 @@ export const routes: RouteObject[] = [
           { path: "grade-levels", element: <GradeLevelsPage /> },
           { path: "education-stages", element: <EducationStagesPage /> },
           { path: "rooms", element: <RoomsPage /> },
+          { path: "subjects", element: <SubjectsPage /> },
+          { path: "books", element: <BooksPage /> },
         ],
       },
     ],
@@ -129,6 +154,36 @@ export const routes: RouteObject[] = [
         ],
       },
     ],
+  },
+  {
+    path: "/billing",
+    element: <RequirePermission permission="billing.read" requiredRole="school_admin" />,
+    children: [
+      {
+        element: <AppLayout />,
+        children: [
+          { index: true, element: <SchoolBillingPage /> },
+        ],
+      },
+    ],
+  },
+  {
+    path: "/subscription-expired",
+    element: <ProtectedRoute />,
+    children: [
+      {
+        element: <AppLayout />,
+        children: [
+          { index: true, element: <SubscriptionExpiredPage /> },
+        ],
+      },
+    ],
+  },
+  {
+    // Deliberately outside ProtectedRoute/AppLayout: a suspended school's API
+    // requests are all blocked, so this page must render without data fetching.
+    path: "/school-suspended",
+    element: <SchoolSuspendedPage />,
   },
   {
     path: "/teacher",
@@ -180,11 +235,11 @@ export const routes: RouteObject[] = [
       },
     ],
   },
-  { path: "/student/assignments", element: <ProtectedRoute requiredRole="student" />, children: [{ element: <PortalLayout />, children: [{ index: true, element: <StudentResourcePage title="Assignments" resource="assignments" /> }] }] },
-  { path: "/student/notifications", element: <ProtectedRoute requiredRole="student" />, children: [{ element: <PortalLayout />, children: [{ index: true, element: <StudentResourcePage title="Notices" resource="notifications" /> }] }] },
-  { path: "/student/report-cards", element: <ProtectedRoute requiredRole="student" />, children: [{ element: <PortalLayout />, children: [{ index: true, element: <StudentResourcePage title="Report cards" resource="report-cards" /> }] }] },
-  { path: "/parent/children/:studentId", element: <ProtectedRoute requiredRole="parent" />, children: [{ element: <PortalLayout />, children: [{ index: true, element: <ParentResourcePage title="Child overview" resource="profile" /> }, { path: "attendance", element: <ParentResourcePage title="Attendance" resource="attendance" /> }, { path: "grades", element: <ParentResourcePage title="Grades" resource="grades" /> }, { path: "assignments", element: <ParentResourcePage title="Assignments" resource="assignments" /> }, { path: "report-cards", element: <ParentResourcePage title="Report cards" resource="report-cards" /> }] }] },
-  { path: "/parent/billing", element: <ProtectedRoute requiredRole="parent" />, children: [{ element: <PortalLayout />, children: [{ index: true, element: <ParentResourcePage title="Payments & fees" resource="billing" /> }] }] },
-  { path: "/parent/notifications", element: <ProtectedRoute requiredRole="parent" />, children: [{ element: <PortalLayout />, children: [{ index: true, element: <ParentResourcePage title="Notices" resource="notifications" /> }] }] },
-  { path: "*", element: <Navigate to="/auth/login" replace /> },
+  { path: "/student/assignments", element: <ProtectedRoute requiredRole="student" />, children: [{ element: <PortalLayout />, children: [{ index: true, element: <StudentResourcePage title={t("Assignments")} resource="assignments" /> }] }] },
+  { path: "/student/notifications", element: <ProtectedRoute requiredRole="student" />, children: [{ element: <PortalLayout />, children: [{ index: true, element: <StudentResourcePage title={t("Notices")} resource="notifications" /> }] }] },
+  { path: "/student/report-cards", element: <ProtectedRoute requiredRole="student" />, children: [{ element: <PortalLayout />, children: [{ index: true, element: <StudentResourcePage title={t("Report cards")} resource="report-cards" /> }] }] },
+  { path: "/parent/children/:studentId", element: <ProtectedRoute requiredRole="parent" />, children: [{ element: <PortalLayout />, children: [{ index: true, element: <ParentResourcePage title={t("Child overview")} resource="profile" /> }, { path: "attendance", element: <ParentResourcePage title={t("Attendance")} resource="attendance" /> }, { path: "grades", element: <ParentResourcePage title={t("Grades")} resource="grades" /> }, { path: "assignments", element: <ParentResourcePage title={t("Assignments")} resource="assignments" /> }, { path: "report-cards", element: <ParentResourcePage title={t("Report cards")} resource="report-cards" /> }] }] },
+  { path: "/parent/billing", element: <ProtectedRoute requiredRole="parent" />, children: [{ element: <PortalLayout />, children: [{ index: true, element: <ParentResourcePage title={t("Payments & fees")} resource="billing" /> }] }] },
+  { path: "/parent/notifications", element: <ProtectedRoute requiredRole="parent" />, children: [{ element: <PortalLayout />, children: [{ index: true, element: <ParentResourcePage title={t("Notices")} resource="notifications" /> }] }] },
+  { path: "*", element: <Navigate to="/" replace /> },
 ];

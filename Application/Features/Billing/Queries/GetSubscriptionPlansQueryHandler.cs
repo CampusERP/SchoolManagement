@@ -13,7 +13,7 @@ public class GetSubscriptionPlansQueryHandler
     public async Task<Result<List<SubscriptionPlanDto>>> Handle(
         GetSubscriptionPlansQuery request, CancellationToken ct)
     {
-        var items = await _readService.GetSubscriptionPlansAsync(ct);
+        var items = await _readService.GetSubscriptionPlansAsync(request.ActiveOnly, ct);
         return Result.Success(items);
     }
 }

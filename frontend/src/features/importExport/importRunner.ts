@@ -1,5 +1,6 @@
 import { parseExcelFile } from "@/lib/excel";
 import type { ParsedRow } from "@/lib/excel";
+import { t } from "@/i18n";
 import {
   mapStudentRow,
   mapTeacherRow,
@@ -29,7 +30,7 @@ function buildMapper(
 
   if (kind === "students") {
     return {
-      label: "student",
+      label: "Student",
       create,
       map: (values) => {
         const r = mapStudentRow(values);
@@ -39,7 +40,7 @@ function buildMapper(
   }
   if (kind === "teachers") {
     return {
-      label: "teacher",
+      label: "Teacher",
       create,
       map: (values) => {
         const r = mapTeacherRow(values);
@@ -48,7 +49,7 @@ function buildMapper(
     };
   }
   return {
-    label: "parent",
+    label: "Parent",
     create,
     map: (values) => {
       const r = mapParentRow(values);
@@ -73,7 +74,7 @@ export async function importPeopleFromExcel(
     const { data, error } = mapper.map(row.values);
 
     if (error || !data) {
-      results.push({ rowNumber: row.rowNumber, ok: false, error: error ?? "Invalid row" });
+      results.push({ rowNumber: row.rowNumber, ok: false, error: error ?? t("Invalid row") });
       continue;
     }
 
@@ -85,7 +86,7 @@ export async function importPeopleFromExcel(
       results.push({
         rowNumber: row.rowNumber,
         ok: false,
-        error: `Failed to create ${mapper.label}`,
+        error: t("Failed to create {entity}", { entity: t(mapper.label) }),
       });
     }
   }

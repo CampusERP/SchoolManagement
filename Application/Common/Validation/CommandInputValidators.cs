@@ -29,7 +29,7 @@ public sealed class UpdateAcademicYearCommandValidator : AbstractValidator<Updat
 
 public sealed class UpdateClassRoomCommandValidator : AbstractValidator<UpdateClassRoomCommand>
 {
-    public UpdateClassRoomCommandValidator() { RuleFor(x => x.ClassRoomId).NotEmpty(); RuleFor(x => x.Name).NotEmpty().MaximumLength(100); }
+    public UpdateClassRoomCommandValidator() { RuleFor(x => x.ClassRoomId).NotEmpty(); RuleFor(x => x.Name).NotEmpty().MaximumLength(100); When(x => x.RoomId.HasValue, () => RuleFor(x => x.RoomId).NotEmpty()); }
 }
 
 public sealed class UpdateGradeLevelCommandValidator : AbstractValidator<UpdateGradeLevelCommand>

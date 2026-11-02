@@ -10,7 +10,7 @@ public class CreateTermCommandValidator : AbstractValidator<CreateTermCommand>
         RuleFor(x => x.AcademicYearId).NotEmpty();
         RuleFor(x => x.Name).NotEmpty().MaximumLength(50);
         RuleFor(x => x.Sequence).GreaterThan(0);
-        RuleFor(x => x.EndDate).GreaterThan(x => x.StartDate)
+        RuleFor(x => x.EndDate).Must((command, endDate) => endDate.Date > command.StartDate.Date)
             .WithMessage("Term end date must be after start date.");
     }
 }

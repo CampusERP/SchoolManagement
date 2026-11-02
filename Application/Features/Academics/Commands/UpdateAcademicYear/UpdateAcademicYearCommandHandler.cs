@@ -16,7 +16,7 @@ public class UpdateAcademicYearCommandHandler : IRequestHandler<UpdateAcademicYe
     public async Task<Result> Handle(UpdateAcademicYearCommand request, CancellationToken ct)
     {
         var year = await _academicYears.GetByIdAsync(request.AcademicYearId, ct);
-        if (year is null) return Result.Failure("Academic year not found.");
+        if (year is null || year.SchoolId != request.SchoolId) return Result.Failure("Academic year not found.");
 
         try
         {

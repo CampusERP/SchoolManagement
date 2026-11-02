@@ -16,6 +16,8 @@ public class UpdateSchoolCommandHandler : IRequestHandler<UpdateSchoolCommand, R
         var school = await _schools.GetByIdAsync(request.SchoolId, ct);
         if (school is null) throw new NotFoundException(nameof(School), request.SchoolId);
         school.Update(request.Name, request.Address, request.Phone, request.Email);
+        if (request.Status is not null)
+            school.ChangeStatus(request.Status);
         return Result.Success();
     }
 }

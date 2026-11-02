@@ -9,9 +9,9 @@ public class SubjectQueryRepository : ISubjectQueryRepository
     private readonly ApplicationDbContext _db;
     public SubjectQueryRepository(ApplicationDbContext db) => _db = db;
 
-    public async Task<List<SubjectDto>> GetSubjectsAsync(Guid? gradeLevelId, CancellationToken cancellationToken = default)
+    public async Task<List<SubjectDto>> GetSubjectsAsync(Guid schoolId, Guid? gradeLevelId, CancellationToken cancellationToken = default)
     {
-        var query = _db.Subjects.AsNoTracking();
+        var query = _db.Subjects.AsNoTracking().Where(subject => subject.SchoolId == null || subject.SchoolId == schoolId);
         if (gradeLevelId.HasValue)
         {
             var subjectIds = _db.CurriculumSubjects
@@ -19,7 +19,7 @@ public class SubjectQueryRepository : ISubjectQueryRepository
                 .Select(cs => cs.SubjectId);
             query = query.Where(s => subjectIds.Contains(s.Id));
         }
-        return await query.Select(s => new SubjectDto(s.Id, s.Code, s.Name, s.Description))
+        return await query.Select(s => new SubjectDto(s.Id, s.Code, s.Name, s.Description, s.SchoolId != null))
             .ToListAsync(cancellationToken);
     }
 }

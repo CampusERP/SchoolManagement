@@ -27,4 +27,12 @@ public class Campus : AuditableEntity
 
         return new Campus(Guid.NewGuid(), schoolId, name, address);
     }
+
+    public void Update(string name, string address)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Campus name is required.", nameof(name));
+        Name = name;
+        Address = address;
+    }
 }

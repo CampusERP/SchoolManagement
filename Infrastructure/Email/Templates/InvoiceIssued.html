@@ -1,0 +1,20 @@
+<!-- subject: Invoice {{InvoiceNumber}} from {{AppName}} -->
+<h1 style="margin:0 0 16px;font-size:22px;color:#111827;">New invoice</h1>
+<p style="margin:0 0 12px;">Hi {{ContactName}},</p>
+<p style="margin:0 0 16px;">
+  A new invoice has been issued for <strong>{{SchoolName}}</strong>.
+</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 20px;background:#f8fafc;border:1px solid #e5e7eb;border-radius:8px;">
+  <tr>
+    <td style="padding:16px;">
+      <p style="margin:0 0 8px;"><strong>Invoice:</strong> {{InvoiceNumber}}</p>
+      <p style="margin:0 0 8px;"><strong>Plan:</strong> {{PlanName}}</p>
+      <p style="margin:0 0 8px;"><strong>Amount:</strong> {{Amount}}</p>
+      <p style="margin:0;"><strong>Due date:</strong> {{DueDate}}</p>
+    </td>
+  </tr>
+</table>
+<p style="margin:0 0 20px;">
+  Please contact our team at <a href="mailto:{{SupportEmail}}" style="color:#2563eb;">{{SupportEmail}}</a>
+  to arrange payment. Your subscription period starts automatically once the invoice is paid in full.
+</p>

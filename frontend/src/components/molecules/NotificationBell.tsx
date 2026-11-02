@@ -1,6 +1,7 @@
 import { Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { t } from "@/i18n";
 
 interface NotificationBellProps {
   count?: number;
@@ -15,7 +16,7 @@ export default function NotificationBell({
     if (onClick) {
       onClick();
     } else {
-      toast.info("Notifications feature coming soon!");
+      toast.info(t("Notifications feature coming soon!"));
     }
   };
 
@@ -23,6 +24,7 @@ export default function NotificationBell({
     <button
       type="button"
       onClick={handleClick}
+      aria-label={t("Notifications")}
       className="relative flex h-10 w-10 items-center justify-center rounded-[var(--border-radius)] text-[var(--color-text-secondary)] hover:bg-[var(--color-border)]/50 hover:text-[var(--color-text-primary)]"
     >
       <Bell className="h-5 w-5" />
@@ -30,7 +32,7 @@ export default function NotificationBell({
       {count > 0 && (
         <span
           className={cn(
-            "absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--color-danger)] px-1 text-[10px] font-bold leading-none text-white"
+            "absolute -end-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--color-danger)] px-1 text-[10px] font-bold leading-none text-white"
           )}
         >
           {count > 99 ? "99+" : count}

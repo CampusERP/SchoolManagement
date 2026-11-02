@@ -11,17 +11,23 @@ namespace Application.Features.People.Commands.CreateTeacher;
 public class CreateTeacherCommandHandler : IRequestHandler<CreateTeacherCommand, Result<Guid>>
 {
     private readonly ITeacherRepository _teachers;
+    private readonly ISchoolRepository _schools;
     private readonly IIdentityService _identityService;
     private readonly IOutboxService _outbox;
+    private readonly IEmailNotifier _emailNotifier;
 
     public CreateTeacherCommandHandler(
         ITeacherRepository teachers,
+        ISchoolRepository schools,
         IIdentityService identityService,
-        IOutboxService outbox)
+        IOutboxService outbox,
+        IEmailNotifier emailNotifier)
     {
         _teachers = teachers;
+        _schools = schools;
         _identityService = identityService;
         _outbox = outbox;
+        _emailNotifier = emailNotifier;
     }
 
     public async Task<Result<Guid>> Handle(CreateTeacherCommand request, CancellationToken ct)
@@ -47,6 +53,21 @@ public class CreateTeacherCommandHandler : IRequestHandler<CreateTeacherCommand,
             await _teachers.AddAsync(teacher, ct);
 
             _outbox.Publish(new LinkTeacherLoginMessage(teacher.Id, userId));
+
+            var school = await _schools.GetByIdAsync(request.SchoolId, ct);
+            await _emailNotifier.SendAsync(
+                userId,
+                EmailTemplate.Welcome,
+                new Dictionary<string, string?>
+                {
+                    ["Name"] = $"{request.FirstName} {request.LastName}".Trim(),
+                    ["Role"] = "Teacher",
+                    ["SchoolName"] = school?.Name ?? "your school",
+                    ["Email"] = request.Email,
+                    ["Password"] = request.Password,
+                    ["LoginUrl"] = $"{_emailNotifier.AppBaseUrl}/auth/login"
+                },
+                ct);
 
             return Result.Success(teacher.Id);
         }

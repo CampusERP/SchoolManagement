@@ -50,6 +50,15 @@ export const useUpdateAcademicYear = () => {
   });
 };
 
+export const useDeleteAcademicYear = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, schoolId }: { id: string; schoolId: string }) =>
+      AcademicsApi.deleteAcademicYear(id, schoolId),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["academic-years"] }),
+  });
+};
+
 export const useCreateTerm = () => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -204,8 +213,106 @@ export const useUpdateRoom = () => {
 
 // ── Subjects ───────────────────────────────────────────────────────
 export const useSubjects = (gradeLevelId?: string) => {
+  const schoolId = useAuthStore((s) => s.user?.schoolId);
   return useQuery({
-    queryKey: ["subjects", gradeLevelId],
-    queryFn: () => AcademicsApi.getSubjects(gradeLevelId),
+    queryKey: ["subjects", schoolId, gradeLevelId],
+    queryFn: () => AcademicsApi.getSubjects(schoolId!, gradeLevelId),
+    enabled: !!schoolId,
+  });
+};
+
+export const useGradeCurriculum = (gradeLevelId: string | undefined) => {
+  const schoolId = useAuthStore((s) => s.user?.schoolId);
+  return useQuery({
+    queryKey: ["grade-curriculum", schoolId, gradeLevelId],
+    queryFn: () => AcademicsApi.getGradeCurriculum(schoolId!, gradeLevelId!),
+    enabled: !!schoolId && !!gradeLevelId,
+  });
+};
+
+export const useAddCurriculumSubject = () => {
+  const client = useQueryClient();
+  const schoolId = useAuthStore((s) => s.user?.schoolId);
+  return useMutation({
+    mutationFn: ({ gradeLevelId, subjectId }: { gradeLevelId: string; subjectId: string }) =>
+      AcademicsApi.addCurriculumSubject(schoolId!, gradeLevelId, subjectId),
+    onSuccess: () => client.invalidateQueries({ queryKey: ["grade-curriculum"] }),
+  });
+};
+
+export const useCreateSchoolSubject = () => {
+  const client = useQueryClient();
+  const schoolId = useAuthStore((s) => s.user?.schoolId);
+  return useMutation({
+    mutationFn: ({ gradeLevelId, data }: { gradeLevelId: string; data: import("./api").SubjectInput }) =>
+      AcademicsApi.createSchoolSubject(schoolId!, gradeLevelId, data),
+    onSuccess: () => {
+      client.invalidateQueries({ queryKey: ["grade-curriculum"] });
+      client.invalidateQueries({ queryKey: ["subjects"] });
+    },
+  });
+};
+
+export const useUpdateSchoolSubject = () => {
+  const client = useQueryClient();
+  const schoolId = useAuthStore((s) => s.user?.schoolId);
+  return useMutation({
+    mutationFn: ({ curriculumSubjectId, data }: { curriculumSubjectId: string; data: import("./api").SubjectInput }) =>
+      AcademicsApi.updateSchoolSubject(schoolId!, curriculumSubjectId, data),
+    onSuccess: () => {
+      client.invalidateQueries({ queryKey: ["grade-curriculum"] });
+      client.invalidateQueries({ queryKey: ["subjects"] });
+    },
+  });
+};
+
+export const useDeleteSchoolSubject = () => {
+  const client = useQueryClient();
+  const schoolId = useAuthStore((s) => s.user?.schoolId);
+  return useMutation({
+    mutationFn: (subjectId: string) => AcademicsApi.deleteSchoolSubject(schoolId!, subjectId),
+    onSuccess: () => {
+      client.invalidateQueries({ queryKey: ["grade-curriculum"] });
+      client.invalidateQueries({ queryKey: ["subjects"] });
+    },
+  });
+};
+
+export const useRemoveCurriculumSubject = () => {
+  const client = useQueryClient();
+  const schoolId = useAuthStore((s) => s.user?.schoolId);
+  return useMutation({
+    mutationFn: (curriculumSubjectId: string) => AcademicsApi.removeCurriculumSubject(schoolId!, curriculumSubjectId),
+    onSuccess: () => client.invalidateQueries({ queryKey: ["grade-curriculum"] }),
+  });
+};
+
+export const useCreateSubjectBook = () => {
+  const client = useQueryClient();
+  const schoolId = useAuthStore((s) => s.user?.schoolId);
+  return useMutation({
+    mutationFn: ({ curriculumSubjectId, data }: { curriculumSubjectId: string; data: import("@/types/academic.types").SubjectBookInput }) =>
+      AcademicsApi.createSubjectBook(schoolId!, curriculumSubjectId, data),
+    onSuccess: () => client.invalidateQueries({ queryKey: ["grade-curriculum"] }),
+  });
+};
+
+export const useUpdateSubjectBook = () => {
+  const client = useQueryClient();
+  const schoolId = useAuthStore((s) => s.user?.schoolId);
+  return useMutation({
+    mutationFn: ({ curriculumSubjectId, bookId, data }: { curriculumSubjectId: string; bookId: string; data: import("@/types/academic.types").SubjectBookInput }) =>
+      AcademicsApi.updateSubjectBook(schoolId!, curriculumSubjectId, bookId, data),
+    onSuccess: () => client.invalidateQueries({ queryKey: ["grade-curriculum"] }),
+  });
+};
+
+export const useDeleteSubjectBook = () => {
+  const client = useQueryClient();
+  const schoolId = useAuthStore((s) => s.user?.schoolId);
+  return useMutation({
+    mutationFn: ({ curriculumSubjectId, bookId }: { curriculumSubjectId: string; bookId: string }) =>
+      AcademicsApi.deleteSubjectBook(schoolId!, curriculumSubjectId, bookId),
+    onSuccess: () => client.invalidateQueries({ queryKey: ["grade-curriculum"] }),
   });
 };

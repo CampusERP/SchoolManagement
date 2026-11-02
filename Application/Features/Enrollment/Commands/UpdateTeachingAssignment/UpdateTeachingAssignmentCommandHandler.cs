@@ -12,15 +12,18 @@ public class UpdateTeachingAssignmentCommandHandler : IRequestHandler<UpdateTeac
     private readonly ITeachingAssignmentRepository _assignments;
     private readonly ITeacherRepository _teachers;
     private readonly IClassRoomRepository _classRooms;
+    private readonly ICurriculumSubjectRepository _curriculumSubjects;
 
     public UpdateTeachingAssignmentCommandHandler(
         ITeachingAssignmentRepository assignments,
         ITeacherRepository teachers,
-        IClassRoomRepository classRooms)
+        IClassRoomRepository classRooms,
+        ICurriculumSubjectRepository curriculumSubjects)
     {
         _assignments = assignments;
         _teachers = teachers;
         _classRooms = classRooms;
+        _curriculumSubjects = curriculumSubjects;
     }
 
     public async Task<Result<Guid>> Handle(UpdateTeachingAssignmentCommand request, CancellationToken ct)
@@ -39,6 +42,9 @@ public class UpdateTeachingAssignmentCommandHandler : IRequestHandler<UpdateTeac
         var classRoom = await _classRooms.GetByIdAsync(request.ClassRoomId, ct);
         if (classRoom is null || classRoom.SchoolId != request.SchoolId)
             return Result.Failure<Guid>($"ClassRoom with ID '{request.ClassRoomId}' was not found in this school.");
+
+        if (!await _curriculumSubjects.ExistsAsync(classRoom.GradeLevelId, request.SubjectId, ct))
+            return Result.Failure<Guid>("The selected subject is not assigned to this classroom's grade level.");
 
         var duplicate = await _assignments.ExistsAsync(request.SchoolId, request.TeacherId, request.ClassRoomId, request.SubjectId, request.TermId, ct);
         if (duplicate && (request.ClassRoomId != assignment.ClassRoomId || request.SubjectId != assignment.SubjectId || request.TermId != assignment.TermId))

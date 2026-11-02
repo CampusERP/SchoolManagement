@@ -25,34 +25,36 @@ public class AcademicYearRepository : IAcademicYearRepository
     public async Task AddAsync(AcademicYear year, CancellationToken ct = default) =>
         await _context.AcademicYears.AddAsync(year, ct);
 
+    public Task DeleteAsync(AcademicYear year, CancellationToken ct = default)
+    {
+        _context.AcademicYears.Remove(year);
+        return Task.CompletedTask;
+    }
+
     /// <summary>
-    /// Persists a newly added child Term. EF mis-classifies the new Term as
-    /// Modified (its RowVersion concurrency token is value-generated), which
-    /// produces an UPDATE instead of an INSERT and fails with a
-    /// DbUpdateConcurrencyException. We force the Term to Added and the
-    /// unchanged aggregate root to Unchanged so only the Term is inserted.
+    /// Marks a newly added child Term for insertion. The mediator transaction
+    /// behavior owns the save boundary for commands.
     /// </summary>
-    public async Task<Guid> AddTermAsync(AcademicYear year, CancellationToken ct = default)
+    public Task<Guid> AddTermAsync(AcademicYear year, CancellationToken ct = default)
     {
         var term = year.Terms.Last();
         _context.Entry(year).State = EntityState.Unchanged;
         _context.Entry(term).State = EntityState.Added;
-        await _context.SaveChangesAsync(ct);
-        return term.Id;
+        return Task.FromResult(term.Id);
     }
 
-    public async Task UpdateTermAsync(AcademicYear year, Term term, CancellationToken ct = default)
+    public Task UpdateTermAsync(AcademicYear year, Term term, CancellationToken ct = default)
     {
         _context.Entry(year).State = EntityState.Unchanged;
         _context.Entry(term).State = EntityState.Modified;
-        await _context.SaveChangesAsync(ct);
+        return Task.CompletedTask;
     }
 
-    public async Task DeleteTermAsync(AcademicYear year, Term term, CancellationToken ct = default)
+    public Task DeleteTermAsync(AcademicYear year, Term term, CancellationToken ct = default)
     {
         _context.Entry(year).State = EntityState.Unchanged;
         _context.Entry(term).State = EntityState.Deleted;
-        await _context.SaveChangesAsync(ct);
+        return Task.CompletedTask;
     }
 
     public async Task SaveChangesAsync(CancellationToken ct = default)

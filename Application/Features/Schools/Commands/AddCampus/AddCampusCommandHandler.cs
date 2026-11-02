@@ -15,7 +15,8 @@ public class AddCampusCommandHandler : IRequestHandler<AddCampusCommand, Result<
     {
         var school = await _schools.GetByIdAsync(request.SchoolId, ct);
         if (school is null) throw new NotFoundException(nameof(School), request.SchoolId);
-        var campus = school.AddCampus(request.Name, request.Address);
-        return Result.Success(campus.Id);
+        school.AddCampus(request.Name, request.Address);
+        var campusId = await _schools.AddCampusAsync(school, ct);
+        return Result.Success(campusId);
     }
 }

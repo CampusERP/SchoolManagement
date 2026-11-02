@@ -19,12 +19,35 @@ public class SchoolReadService : ISchoolReadService
         _appDb = appDb;
     }
 
-    public async Task<PagedResult<SchoolListDto>> GetSchoolsAsync(PaginationParams pagination, CancellationToken ct = default)
+    public async Task<PagedResult<SchoolListDto>> GetSchoolsAsync(
+        PaginationParams pagination,
+        string? searchTerm = null,
+        CancellationToken ct = default)
     {
         var query = _platformDb.Schools.AsNoTracking().Where(s => !s.IsDeleted);
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            var terms = searchTerm
+                .Trim()
+                .ToLower()
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Distinct()
+                .Take(5)
+                .ToArray();
+
+            foreach (var term in terms)
+            {
+                query = query.Where(s =>
+                    s.Name.ToLower().Contains(term) ||
+                    s.SubdomainCode.ToLower().Contains(term) ||
+                    (s.Email != null && s.Email.ToLower().Contains(term)));
+            }
+        }
+
         var total = await query.CountAsync(ct);
         var items = await query
-            .OrderBy(s => s.Name)
+            .OrderByDescending(s => s.CreatedAtUtc)
             .Skip(pagination.Skip).Take(pagination.PageSize)
             .Select(s => new SchoolListDto(s.Id, s.Name, s.SubdomainCode, s.Status, 0, 0, s.CreatedAtUtc))
             .ToListAsync(ct);
@@ -34,12 +57,32 @@ public class SchoolReadService : ISchoolReadService
 
     public async Task<SchoolDetailDto?> GetSchoolByIdAsync(Guid schoolId, CancellationToken ct = default)
     {
-        return await _platformDb.Schools.AsNoTracking()
+        var school = await _platformDb.Schools.AsNoTracking()
             .Where(s => s.Id == schoolId && !s.IsDeleted)
             .Select(s => new SchoolDetailDto(
                 s.Id, s.Name, s.SubdomainCode, s.Status,
-                s.Campuses.Select(c => new CampusDto(c.Id, c.Name, c.Address)).ToList()))
+                s.Address, s.Phone, s.Email,
+                s.Campuses.Select(c => new CampusDto(c.Id, c.Name, c.Address)).ToList(),
+                new List<SchoolAdminDto>()))
             .FirstOrDefaultAsync(ct);
+        if (school is null) return null;
+
+        var profiles = await _appDb.SchoolAdminProfiles.IgnoreQueryFilters().AsNoTracking()
+            .Where(admin => admin.SchoolId == schoolId && !admin.IsDeleted)
+            .Select(admin => new { admin.ApplicationUserId, admin.FirstName, admin.LastName })
+            .ToListAsync(ct);
+        var userIds = profiles.Select(admin => admin.ApplicationUserId).Distinct().ToArray();
+        var emails = userIds.Length == 0
+            ? new Dictionary<Guid, string?>()
+            : await _platformDb.Users.AsNoTracking().Where(user => userIds.Contains(user.Id))
+                .ToDictionaryAsync(user => user.Id, user => user.Email, ct);
+
+        return school with
+        {
+            Admins = profiles.Select(admin => new SchoolAdminDto(
+                admin.ApplicationUserId, admin.FirstName, admin.LastName,
+                emails.GetValueOrDefault(admin.ApplicationUserId))).ToList()
+        };
     }
 
     public async Task<SchoolDashboardDto?> GetSchoolDashboardAsync(Guid schoolId, CancellationToken ct = default)

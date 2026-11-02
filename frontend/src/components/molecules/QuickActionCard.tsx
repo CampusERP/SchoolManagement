@@ -19,14 +19,14 @@ export default function QuickActionCard({
       type="button"
       onClick={onClick}
       className={cn(
-        "flex flex-col items-center justify-center gap-3 rounded-[var(--card-radius)] border border-[var(--color-border)] bg-[var(--color-surface-card)] p-5 text-center transition-shadow hover:shadow-[var(--shadow-elevated)]",
+        "flex min-w-0 flex-col items-center justify-center gap-2 rounded-[var(--card-radius)] border border-[var(--color-border)] bg-[var(--color-surface-card)] p-3 text-center transition-shadow hover:shadow-[var(--shadow-elevated)] sm:gap-3 sm:p-5",
         className
       )}
     >
-      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--color-primary-light)] text-[var(--color-primary)]">
+      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-primary-light)] text-[var(--color-primary-soft-text)] sm:h-12 sm:w-12">
         {icon}
       </div>
-      <span className="text-sm font-medium text-[var(--color-text-primary)]">
+      <span className="text-xs font-medium text-[var(--color-text-primary)] sm:text-sm">
         {label}
       </span>
     </button>

@@ -13,5 +13,6 @@ public class PaymentConfiguration : IEntityTypeConfiguration<Payment>
         builder.Property(p => p.Method).HasConversion<string>().HasMaxLength(30);
         builder.Property(p => p.Reference).HasMaxLength(200);
         builder.HasIndex(p => p.InvoiceId);
+        builder.Property(p => p.RowVersion).IsRowVersion();
     }
 }

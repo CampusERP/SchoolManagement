@@ -1,6 +1,6 @@
 export interface StudentListDto {
   id: string;
-  studentCode: string;
+  studentCode?: string;
   firstName: string;
   lastName: string;
   email?: string | null;
@@ -45,7 +45,7 @@ export interface GuardianSummary {
 
 export interface CreateStudentCommand {
   schoolId: string;
-  studentCode: string;
+  studentCode?: string;
   firstName: string;
   lastName: string;
   dateOfBirth: string;

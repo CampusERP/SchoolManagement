@@ -13,10 +13,11 @@ import { Input } from "@/components/atoms/Input";
 import { useAuthStore } from "@/store/authStore";
 import { useParent, useUpdateParent } from "@/features/parents/hooks";
 import type { ChildSummary } from "@/types/parent.types";
+import { t } from "@/i18n";
 
 const schema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
+  firstName: z.string().min(1, t("First name is required")),
+  lastName: z.string().min(1, t("Last name is required")),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -47,16 +48,16 @@ export default function ParentDetailPage() {
     if (!id) return;
     try {
       await updateParent.mutateAsync({ parentId: id, data: { schoolId, ...values } });
-      toast.success("Parent updated");
+      toast.success(t("Parent updated"));
       setModalOpen(false);
     } catch {
-      toast.error("Failed to update parent");
+      toast.error(t("Failed to update parent"));
     }
   };
 
   if (isLoading) {
     return (
-      <DashboardTemplate title="Parent" loading>
+      <DashboardTemplate title={t("Parent")} loading>
         <div />
       </DashboardTemplate>
     );
@@ -64,9 +65,9 @@ export default function ParentDetailPage() {
 
   if (isError || !parent) {
     return (
-      <DashboardTemplate title="Parent">
+      <DashboardTemplate title={t("Parent")}>
         <div className="flex items-center justify-center py-24">
-          <p className="text-[var(--color-text-secondary)]">Parent not found.</p>
+          <p className="text-[var(--color-text-secondary)]">{t("Parent not found.")}</p>
         </div>
       </DashboardTemplate>
     );
@@ -74,7 +75,7 @@ export default function ParentDetailPage() {
 
   const childColumns: TableProps<ChildSummary>["columns"] = [
     {
-      title: "Student Code",
+      title: t("Student Code"),
       dataIndex: "studentCode",
       key: "studentCode",
       render: (code: string) => (
@@ -82,7 +83,7 @@ export default function ParentDetailPage() {
       ),
     },
     {
-      title: "Name",
+      title: t("Name"),
       key: "name",
       render: (_, r) => `${r.firstName} ${r.lastName}`,
     },
@@ -91,24 +92,24 @@ export default function ParentDetailPage() {
   return (
     <DashboardTemplate
       title={`${parent.firstName} ${parent.lastName}`}
-      subtitle="Parent details"
+      subtitle={t("Parent details")}
       actions={
         <div className="flex items-center gap-2">
           <Button variant="secondary" icon={<ArrowLeft className="h-4 w-4" />} onClick={() => navigate("/people/parents")}>
-            Back
+            {t("Back")}
           </Button>
           <Button variant="primary" icon={<Pencil className="h-4 w-4" />} onClick={openEdit}>
-            Edit
+            {t("Edit")}
           </Button>
         </div>
       }
     >
       <div className="space-y-6">
-        <InfoCard title="Parent Information">
+        <InfoCard title={t("Parent Information")}>
           <dl className="grid gap-4 sm:grid-cols-2">
             <div className="flex items-center gap-3">
               <User className="h-4 w-4 text-[var(--color-text-muted)]" />
-              <dt className="w-32 text-sm text-[var(--color-text-secondary)]">Name</dt>
+              <dt className="w-32 text-sm text-[var(--color-text-secondary)]">{t("Name")}</dt>
               <dd className="text-sm font-medium text-[var(--color-text-primary)]">
                 {parent.firstName} {parent.lastName}
               </dd>
@@ -116,30 +117,30 @@ export default function ParentDetailPage() {
           </dl>
         </InfoCard>
 
-        <InfoCard title="Children">
+        <InfoCard title={t("Children")}>
           <Table<ChildSummary>
             columns={childColumns}
             dataSource={parent.children ?? []}
             rowKey={(r) => r.id ?? r.studentId ?? r.studentCode}
             pagination={false}
             size="small"
-            locale={{ emptyText: "No children linked." }}
+            locale={{ emptyText: t("No children linked.") }}
           />
         </InfoCard>
       </div>
 
-      <Modal title="Edit Parent" open={modalOpen} onCancel={() => setModalOpen(false)} footer={null} destroyOnHidden>
+      <Modal title={t("Edit Parent")} open={modalOpen} onCancel={() => setModalOpen(false)} footer={null} destroyOnHidden>
         <Form layout="vertical" onFinish={handleSubmit(onSubmit)} requiredMark={false}>
           <div className="grid grid-cols-2 gap-4">
             <Form.Item
-              label="First Name"
+              label={t("First Name")}
               validateStatus={errors.firstName ? "error" : ""}
               help={errors.firstName?.message}
             >
               <Controller name="firstName" control={control} render={({ field }) => <Input {...field} />} />
             </Form.Item>
             <Form.Item
-              label="Last Name"
+              label={t("Last Name")}
               validateStatus={errors.lastName ? "error" : ""}
               help={errors.lastName?.message}
             >
@@ -148,10 +149,10 @@ export default function ParentDetailPage() {
           </div>
           <div className="mt-4 flex items-center justify-end gap-3">
             <Button variant="ghost" onClick={() => setModalOpen(false)}>
-              Cancel
+              {t("Cancel")}
             </Button>
             <Button variant="primary" htmlType="submit" loading={updateParent.isPending}>
-              Save
+              {t("Save")}
             </Button>
           </div>
         </Form>

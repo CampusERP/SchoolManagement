@@ -42,6 +42,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Room> Rooms => Set<Room>();
     public DbSet<Subject> Subjects => Set<Subject>();
     public DbSet<CurriculumSubject> CurriculumSubjects => Set<CurriculumSubject>();
+    public DbSet<SubjectBook> SubjectBooks => Set<SubjectBook>();
 
     // ─────────────────── Enrollment ───────────────────
 
@@ -95,6 +96,7 @@ public class ApplicationDbContext : DbContext
         ApplyTenantFilter<ClassRoom>(builder);
         ApplyTenantFilter<Room>(builder);
         ApplyTenantFilter<CurriculumSubject>(builder);
+        ApplyTenantFilter<SubjectBook>(builder);
 
         ApplyTenantFilter<StudentEnrollment>(builder);
         ApplyTenantFilter<TeacherEnrollment>(builder);

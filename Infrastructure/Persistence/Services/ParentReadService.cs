@@ -21,10 +21,20 @@ public class ParentReadService : IParentReadService
 
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
-            var term = searchTerm.ToLower();
-            query = query.Where(p =>
-                p.FirstName.ToLower().Contains(term) ||
-                p.LastName.ToLower().Contains(term));
+            var terms = searchTerm
+                .Trim()
+                .ToLower()
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Distinct()
+                .Take(5)
+                .ToArray();
+
+            foreach (var term in terms)
+            {
+                query = query.Where(p =>
+                    p.FirstName.ToLower().Contains(term) ||
+                    p.LastName.ToLower().Contains(term));
+            }
         }
 
         var total = await query.CountAsync(ct);

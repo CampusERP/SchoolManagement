@@ -17,7 +17,7 @@ export default function BreadcrumbNav({
   className,
 }: BreadcrumbNavProps) {
   return (
-    <nav className={cn("flex items-center text-sm", className)}>
+    <nav className={cn("flex items-center whitespace-nowrap text-sm", className)}>
       {items.map((item, index) => {
         const isLast = index === items.length - 1;
 

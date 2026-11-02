@@ -12,13 +12,15 @@ import { Input, InputPassword } from "@/components/atoms/Input";
 import { useSchools } from "@/features/dashboard/hooks";
 import { SchoolsApi } from "@/features/schools/api";
 import type { School } from "@/types/dashboard.types";
+import { t } from "@/i18n";
+import { translateApiMessage } from "@/lib/errors";
 
 const schema = z.object({
-  schoolId: z.string().min(1, "Please select a school"),
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
-  email: z.string().min(1, "Email is required").email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  schoolId: z.string().min(1, t("Please select a school")),
+  firstName: z.string().min(1, t("First name is required")),
+  lastName: z.string().min(1, t("Last name is required")),
+  email: z.string().min(1, t("Email is required")).email(t("Invalid email address")),
+  password: z.string().min(6, t("Password must be at least 6 characters")),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -28,7 +30,8 @@ export default function RegisterAdminPage() {
   const [searchParams] = useSearchParams();
   const presetSchoolId = searchParams.get("schoolId") ?? undefined;
   const [loading, setLoading] = useState(false);
-  const { data: schools } = useSchools({ page: 1, pageSize: 100 });
+  const [schoolSearch, setSchoolSearch] = useState("");
+  const { data: schools } = useSchools({ page: 1, pageSize: 50, search: schoolSearch });
 
   const {
     control,
@@ -40,25 +43,25 @@ export default function RegisterAdminPage() {
     setLoading(true);
     try {
       await SchoolsApi.registerAdmin(data);
-      toast.success("School admin registered successfully");
+      toast.success(t("School admin registered successfully"));
       navigate(presetSchoolId ? `/platform/schools/${presetSchoolId}` : "/platform/schools");
     } catch (err: unknown) {
       const message =
         err && typeof err === "object" && "response" in err
           ? ((err as { response?: { data?: { error?: string; message?: string } } }).response?.data?.error ||
              (err as { response?: { data?: { message?: string } } }).response?.data?.message)
-          : err instanceof Error ? err.message : "Failed to register admin.";
-      toast.error(message);
+          : err instanceof Error ? err.message : t("Failed to register admin.");
+      toast.error(translateApiMessage(message ?? t("Failed to register admin.")));
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <DashboardTemplate title="Register School Admin" subtitle="Create an admin account for a school">
-      <div className="mx-auto max-w-xl rounded-[var(--card-radius)] bg-[var(--color-surface-card)] p-8 shadow-[var(--shadow-card)]">
+    <DashboardTemplate title={t("Register School Admin")} subtitle={t("Create an admin account for a school")}>
+      <div className="mx-auto max-w-xl rounded-[var(--card-radius)] bg-[var(--color-surface-card)] p-5 shadow-[var(--shadow-card)] sm:p-8">
         <Form layout="vertical" onFinish={handleSubmit(onSubmit)} requiredMark={false}>
-          <Form.Item label="School" validateStatus={errors.schoolId ? "error" : ""} help={errors.schoolId?.message}>
+          <Form.Item label={t("School")} validateStatus={errors.schoolId ? "error" : ""} help={errors.schoolId?.message}>
             <Controller
               name="schoolId"
               control={control}
@@ -66,7 +69,10 @@ export default function RegisterAdminPage() {
                 <Select
                   {...field}
                   disabled={!!presetSchoolId}
-                  placeholder="Select a school"
+                  placeholder={t("Select a school")}
+                  showSearch
+                  filterOption={false}
+                  onSearch={setSchoolSearch}
                   size="large"
                   options={(schools?.items ?? []).map((s: School) => ({ value: s.id, label: s.name }))}
                 />
@@ -74,7 +80,7 @@ export default function RegisterAdminPage() {
             />
           </Form.Item>
 
-          <Form.Item label="First Name" validateStatus={errors.firstName ? "error" : ""} help={errors.firstName?.message}>
+          <Form.Item label={t("First Name")} validateStatus={errors.firstName ? "error" : ""} help={errors.firstName?.message}>
             <Controller
               name="firstName"
               control={control}
@@ -82,28 +88,28 @@ export default function RegisterAdminPage() {
                 <Input
                   {...field}
                   prefix={<User className="h-4 w-4 text-[var(--color-text-muted)]" />}
-                  placeholder="First name"
+                  placeholder={t("First name")}
                   size="large"
                 />
               )}
             />
           </Form.Item>
 
-          <Form.Item label="Last Name" validateStatus={errors.lastName ? "error" : ""} help={errors.lastName?.message}>
+          <Form.Item label={t("Last Name")} validateStatus={errors.lastName ? "error" : ""} help={errors.lastName?.message}>
             <Controller
               name="lastName"
               control={control}
               render={({ field }) => (
                 <Input
                   {...field}
-                  placeholder="Last name"
+                  placeholder={t("Last name")}
                   size="large"
                 />
               )}
             />
           </Form.Item>
 
-          <Form.Item label="Email" validateStatus={errors.email ? "error" : ""} help={errors.email?.message}>
+          <Form.Item label={t("Email")} validateStatus={errors.email ? "error" : ""} help={errors.email?.message}>
             <Controller
               name="email"
               control={control}
@@ -111,14 +117,14 @@ export default function RegisterAdminPage() {
                 <Input
                   {...field}
                   prefix={<Mail className="h-4 w-4 text-[var(--color-text-muted)]" />}
-                  placeholder="admin@school.com"
+                  placeholder={t("admin@school.com")}
                   size="large"
                 />
               )}
             />
           </Form.Item>
 
-          <Form.Item label="Password" validateStatus={errors.password ? "error" : ""} help={errors.password?.message}>
+          <Form.Item label={t("Password")} validateStatus={errors.password ? "error" : ""} help={errors.password?.message}>
             <Controller
               name="password"
               control={control}
@@ -126,7 +132,7 @@ export default function RegisterAdminPage() {
                 <InputPassword
                   {...field}
                   prefix={<Lock className="h-4 w-4 text-[var(--color-text-muted)]" />}
-                  placeholder="Temporary password"
+                  placeholder={t("Temporary password")}
                   size="large"
                 />
               )}
@@ -135,10 +141,10 @@ export default function RegisterAdminPage() {
 
           <div className="mt-6 flex items-center justify-end gap-3">
             <Button variant="ghost" onClick={() => navigate(presetSchoolId ? `/platform/schools/${presetSchoolId}` : "/platform/schools")}>
-              Cancel
+              {t("Cancel")}
             </Button>
             <Button variant="primary" htmlType="submit" loading={loading}>
-              Register Admin
+              {t("Register Admin")}
             </Button>
           </div>
         </Form>

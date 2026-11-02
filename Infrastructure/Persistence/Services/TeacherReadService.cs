@@ -24,11 +24,21 @@ public class TeacherReadService : ITeacherReadService
 
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
-            var term = searchTerm.ToLower();
-            query = query.Where(t =>
-                t.FirstName.ToLower().Contains(term) ||
-                t.LastName.ToLower().Contains(term) ||
-                t.EmployeeCode.ToLower().Contains(term));
+            var terms = searchTerm
+                .Trim()
+                .ToLower()
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Distinct()
+                .Take(5)
+                .ToArray();
+
+            foreach (var term in terms)
+            {
+                query = query.Where(t =>
+                    t.FirstName.ToLower().Contains(term) ||
+                    t.LastName.ToLower().Contains(term) ||
+                    t.EmployeeCode.ToLower().Contains(term));
+            }
         }
 
         var total = await query.CountAsync(ct);

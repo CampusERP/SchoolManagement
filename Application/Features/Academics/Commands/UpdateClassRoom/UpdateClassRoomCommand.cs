@@ -6,4 +6,5 @@ namespace Application.Features.Academics.Commands.UpdateClassRoom;
 public record UpdateClassRoomCommand(
     Guid SchoolId,
     Guid ClassRoomId,
-    string Name) : ICommand, IBaseCommand, ITenantScopedRequest;
+    string Name,
+    Guid? RoomId = null) : ICommand, IBaseCommand, ITenantScopedRequest;

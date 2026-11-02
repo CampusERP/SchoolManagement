@@ -16,7 +16,8 @@ public class CreateGradeLevelCommandHandler : IRequestHandler<CreateGradeLevelCo
 
     public async Task<Result<Guid>> Handle(CreateGradeLevelCommand request, CancellationToken ct)
     {
-
+        if (await _gradeLevels.SequenceExistsAsync(request.SchoolId, request.EducationStageId, request.Sequence, ct: ct))
+            return Result.Failure<Guid>($"Sequence {request.Sequence} is already used in this education stage.");
         var gradeLevel = GradeLevel.Create(request.SchoolId, request.EducationStageId, request.Name, request.Sequence);
         await _gradeLevels.AddAsync(gradeLevel, ct);
 

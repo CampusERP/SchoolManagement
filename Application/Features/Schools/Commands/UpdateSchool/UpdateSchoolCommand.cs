@@ -10,5 +10,6 @@ public record UpdateSchoolCommand(
     string Name,
     string? Address = null,
     string? Phone = null,
-    string? Email = null)
+    string? Email = null,
+    string? Status = null)
     : ICommand, ITenantScopedRequest;

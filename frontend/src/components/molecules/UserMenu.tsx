@@ -7,6 +7,15 @@ import {
   DropdownMenuLabel,
 } from "@radix-ui/react-dropdown-menu";
 import { LogOut, User } from "lucide-react";
+import { t } from "@/i18n";
+
+const ROLE_LABELS: Record<string, string> = {
+  platform_admin: "Platform Admin",
+  school_admin: "School Admin",
+  teacher: "Teacher",
+  student: "Student",
+  parent: "Parent",
+};
 
 interface UserMenuProps {
   user: {
@@ -49,8 +58,8 @@ export default function UserMenu({ user, onLogout }: UserMenuProps) {
           <p className="mt-0.5 text-xs text-[var(--color-text-secondary)]">
             {user.email}
           </p>
-          <span className="mt-1 inline-block rounded-full bg-[var(--color-primary-light)] px-2 py-0.5 text-xs font-medium text-[var(--color-primary)]">
-            {user.role}
+          <span className="mt-1 inline-block rounded-full bg-[var(--color-primary-light)] px-2 py-0.5 text-xs font-medium text-[var(--color-primary-soft-text)]">
+            {t(ROLE_LABELS[user.role] ?? user.role)}
           </span>
         </DropdownMenuLabel>
 
@@ -60,17 +69,17 @@ export default function UserMenu({ user, onLogout }: UserMenuProps) {
           className="flex cursor-pointer items-center gap-2 rounded-[6px] px-2.5 py-2 text-sm text-[var(--color-text-secondary)] outline-none hover:bg-[var(--color-border)]/50 hover:text-[var(--color-text-primary)]"
         >
           <User className="h-4 w-4" />
-          Profile
+          {t("Profile")}
         </DropdownMenuItem>
 
         <DropdownMenuSeparator className="my-1 h-px bg-[var(--color-border)]" />
 
         <DropdownMenuItem
           onClick={onLogout}
-          className="flex cursor-pointer items-center gap-2 rounded-[6px] px-2.5 py-2 text-sm text-[var(--color-danger)] outline-none hover:bg-red-50"
+          className="flex cursor-pointer items-center gap-2 rounded-[6px] px-2.5 py-2 text-sm text-[var(--color-danger)] outline-none hover:bg-[var(--color-danger-soft)]"
         >
           <LogOut className="h-4 w-4" />
-          Log out
+          {t("Log out")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -6,4 +6,4 @@ using MediatR;
 namespace Application.Features.Schools.Commands.AddCampus;
 
 public record AddCampusCommand(Guid SchoolId, string Name, string Address)
-    : ICommand<Guid>, ITenantScopedRequest;
+    : ICommand<Guid>, IBaseCommand, ITenantScopedRequest;

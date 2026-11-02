@@ -33,10 +33,10 @@ public class StudentRepository : IStudentRepository
     public async Task AddAsync(Student student, CancellationToken ct = default) =>
         await _context.Students.AddAsync(student, ct);
 
-    public async Task RemoveAsync(Student student, CancellationToken ct = default)
+    public Task RemoveAsync(Student student, CancellationToken ct = default)
     {
-        student.IsDeleted = true;
-        student.DeletedAtUtc = DateTime.UtcNow;
+        _context.Students.Remove(student);
+        return Task.CompletedTask;
     }
 
     public async Task<PagedResult<StudentListDto>> GetStudentsAsync(

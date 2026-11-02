@@ -2,9 +2,13 @@ import { Suspense } from "react";
 import { BrowserRouter, useRoutes } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ConfigProvider } from "antd";
+import arEG from "antd/locale/ar_EG";
+import enUS from "antd/locale/en_US";
 import { Toaster } from "sonner";
 import { queryClient } from "@/lib/queryClient";
-import { antdTheme } from "@/styles/antd-theme";
+import { getAntdTheme } from "@/styles/antd-theme";
+import { useThemeStore } from "@/store/themeStore";
+import { getDirection, getLanguage } from "@/i18n";
 import { routes } from "@/router/routes";
 import Spinner from "@/components/atoms/Spinner";
 
@@ -28,9 +32,15 @@ function AppRoutes() {
 }
 
 export default function Router() {
+  const theme = useThemeStore((s) => s.theme);
+
   return (
     <QueryClientProvider client={queryClient}>
-      <ConfigProvider theme={antdTheme}>
+      <ConfigProvider
+        theme={getAntdTheme(theme)}
+        locale={getLanguage() === "ar" ? arEG : enUS}
+        direction={getDirection()}
+      >
         <BrowserRouter>
           <AppRoutes />
         </BrowserRouter>

@@ -1,4 +1,5 @@
-﻿using Application.Common.Interfaces;
+﻿using Application.Common.Constants;
+using Application.Common.Interfaces;
 using Application.Common.Interfaces.Repositories;
 using Application.Common.Interfaces.Services;
 using Application.Common.Models;
@@ -44,6 +45,9 @@ public class SwitchSchoolCommandHandler
         var school = await _schools.GetByIdAsync(request.TargetSchoolId, ct);
         if (school is null)
             return Result.Failure<SwitchSchoolResponse>("School not found.");
+
+        if (!school.IsActive)
+            return Result.Failure<SwitchSchoolResponse>(SchoolAccessMessages.Suspended);
 
         var permissions = _permissionProvider.GetPermissionsForRole(membership.Role);
 

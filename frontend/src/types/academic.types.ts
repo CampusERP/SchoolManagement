@@ -43,6 +43,7 @@ export interface CreateTermCommand {
 export interface ClassRoomDetailDto {
   id: string;
   name: string;
+  gradeLevelId: string;
   gradeLevelName: string;
   gradeLevel?: string;
   academicYearName: string;
@@ -50,6 +51,8 @@ export interface ClassRoomDetailDto {
   studentCount: number;
   enrolledStudents?: number;
   teachingAssignmentCount?: number;
+  roomId?: string | null;
+  roomName?: string | null;
 }
 
 export interface CreateClassRoomCommand {
@@ -57,11 +60,13 @@ export interface CreateClassRoomCommand {
   gradeLevelId: string;
   academicYearId: string;
   name: string;
+  roomId?: string | null;
 }
 
 export interface UpdateClassRoomCommand {
   schoolId: string;
   name: string;
+  roomId?: string | null;
 }
 
 export interface GradeLevelDto {
@@ -84,6 +89,35 @@ export interface UpdateGradeLevelCommand {
   schoolId: string;
   name: string;
   sequence: number;
+}
+
+export interface CurriculumBookDto {
+  id: string;
+  title: string;
+  author?: string | null;
+  publisher?: string | null;
+  isbn?: string | null;
+  edition?: string | null;
+  notes?: string | null;
+}
+
+export interface CurriculumSubjectDto {
+  curriculumSubjectId: string;
+  subjectId: string;
+  code: string;
+  name: string;
+  description?: string | null;
+  isSchoolSpecific: boolean;
+  books: CurriculumBookDto[];
+}
+
+export interface SubjectBookInput {
+  title: string;
+  author?: string;
+  publisher?: string;
+  isbn?: string;
+  edition?: string;
+  notes?: string;
 }
 
 export interface EducationStageDto {

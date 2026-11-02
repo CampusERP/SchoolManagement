@@ -1,6 +1,7 @@
 import { Table, type TableProps } from "antd";
 import dayjs from "dayjs";
 import StatusBadge from "@/components/molecules/StatusBadge";
+import { t } from "@/i18n";
 
 interface StudentRecord {
   id: string;
@@ -22,7 +23,7 @@ export default function RecentStudentsTable({
 }: RecentStudentsTableProps) {
   const columns: TableProps<StudentRecord>["columns"] = [
     {
-      title: "Name",
+      title: t("Name"),
       dataIndex: "name",
       key: "name",
       render: (name: string) => {
@@ -43,23 +44,23 @@ export default function RecentStudentsTable({
       },
     },
     {
-      title: "Code",
+      title: t("Code"),
       dataIndex: "code",
       key: "code",
     },
     {
-      title: "Grade Level",
+      title: t("Grade Level"),
       dataIndex: "gradeLevel",
       key: "gradeLevel",
     },
     {
-      title: "Enrolled",
+      title: t("Enrolled"),
       dataIndex: "enrolledAt",
       key: "enrolledAt",
       render: (date: string) => dayjs(date).format("MMM D, YYYY"),
     },
     {
-      title: "Status",
+      title: t("Status"),
       dataIndex: "status",
       key: "status",
       render: (status: string) => <StatusBadge status={status} />,
@@ -72,6 +73,7 @@ export default function RecentStudentsTable({
       dataSource={data}
       rowKey="id"
       loading={loading}
+      scroll={{ x: "max-content" }}
       pagination={{ pageSize: 10, showSizeChanger: false }}
     />
   );

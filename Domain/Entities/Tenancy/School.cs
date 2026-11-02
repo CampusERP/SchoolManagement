@@ -14,6 +14,14 @@ public class School : AuditableEntity, IAggregateRoot
     public string? Phone { get; private set; }
     public string? Email { get; private set; }
 
+    /// <summary>
+    /// A school is usable only while it is active and has not been deleted.
+    /// Suspended schools keep their data, but nobody in the school may use
+    /// the platform until a platform administrator reactivates it.
+    /// </summary>
+    public bool IsActive =>
+        !IsDeleted && string.Equals(Status, "Active", StringComparison.OrdinalIgnoreCase);
+
     private readonly List<Campus> _campuses = new();
     public IReadOnlyCollection<Campus> Campuses => _campuses.AsReadOnly();
 
@@ -51,6 +59,13 @@ public class School : AuditableEntity, IAggregateRoot
         var campus = Campus.Create(Id, name, address);
         _campuses.Add(campus);
         return campus;
+    }
+
+    public void ChangeStatus(string status)
+    {
+        if (status is not ("Active" or "Suspended"))
+            throw new ArgumentException($"Invalid school status '{status}'.", nameof(status));
+        Status = status;
     }
 
     public void Suspend() => Status = "Suspended";

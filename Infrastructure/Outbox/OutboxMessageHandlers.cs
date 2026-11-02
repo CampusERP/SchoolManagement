@@ -2,6 +2,7 @@ using Application.Common.Interfaces.Services;
 using Application.Common.Messages;
 using Domain.Entities.Notifications;
 using Domain.Entities.People;
+using Infrastructure.Email;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -55,6 +56,7 @@ public sealed class LinkParentLoginHandler(ApplicationDbContext db) : IOutboxMes
 public sealed class DeliverNotificationBatchHandler(
     ApplicationDbContext db,
     IEmailService emailService,
+    EmailTemplateRenderer templateRenderer,
     ILogger<DeliverNotificationBatchHandler> logger)
     : IOutboxMessageHandler<DeliverNotificationBatchMessage>
 {
@@ -77,6 +79,10 @@ public sealed class DeliverNotificationBatchHandler(
                     .Where(x => x.Status == NotificationStatus.Pending)
                     .ToList();
 
+                var email = templateRenderer.Render(
+                    EmailTemplate.Notification,
+                    new Dictionary<string, string?> { ["Body"] = batch.Body });
+
                 foreach (var notification in pendingRecipients)
                 {
                     try
@@ -84,7 +90,7 @@ public sealed class DeliverNotificationBatchHandler(
                         await emailService.SendAsync(
                             notification.RecipientUserId,
                             batch.Subject,
-                            batch.Body,
+                            email.HtmlBody,
                             ct);
                         notification.MarkDelivered();
                     }

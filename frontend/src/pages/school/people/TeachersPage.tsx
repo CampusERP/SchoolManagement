@@ -16,13 +16,14 @@ import { useAuthStore } from "@/store/authStore";
 import { useTeachers, useCreateTeacher, useDeleteTeacher } from "@/features/teachers/hooks";
 import ImportExportButtons from "@/components/importExport/ImportExportButtons";
 import type { TeacherListDto } from "@/types/teacher.types";
+import { t } from "@/i18n";
 
 const schema = z.object({
-  employeeCode: z.string().min(1, "Employee code is required"),
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
-  email: z.string().min(1, "Email is required").email("Invalid email"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+  employeeCode: z.string().min(1, t("Employee code is required")),
+  firstName: z.string().min(1, t("First name is required")),
+  lastName: z.string().min(1, t("Last name is required")),
+  email: z.string().min(1, t("Email is required")).email(t("Invalid email")),
+  password: z.string().min(8, t("Password must be at least 8 characters")),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -58,16 +59,16 @@ export default function TeachersPage() {
   const onSubmit = async (values: FormData) => {
     try {
       await createTeacher.mutateAsync({ schoolId, ...values });
-      toast.success("Teacher created");
+      toast.success(t("Teacher created"));
       setModalOpen(false);
     } catch {
-      toast.error("Failed to create teacher");
+      toast.error(t("Failed to create teacher"));
     }
   };
 
   const columns: TableProps<TeacherListDto>["columns"] = [
     {
-      title: "Employee Code",
+      title: t("Employee Code"),
       dataIndex: "employeeCode",
       key: "employeeCode",
       render: (code: string) => (
@@ -75,7 +76,7 @@ export default function TeachersPage() {
       ),
     },
     {
-      title: "Name",
+      title: t("Name"),
       key: "name",
       render: (_, record) => (
         <span className="font-medium text-[var(--color-text-primary)]">
@@ -84,7 +85,7 @@ export default function TeachersPage() {
       ),
     },
     {
-      title: "Email",
+      title: t("Email"),
       dataIndex: "email",
       key: "email",
       render: (email: string) => (
@@ -94,13 +95,13 @@ export default function TeachersPage() {
       ),
     },
     {
-      title: "Employment Status",
+      title: t("Employment Status"),
       dataIndex: "employmentStatus",
       key: "employmentStatus",
       render: (status: string) => <StatusBadge status={status} />,
     },
     {
-      title: "Assigned Classes",
+      title: t("Assigned Classes"),
       dataIndex: "assignedClassesCount",
       key: "assignedClassesCount",
       align: "center",
@@ -111,7 +112,7 @@ export default function TeachersPage() {
       ),
     },
     {
-      title: "Actions",
+      title: t("Actions"),
       key: "actions",
       align: "center",
       width: 140,
@@ -124,7 +125,7 @@ export default function TeachersPage() {
             className="p-0"
             onClick={() => navigate(`/people/teachers/${record.id}`)}
           >
-            View
+            {t("View")}
           </Button>
           <Button
             variant="ghost"
@@ -133,16 +134,16 @@ export default function TeachersPage() {
             className="p-0 text-[var(--color-danger)]"
             onClick={() => {
               Modal.confirm({
-                title: "Delete Teacher",
-                content: `Are you sure you want to delete ${record.firstName} ${record.lastName}?`,
-                okText: "Delete",
+                title: t("Delete Teacher"),
+                content: t("Are you sure you want to delete {name}?", { name: `${record.firstName} ${record.lastName}` }),
+                okText: t("Delete"),
                 okType: "danger",
                 onOk: async () => {
                   try {
                     await deleteTeacher.mutateAsync(record.id);
-                    toast.success("Teacher deleted");
+                    toast.success(t("Teacher deleted"));
                   } catch {
-                    toast.error("Failed to delete teacher");
+                    toast.error(t("Failed to delete teacher"));
                   }
                 },
               });
@@ -157,8 +158,8 @@ export default function TeachersPage() {
 
   return (
     <DashboardTemplate
-      title="Teachers"
-      subtitle="Manage teacher records"
+      title={t("Teachers")}
+      subtitle={t("Manage teacher records")}
       actions={
         <>
           <ImportExportButtons
@@ -176,7 +177,7 @@ export default function TeachersPage() {
             ]}
           />
           <Button variant="primary" icon={<Plus className="h-4 w-4" />} onClick={openCreate}>
-            Add Teacher
+            {t("Add Teacher")}
           </Button>
         </>
       }
@@ -188,23 +189,23 @@ export default function TeachersPage() {
             setSearch(v);
             setPage(1);
           }}
-          placeholder="Search teachers..."
+          placeholder={t("Search teachers...")}
           className="max-w-md"
         />
       </div>
 
       {isError ? (
         <div className="flex items-center justify-center py-24">
-          <p className="text-[var(--color-text-secondary)]">Failed to load teachers.</p>
+          <p className="text-[var(--color-text-secondary)]">{t("Failed to load teachers.")}</p>
         </div>
       ) : !isLoading && (data?.items.length ?? 0) === 0 ? (
         <EmptyState
           icon={<GraduationCap className="h-6 w-6" />}
-          title="No teachers found"
-          description="Add your first teacher to get started."
+          title={t("No teachers found")}
+          description={t("Add your first teacher to get started.")}
           action={
             <Button variant="primary" icon={<Plus className="h-4 w-4" />} onClick={openCreate}>
-              Add Teacher
+              {t("Add Teacher")}
             </Button>
           }
         />
@@ -220,56 +221,57 @@ export default function TeachersPage() {
             total: data?.totalCount ?? 0,
             onChange: setPage,
             showSizeChanger: false,
-            showTotal: (total) => `Total ${total} teachers`,
+            showTotal: (total) => t("Total {count} teachers", { count: total }),
           }}
+          scroll={{ x: "max-content" }}
         />
       )}
 
-      <Modal title="Add Teacher" open={modalOpen} onCancel={() => setModalOpen(false)} footer={null} destroyOnHidden>
+      <Modal title={t("Add Teacher")} open={modalOpen} onCancel={() => setModalOpen(false)} footer={null} destroyOnHidden>
         <Form layout="vertical" onFinish={handleSubmit(onSubmit)} requiredMark={false}>
           <Form.Item
-            label="Employee Code"
+            label={t("Employee Code")}
             validateStatus={errors.employeeCode ? "error" : ""}
             help={errors.employeeCode?.message}
           >
             <Controller
               name="employeeCode"
               control={control}
-              render={({ field }) => <Input {...field} placeholder="e.g. EMP-001" />}
+              render={({ field }) => <Input {...field} placeholder={t("e.g. EMP-001")} />}
             />
           </Form.Item>
           <div className="grid grid-cols-2 gap-4">
             <Form.Item
-              label="First Name"
+              label={t("First Name")}
               validateStatus={errors.firstName ? "error" : ""}
               help={errors.firstName?.message}
             >
-              <Controller name="firstName" control={control} render={({ field }) => <Input {...field} placeholder="First name" />} />
+              <Controller name="firstName" control={control} render={({ field }) => <Input {...field} placeholder={t("First name")} />} />
             </Form.Item>
             <Form.Item
-              label="Last Name"
+              label={t("Last Name")}
               validateStatus={errors.lastName ? "error" : ""}
               help={errors.lastName?.message}
             >
-              <Controller name="lastName" control={control} render={({ field }) => <Input {...field} placeholder="Last name" />} />
+              <Controller name="lastName" control={control} render={({ field }) => <Input {...field} placeholder={t("Last name")} />} />
             </Form.Item>
           </div>
-          <Form.Item label="Email" validateStatus={errors.email ? "error" : ""} help={errors.email?.message}>
-            <Controller name="email" control={control} render={({ field }) => <Input {...field} placeholder="teacher@school.com" />} />
+          <Form.Item label={t("Email")} validateStatus={errors.email ? "error" : ""} help={errors.email?.message}>
+            <Controller name="email" control={control} render={({ field }) => <Input {...field} placeholder={t("teacher@school.com")} />} />
           </Form.Item>
-          <Form.Item label="Password" validateStatus={errors.password ? "error" : ""} help={errors.password?.message}>
+          <Form.Item label={t("Password")} validateStatus={errors.password ? "error" : ""} help={errors.password?.message}>
             <Controller
               name="password"
               control={control}
-              render={({ field }) => <InputPassword {...field} placeholder="Temporary password" />}
+              render={({ field }) => <InputPassword {...field} placeholder={t("Temporary password")} />}
             />
           </Form.Item>
           <div className="mt-4 flex items-center justify-end gap-3">
             <Button variant="ghost" onClick={() => setModalOpen(false)}>
-              Cancel
+              {t("Cancel")}
             </Button>
             <Button variant="primary" htmlType="submit" loading={createTeacher.isPending}>
-              Create
+              {t("Create")}
             </Button>
           </div>
         </Form>

@@ -95,6 +95,7 @@ public static class DependencyInjection
         services.AddScoped<IUserSchoolMembershipRepository, UserSchoolMembershipRepository>();
         services.AddScoped<ISchoolAdminProfileRepository, SchoolAdminProfileRepository>();
         services.AddScoped<ISchoolRepository, SchoolRepository>();
+        services.AddScoped<ISchoolRegistrationRequestRepository, SchoolRegistrationRequestRepository>();
         services.AddScoped<IEducationStageRepository, EducationStageRepository>();
 
         // Read Services
@@ -103,6 +104,7 @@ public static class DependencyInjection
         services.AddScoped<IParentReadService, ParentReadService>();
         services.AddScoped<ISchoolReadService, SchoolReadService>();
         services.AddScoped<IAcademicReadService, AcademicReadService>();
+        services.AddScoped<ISubjectReadService, SubjectReadService>();
 
         services
             .AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
@@ -142,6 +144,7 @@ public static class DependencyInjection
         services.AddScoped<IPaymentRepository, PaymentRepository>();
         services.AddScoped<ISubjectRepository, SubjectRepository>();
         services.AddScoped<ICurriculumSubjectRepository, CurriculumSubjectRepository>();
+        services.AddScoped<ISubjectBookRepository, SubjectBookRepository>();
         services.AddScoped<IExamResultRepository, ExamResultRepository>();
         services.AddScoped<IDocumentRepository, DocumentRepository>();
 
@@ -160,14 +163,18 @@ public static class DependencyInjection
         // Email
         var emailConfig = config.GetSection("Email").Get<EmailConfiguration>() ?? new EmailConfiguration();
         services.AddSingleton(emailConfig);
+        services.AddSingleton<EmailTemplateRenderer>();
+        services.AddSingleton<IEmailDeliveryQueue, EmailDeliveryQueue>();
         services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<IEmailNotifier, EmailNotifier>();
+        services.AddHostedService<EmailDeliveryProcessor>();
 
         services.AddScoped<IOutboxMessageHandler<CreateSchoolAdminProfileMessage>, CreateSchoolAdminProfileHandler>();
         services.AddScoped<IOutboxMessageHandler<LinkStudentLoginMessage>, LinkStudentLoginHandler>();
         services.AddScoped<IOutboxMessageHandler<LinkTeacherLoginMessage>, LinkTeacherLoginHandler>();
         services.AddScoped<IOutboxMessageHandler<LinkParentLoginMessage>, LinkParentLoginHandler>();
         services.AddScoped<IOutboxMessageHandler<DeliverNotificationBatchMessage>, DeliverNotificationBatchHandler>();
-        // services.AddHostedService<OutboxProcessor>(); // Disabled: LinkStudentLoginHandler fails for missing students
+        services.AddHostedService<OutboxProcessor>();
 
         // ───────────── Outbox Handlers ───────────
 

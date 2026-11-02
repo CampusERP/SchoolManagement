@@ -28,9 +28,10 @@ import type {
   RosterStudentDto,
   ClassRoomTeachingAssignmentDto,
 } from "@/types/academic.types";
+import { t } from "@/i18n";
 
 const schema = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().min(1, t("Name is required")),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -81,25 +82,25 @@ export default function ClassroomDetailPage() {
         id,
         data: { schoolId, name: values.name },
       });
-      toast.success("Classroom updated");
+      toast.success(t("Classroom updated"));
       setEditModalOpen(false);
     } catch {
-      toast.error("Failed to update classroom");
+      toast.error(t("Failed to update classroom"));
     }
   };
 
   const handleWithdraw = async (enrollmentId: string) => {
     try {
       await withdrawStudent.mutateAsync({ enrollmentId, schoolId });
-      toast.success("Student withdrawn from classroom");
+      toast.success(t("Student withdrawn from classroom"));
     } catch {
-      toast.error("Failed to withdraw student");
+      toast.error(t("Failed to withdraw student"));
     }
   };
 
   if (classroomsLoading) {
     return (
-      <DashboardTemplate title="Classroom" loading>
+      <DashboardTemplate title={t("Classroom")} loading>
         <div />
       </DashboardTemplate>
     );
@@ -107,10 +108,10 @@ export default function ClassroomDetailPage() {
 
   if (!classroom) {
     return (
-      <DashboardTemplate title="Classroom">
+      <DashboardTemplate title={t("Classroom")}>
         <div className="flex items-center justify-center py-24">
           <p className="text-[var(--color-text-secondary)]">
-            Classroom not found.
+            {t("Classroom not found.")}
           </p>
         </div>
       </DashboardTemplate>
@@ -119,7 +120,7 @@ export default function ClassroomDetailPage() {
 
   const rosterColumns: TableProps<RosterStudentDto>["columns"] = [
     {
-      title: "Student Code",
+      title: t("Student Code"),
       dataIndex: "studentCode",
       key: "studentCode",
       render: (code: string) => (
@@ -127,17 +128,17 @@ export default function ClassroomDetailPage() {
       ),
     },
     {
-      title: "First Name",
+      title: t("First Name"),
       dataIndex: "firstName",
       key: "firstName",
     },
     {
-      title: "Last Name",
+      title: t("Last Name"),
       dataIndex: "lastName",
       key: "lastName",
     },
     {
-      title: "Status",
+      title: t("Status"),
       dataIndex: "enrollmentStatus",
       key: "enrollmentStatus",
       render: (status: string) => (
@@ -148,26 +149,26 @@ export default function ClassroomDetailPage() {
               : "text-[var(--color-text-secondary)]"
           }
         >
-          {status}
+          {t(status)}
         </span>
       ),
     },
     {
-      title: "Actions",
+      title: t("Actions"),
       key: "actions",
       align: "center",
       width: 120,
       render: (_, record) =>
         record.enrollmentStatus === "Active" ? (
           <Popconfirm
-            title="Withdraw student"
-            description="Are you sure you want to withdraw this student from the classroom?"
+            title={t("Withdraw student")}
+            description={t("Are you sure you want to withdraw this student from the classroom?")}
             onConfirm={() => handleWithdraw(record.enrollmentId)}
-            okText="Withdraw"
-            cancelText="Cancel"
+            okText={t("Withdraw")}
+            cancelText={t("Cancel")}
           >
             <Button variant="ghost" type="link" size="small" className="p-0 text-[var(--color-danger)]">
-              Withdraw
+              {t("Withdraw")}
             </Button>
           </Popconfirm>
         ) : null,
@@ -176,7 +177,7 @@ export default function ClassroomDetailPage() {
 
   const taColumns: TableProps<ClassRoomTeachingAssignmentDto>["columns"] = [
     {
-      title: "Subject",
+      title: t("Subject"),
       key: "subject",
       render: (_, record) => (
         <span className="font-medium">
@@ -188,13 +189,13 @@ export default function ClassroomDetailPage() {
       ),
     },
     {
-      title: "Teacher",
+      title: t("Teacher"),
       key: "teacher",
       render: (_, record) =>
         `${record.teacherFirstName} ${record.teacherLastName}`,
     },
     {
-      title: "Term",
+      title: t("Term"),
       dataIndex: "termName",
       key: "termName",
     },
@@ -211,14 +212,14 @@ export default function ClassroomDetailPage() {
             icon={<ArrowLeft className="h-4 w-4" />}
             onClick={() => navigate("/academics/classrooms")}
           >
-            Back
+            {t("Back")}
           </Button>
           <Button
             variant="primary"
             icon={<Pencil className="h-4 w-4" />}
             onClick={openEdit}
           >
-            Edit
+            {t("Edit")}
           </Button>
         </div>
       }
@@ -226,12 +227,12 @@ export default function ClassroomDetailPage() {
       <div className="space-y-6">
         {/* Info Cards */}
         <div className="grid gap-4 sm:grid-cols-2">
-          <InfoCard title="Classroom Information">
+          <InfoCard title={t("Classroom Information")}>
             <dl className="grid gap-3">
               <div className="flex items-center gap-3">
                 <BookOpen className="h-4 w-4 text-[var(--color-text-muted)]" />
                 <dt className="w-28 text-sm text-[var(--color-text-secondary)]">
-                  Grade Level
+                  {t("Grade Level")}
                 </dt>
                 <dd className="text-sm font-medium text-[var(--color-text-primary)]">
                   {classroom.gradeLevel ?? classroom.gradeLevelName ?? "—"}
@@ -240,30 +241,39 @@ export default function ClassroomDetailPage() {
               <div className="flex items-center gap-3">
                 <BookOpen className="h-4 w-4 text-[var(--color-text-muted)]" />
                 <dt className="w-28 text-sm text-[var(--color-text-secondary)]">
-                  Academic Year
+                  {t("Academic Year")}
                 </dt>
                 <dd className="text-sm font-medium text-[var(--color-text-primary)]">
                   {classroom.academicYear ?? classroom.academicYearName ?? "—"}
                 </dd>
               </div>
               <div className="flex items-center gap-3">
-                <Users className="h-4 w-4 text-[var(--color-text-muted)]" />
+                <BookOpen className="h-4 w-4 text-[var(--color-text-muted)]" />
                 <dt className="w-28 text-sm text-[var(--color-text-secondary)]">
-                  Enrolled
+                  {t("Room")}
                 </dt>
                 <dd className="text-sm font-medium text-[var(--color-text-primary)]">
-                  {classroom.enrolledStudents ?? classroom.studentCount ?? 0}{" "}
-                  students
+                  {classroom.roomName || "—"}
+                </dd>
+              </div>
+              <div className="flex items-center gap-3">
+                <Users className="h-4 w-4 text-[var(--color-text-muted)]" />
+                <dt className="w-28 text-sm text-[var(--color-text-secondary)]">
+                  {t("Enrolled")}
+                </dt>
+                <dd className="text-sm font-medium text-[var(--color-text-primary)]">
+                  {t("{count} students", {
+                    count: String(classroom.enrolledStudents ?? classroom.studentCount ?? 0),
+                  })}
                 </dd>
               </div>
               <div className="flex items-center gap-3">
                 <BookOpen className="h-4 w-4 text-[var(--color-text-muted)]" />
                 <dt className="w-28 text-sm text-[var(--color-text-secondary)]">
-                  Assignments
+                  {t("Assignments")}
                 </dt>
                 <dd className="text-sm font-medium text-[var(--color-text-primary)]">
-                  {classroom.teachingAssignmentCount ?? 0} teaching
-                  assignments
+                  {classroom.teachingAssignmentCount ?? 0} {t("teaching assignments")}
                 </dd>
               </div>
             </dl>
@@ -271,7 +281,7 @@ export default function ClassroomDetailPage() {
         </div>
 
         {/* Teaching Assignments */}
-        <InfoCard title="Teaching Assignments">
+        <InfoCard title={t("Teaching Assignments")}>
           <Table<ClassRoomTeachingAssignmentDto>
             columns={taColumns}
             dataSource={teachingAssignments ?? []}
@@ -279,16 +289,16 @@ export default function ClassroomDetailPage() {
             loading={taLoading}
             pagination={false}
             size="small"
-            locale={{ emptyText: "No teaching assignments." }}
+            locale={{ emptyText: t("No teaching assignments.") }}
           />
         </InfoCard>
 
         {/* Student Roster */}
         <InfoCard
-          title="Student Roster"
+          title={t("Student Roster")}
           extra={
             <span className="text-sm text-[var(--color-text-secondary)]">
-              {roster?.totalCount ?? 0} students
+              {t("{count} students", { count: String(roster?.totalCount ?? 0) })}
             </span>
           }
         >
@@ -305,14 +315,14 @@ export default function ClassroomDetailPage() {
               showSizeChanger: false,
             }}
             size="small"
-            locale={{ emptyText: "No students enrolled." }}
+            locale={{ emptyText: t("No students enrolled.") }}
           />
         </InfoCard>
       </div>
 
       {/* Edit Modal */}
       <Modal
-        title="Edit Classroom"
+        title={t("Edit Classroom")}
         open={editModalOpen}
         onCancel={() => setEditModalOpen(false)}
         footer={null}
@@ -324,7 +334,7 @@ export default function ClassroomDetailPage() {
           requiredMark={false}
         >
           <Form.Item
-            label="Name"
+            label={t("Name")}
             validateStatus={errors.name ? "error" : ""}
             help={errors.name?.message}
           >
@@ -332,20 +342,20 @@ export default function ClassroomDetailPage() {
               name="name"
               control={control}
               render={({ field }) => (
-                <Input {...field} placeholder="e.g. Grade 10-A" />
+                <Input {...field} placeholder={t("e.g. Grade 10-A")} />
               )}
             />
           </Form.Item>
           <div className="mt-4 flex items-center justify-end gap-3">
             <Button variant="ghost" onClick={() => setEditModalOpen(false)}>
-              Cancel
+              {t("Cancel")}
             </Button>
             <Button
               variant="primary"
               htmlType="submit"
               loading={updateClassroom.isPending}
             >
-              Save
+              {t("Save")}
             </Button>
           </div>
         </Form>

@@ -1,4 +1,4 @@
-import { forwardRef } from "react";
+import { forwardRef, type ComponentProps, type ComponentRef } from "react";
 import { Input as AntInput, type InputProps as AntInputProps, type InputRef } from "antd";
 import { cn } from "@/lib/utils";
 
@@ -18,5 +18,16 @@ export const InputPassword = forwardRef<InputRef, InputProps>((props, ref) => {
 });
 
 InputPassword.displayName = "InputPassword";
+
+export type TextAreaProps = ComponentProps<typeof AntInput.TextArea>;
+
+export const TextArea = forwardRef<
+  ComponentRef<typeof AntInput.TextArea>,
+  TextAreaProps
+>(({ className, ...props }, ref) => (
+  <AntInput.TextArea ref={ref} className={cn(className)} {...props} />
+));
+
+TextArea.displayName = "TextArea";
 
 export default Input;

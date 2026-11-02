@@ -14,6 +14,12 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Keep startup failures visible in the console even when the Windows Event Log
+// source cannot be opened (for example, during local development without admin rights).
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
+
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
@@ -208,6 +214,8 @@ app.MapScalarApiReference();
     app.UseHttpsRedirection();
     app.UseCors(app.Environment.IsDevelopment() ? "Development" : "Frontend");
     app.UseAuthentication();
+    app.UseMiddleware<SchoolSuspensionMiddleware>();
+    app.UseMiddleware<SubscriptionEnforcementMiddleware>();
     app.UseAuthorization();
     app.MapControllers();
 

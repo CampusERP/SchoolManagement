@@ -14,6 +14,8 @@ import { exportToExcel } from "@/lib/excel";
 import type { StudentListDto } from "@/types/student.types";
 import type { TeacherListDto } from "@/types/teacher.types";
 import type { ParentListDto } from "@/types/parent.types";
+import { t } from "@/i18n";
+import { translateApiMessage } from "@/lib/errors";
 
 type Kind = "students" | "teachers" | "parents";
 
@@ -55,10 +57,10 @@ export default function ImportExportButtons({
     try {
       const result = await importPeopleFromExcel(file, kind, schoolId, createFn);
       setSummary(result);
-      if (result.failed === 0) toast.success(`Imported ${result.succeeded} ${kind}.`);
-      else toast.warning(`Imported ${result.succeeded}, ${result.failed} failed.`);
+      if (result.failed === 0) toast.success(t("Imported {count} records.", { count: result.succeeded }));
+      else toast.warning(t("Imported {count} records, {failed} failed.", { count: result.succeeded, failed: result.failed }));
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to import file.");
+      toast.error(translateApiMessage(err instanceof Error ? err.message : t("Failed to import file.")));
     } finally {
       setImporting(false);
     }
@@ -66,7 +68,7 @@ export default function ImportExportButtons({
 
   const onExport = () => {
     if (!exportRecords.length) {
-      toast.error("No rows to export.");
+      toast.error(t("No rows to export."));
       return;
     }
     exportToExcel(exportFileName, exportSheetName, exportColumns, exportRecords);
@@ -83,14 +85,14 @@ export default function ImportExportButtons({
   };
 
   const resultColumns: TableProps<ImportSummary["results"][number]>["columns"] = [
-    { title: "Row", dataIndex: "rowNumber", key: "rowNumber", width: 80 },
+    { title: t("Row"), dataIndex: "rowNumber", key: "rowNumber", width: 80 },
     {
-      title: "Status",
+      title: t("Status"),
       key: "status",
-      render: (_, r) => (r.ok ? "OK" : "Failed"),
+      render: (_, r) => (r.ok ? t("OK") : t("Failed")),
     },
     {
-      title: "Error",
+      title: t("Error"),
       dataIndex: "error",
       key: "error",
       render: (err: string) => err ?? "—",
@@ -107,29 +109,29 @@ export default function ImportExportButtons({
         onChange={onFile}
       />
       <Button variant="secondary" icon={<Upload className="h-4 w-4" />} loading={importing} onClick={() => inputRef.current?.click()}>
-        Import
+        {t("Import")}
       </Button>
       <Button variant="secondary" icon={<Download className="h-4 w-4" />} onClick={onExport}>
-        Export
+        {t("Export")}
       </Button>
       <Button variant="ghost" icon={<FileSpreadsheet className="h-4 w-4" />} onClick={onTemplate}>
-        Template
+        {t("Template")}
       </Button>
 
       <Modal
-        title="Import results"
+        title={t("Import results")}
         open={!!summary}
         onCancel={() => setSummary(null)}
         footer={
           <Button variant="ghost" onClick={() => setSummary(null)}>
-            Close
+            {t("Close")}
           </Button>
         }
       >
         {summary && (
           <div className="space-y-3">
             <p className="text-sm text-[var(--color-text-secondary)]">
-              {summary.succeeded} succeeded, {summary.failed} failed out of {summary.total}.
+              {t("{succeeded} succeeded, {failed} failed out of {total}.", { succeeded: summary.succeeded, failed: summary.failed, total: summary.total })}
             </p>
             <Table
               size="small"

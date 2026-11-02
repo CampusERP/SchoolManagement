@@ -1,5 +1,6 @@
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import { t } from "@/i18n";
 
 export interface ParsedRow {
   rowNumber: number;
@@ -25,14 +26,14 @@ export function parseExcelFile(file: File): Promise<ParseResult> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
 
-    reader.onerror = () => reject(new Error("Could not read the file."));
+    reader.onerror = () => reject(new Error(t("Could not read the file.")));
     reader.onload = (e) => {
       try {
         const data = new Uint8Array(e.target?.result as ArrayBuffer);
         const workbook = XLSX.read(data, { type: "array" });
 
         if (workbook.SheetNames.length === 0)
-          throw new Error("The workbook contains no sheets.");
+          throw new Error(t("The workbook contains no sheets."));
 
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
@@ -44,7 +45,7 @@ export function parseExcelFile(file: File): Promise<ParseResult> {
         }) as Array<Record<string, unknown>>;
 
         if (rawRows.length === 0)
-          throw new Error("The first sheet is empty.");
+          throw new Error(t("The first sheet is empty."));
 
         const headers = Object.keys(rawRows[0]).map((h) => h.trim());
 
@@ -58,7 +59,7 @@ export function parseExcelFile(file: File): Promise<ParseResult> {
 
         resolve({ headers, rows, sheetName });
       } catch (err) {
-        reject(err instanceof Error ? err : new Error("Failed to parse Excel file."));
+        reject(err instanceof Error ? err : new Error(t("Failed to parse Excel file.")));
       }
     };
 

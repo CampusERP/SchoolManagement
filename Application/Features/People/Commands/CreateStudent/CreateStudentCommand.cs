@@ -5,7 +5,7 @@ namespace Application.Features.People.Commands.CreateStudent;
 
 public record CreateStudentCommand(
     Guid SchoolId,
-    string StudentCode,
+    string? StudentCode,
     string FirstName,
     string LastName,
     DateTime DateOfBirth,

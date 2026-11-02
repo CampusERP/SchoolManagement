@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 import InfoCard from "@/components/molecules/InfoCard";
+import { t } from "@/i18n";
 
 interface Announcement {
   id: string;
@@ -20,9 +21,9 @@ export default function AnnouncementsPanel({
   className,
 }: AnnouncementsPanelProps) {
   return (
-    <InfoCard title="Announcements" className={className}>
+    <InfoCard title={t("Announcements")} className={className}>
       {announcements.length === 0 ? (
-        <p className="text-sm text-[var(--color-text-muted)]">No announcements</p>
+        <p className="text-sm text-[var(--color-text-muted)]">{t("No announcements")}</p>
       ) : (
         <div className="space-y-4">
           {announcements.map((a) => (

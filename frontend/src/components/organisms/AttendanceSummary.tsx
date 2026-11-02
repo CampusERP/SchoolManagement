@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import InfoCard from "@/components/molecules/InfoCard";
+import { t } from "@/i18n";
 
 interface AttendanceData {
   present: number;
@@ -14,10 +15,10 @@ interface AttendanceSummaryProps {
 }
 
 const categories = [
-  { key: "present", label: "Present", color: "bg-[var(--color-success)]" },
-  { key: "absent", label: "Absent", color: "bg-[var(--color-danger)]" },
-  { key: "late", label: "Late", color: "bg-[var(--color-warning)]" },
-  { key: "excused", label: "Excused", color: "bg-[var(--color-info)]" },
+  { key: "present", label: t("Present"), color: "bg-[var(--color-success)]" },
+  { key: "absent", label: t("Absent"), color: "bg-[var(--color-danger)]" },
+  { key: "late", label: t("Late"), color: "bg-[var(--color-warning)]" },
+  { key: "excused", label: t("Excused"), color: "bg-[var(--color-info)]" },
 ] as const;
 
 export default function AttendanceSummary({
@@ -27,10 +28,10 @@ export default function AttendanceSummary({
   const total = data.present + data.absent + data.late + data.excused;
 
   return (
-    <InfoCard title="Attendance Summary" className={className}>
+    <InfoCard title={t("Attendance Summary")} className={className}>
       <div className="mb-4 text-center">
         <span className="text-3xl font-bold text-[var(--color-text-primary)]">{total}</span>
-        <span className="ml-1 text-sm text-[var(--color-text-muted)]">total records</span>
+        <span className="ml-1 text-sm text-[var(--color-text-muted)]">{t("total records")}</span>
       </div>
 
       {total > 0 && (

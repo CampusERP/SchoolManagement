@@ -7,4 +7,5 @@ public record CreateClassRoomCommand(
     Guid SchoolId,
     Guid GradeLevelId,
     Guid AcademicYearId,
-    string Name) : ICommand<Guid>, IBaseCommand, ITenantScopedRequest;
+    string Name,
+    Guid? RoomId = null) : ICommand<Guid>, IBaseCommand, ITenantScopedRequest;

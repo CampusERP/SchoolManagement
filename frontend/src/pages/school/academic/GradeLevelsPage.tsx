@@ -17,14 +17,15 @@ import {
 } from "@/features/academics/hooks";
 import { useEducationStages } from "@/features/educationStages/hooks";
 import type { GradeLevelDto } from "@/types/academic.types";
+import { t } from "@/i18n";
 
 const schema = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().min(1, t("Name is required")),
   sequence: z
-    .number({ invalid_type_error: "Sequence is required" })
+    .number({ invalid_type_error: t("Sequence is required") })
     .int()
-    .min(1, "Sequence must be at least 1"),
-  educationStageId: z.string().min(1, "Education stage is required"),
+    .min(1, t("Sequence must be at least 1")),
+  educationStageId: z.string().min(1, t("Education stage is required")),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -80,19 +81,22 @@ export default function GradeLevelsPage() {
           id: editing.id,
           data: { schoolId, name: values.name, sequence: values.sequence },
         });
-        toast.success("Grade level updated");
+        toast.success(t("Grade level updated"));
       } else {
+        const nextSequence = Math.max(0, ...(data ?? [])
+          .filter((grade) => grade.educationStageId === values.educationStageId)
+          .map((grade) => grade.sequence)) + 1;
         await createGradeLevel.mutateAsync({
           schoolId,
           educationStageId: values.educationStageId,
           name: values.name,
-          sequence: values.sequence,
+          sequence: nextSequence,
         });
-        toast.success("Grade level created");
+        toast.success(t("Grade level created"));
       }
       setModalOpen(false);
     } catch {
-      toast.error(editing ? "Failed to update grade level" : "Failed to create grade level");
+      toast.error(editing ? t("Failed to update grade level") : t("Failed to create grade level"));
     }
   };
 
@@ -106,7 +110,7 @@ export default function GradeLevelsPage() {
 
   const columns: TableProps<GradeLevelDto>["columns"] = [
     {
-      title: "Name",
+      title: t("Name"),
       dataIndex: "name",
       key: "name",
       render: (name: string) => (
@@ -114,48 +118,50 @@ export default function GradeLevelsPage() {
       ),
     },
     {
-      title: "Education Stage",
+      title: t("Education Stage"),
       key: "educationStage",
       render: (_, record) =>
         record.educationStage ?? stageName(record.educationStageId),
     },
-    { title: "Sequence", dataIndex: "sequence", key: "sequence", align: "center" },
+    { title: t("Sequence"), dataIndex: "sequence", key: "sequence", align: "center" },
     {
-      title: "Actions",
+      title: t("Actions"),
       key: "actions",
       align: "center",
       width: 120,
       render: (_, record) => (
-        <Button variant="ghost" type="link" size="small" className="p-0" onClick={() => openEdit(record)}>
-          Edit
-        </Button>
+        <div className="flex justify-center gap-2">
+          <Button variant="ghost" type="link" size="small" className="p-0" onClick={() => openEdit(record)}>
+            {t("Edit")}
+          </Button>
+        </div>
       ),
     },
   ];
 
   return (
     <DashboardTemplate
-      title="Grade Levels"
-      subtitle="Configure grade levels"
+      title={t("Grade Levels")}
+      subtitle={t("Configure grade levels")}
       loading={isLoading}
       actions={
         <Button variant="primary" icon={<Plus className="h-4 w-4" />} onClick={openCreate}>
-          Add Grade Level
+          {t("Add Grade Level")}
         </Button>
       }
     >
       {isError ? (
         <div className="flex items-center justify-center py-24">
-          <p className="text-[var(--color-text-secondary)]">Failed to load grade levels.</p>
+          <p className="text-[var(--color-text-secondary)]">{t("Failed to load grade levels.")}</p>
         </div>
       ) : (data?.length ?? 0) === 0 ? (
         <EmptyState
           icon={<GraduationCap className="h-6 w-6" />}
-          title="No grade levels yet"
-          description="Add your first grade level."
+          title={t("No grade levels yet")}
+          description={t("Add your first grade level.")}
           action={
             <Button variant="primary" icon={<Plus className="h-4 w-4" />} onClick={openCreate}>
-              Add Grade Level
+              {t("Add Grade Level")}
             </Button>
           }
         />
@@ -164,21 +170,21 @@ export default function GradeLevelsPage() {
       )}
 
       <Modal
-        title={editing ? "Edit Grade Level" : "Add Grade Level"}
+        title={editing ? t("Edit Grade Level") : t("Add Grade Level")}
         open={modalOpen}
         onCancel={() => setModalOpen(false)}
         footer={null}
         destroyOnHidden
       >
         <Form layout="vertical" onFinish={handleSubmit(onSubmit)} requiredMark={false}>
-          <Form.Item label="Name" validateStatus={errors.name ? "error" : ""} help={errors.name?.message}>
+          <Form.Item label={t("Name")} validateStatus={errors.name ? "error" : ""} help={errors.name?.message}>
             <Controller
               name="name"
               control={control}
-              render={({ field }) => <Input {...field} placeholder="e.g. Grade 1" />}
+              render={({ field }) => <Input {...field} placeholder={t("e.g. Grade 1")} />}
             />
           </Form.Item>
-          <Form.Item label="Sequence" validateStatus={errors.sequence ? "error" : ""} help={errors.sequence?.message}>
+          <Form.Item label={t("Sequence")} validateStatus={errors.sequence ? "error" : ""} help={errors.sequence?.message}>
             <Controller
               name="sequence"
               control={control}
@@ -188,9 +194,9 @@ export default function GradeLevelsPage() {
             />
           </Form.Item>
           <Form.Item
-            label="Education Stage"
+            label={t("Education Stage")}
             validateStatus={errors.educationStageId ? "error" : ""}
-            help={errors.educationStageId?.message ?? "The education stage this grade level belongs to."}
+            help={errors.educationStageId?.message ?? t("The education stage this grade level belongs to.")}
           >
             <Controller
               name="educationStageId"
@@ -198,7 +204,7 @@ export default function GradeLevelsPage() {
               render={({ field }) => (
                 <Select
                   {...field}
-                  placeholder="Select education stage"
+                  placeholder={t("Select education stage")}
                   options={stageOptions}
                 />
               )}
@@ -206,14 +212,14 @@ export default function GradeLevelsPage() {
           </Form.Item>
           <div className="mt-4 flex items-center justify-end gap-3">
             <Button variant="ghost" onClick={() => setModalOpen(false)}>
-              Cancel
+              {t("Cancel")}
             </Button>
             <Button
               variant="primary"
               htmlType="submit"
               loading={createGradeLevel.isPending || updateGradeLevel.isPending}
             >
-              {editing ? "Save" : "Create"}
+              {editing ? t("Save") : t("Create")}
             </Button>
           </div>
         </Form>

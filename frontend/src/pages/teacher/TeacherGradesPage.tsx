@@ -6,6 +6,7 @@ import { useAuthStore } from "@/store/authStore";
 import { useTeacherDashboard } from "@/features/dashboard/hooks";
 import { useClassAssignments, useGradeSubmission } from "@/features/teacher/hooks";
 import type { AssignmentSummary } from "@/features/teacher/api";
+import { t } from "@/i18n";
 
 export default function TeacherGradesPage() {
   const schoolId = useAuthStore((s) => s.user?.schoolId) ?? "";
@@ -20,7 +21,7 @@ export default function TeacherGradesPage() {
 
   const assignmentColumns: TableProps<AssignmentSummary>["columns"] = [
     {
-      title: "Title",
+      title: t("Title"),
       dataIndex: "title",
       key: "title",
       render: (title: string) => (
@@ -28,18 +29,18 @@ export default function TeacherGradesPage() {
       ),
     },
     {
-      title: "Due Date",
+      title: t("Due Date"),
       dataIndex: "dueDate",
       key: "dueDate",
       render: (d: string) => new Date(d).toLocaleDateString(),
     },
     {
-      title: "Submissions",
+      title: t("Submissions"),
       key: "subs",
       render: (_: unknown, r: AssignmentSummary) => (
         <div className="flex gap-1">
-          <Tag color="green">{r.gradedSubmissions} graded</Tag>
-          <Tag color="orange">{r.pendingSubmissions} pending</Tag>
+          <Tag color="green">{t("{count} graded", { count: r.gradedSubmissions })}</Tag>
+          <Tag color="orange">{t("{count} pending", { count: r.pendingSubmissions })}</Tag>
         </div>
       ),
     },
@@ -52,7 +53,7 @@ export default function TeacherGradesPage() {
           onClick={() => setSelectedAssignment(record)}
           className="rounded-lg bg-[var(--color-primary)] px-3 py-1.5 text-xs font-medium text-white hover:opacity-90"
         >
-          View details
+          {t("View details")}
         </button>
       ),
     },
@@ -70,18 +71,18 @@ export default function TeacherGradesPage() {
 
   return (
     <DashboardTemplate
-      title="Enter Grades"
-      subtitle="Grade student assignments"
+      title={t("Enter Grades")}
+      subtitle={t("Grade student assignments")}
       loading={dashLoading}
     >
       <div className="space-y-4">
         <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-card)] p-4">
           <label className="mb-2 block text-sm font-medium text-[var(--color-text-primary)]">
-            Select a class
+            {t("Select a class")}
           </label>
           <Select
             className="w-full max-w-md"
-            placeholder="Choose a class..."
+            placeholder={t("Choose a class...")}
             value={selectedTaId}
             onChange={setSelectedTaId}
             options={classes.map((c) => ({
@@ -93,7 +94,7 @@ export default function TeacherGradesPage() {
           />
           {classes.length === 0 && !dashLoading && (
             <p className="mt-2 text-xs text-[var(--color-text-muted)]">
-              No classes assigned. Contact your administrator.
+              {t("No classes assigned. Contact your administrator.")}
             </p>
           )}
         </div>
@@ -142,70 +143,69 @@ function GradesDetail({
         grade: gradeValue,
         feedback: feedback || undefined,
       });
-      message.success("Grade submitted");
+      message.success(t("Grade submitted"));
       setModalOpen(false);
       setCurrentSubmission(null);
       setGradeValue(0);
       setFeedback("");
     } catch {
-      message.error("Failed to submit grade");
+      message.error(t("Failed to submit grade"));
     }
   };
 
   return (
     <DashboardTemplate
       title={assignment.title}
-      subtitle={`Due: ${new Date(assignment.dueDate).toLocaleDateString()} · Max score: ${assignment.maxScore ?? "N/A"}`}
+      subtitle={t("Due: {date} · Max score: {score}", { date: new Date(assignment.dueDate).toLocaleDateString(), score: assignment.maxScore ?? t("N/A") })}
       actions={
         <button
           onClick={onBack}
           className="flex items-center gap-2 rounded-lg border border-[var(--color-border)] px-3 py-2 text-sm text-[var(--color-text-secondary)] hover:bg-[var(--color-surface)]"
         >
-          <ArrowLeft className="h-4 w-4" /> Back
+          <ArrowLeft className="h-4 w-4" /> {t("Back")}
         </button>
       }
     >
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-card)] p-4 text-center">
-          <p className="text-sm text-[var(--color-text-secondary)]">Total Submissions</p>
+          <p className="text-sm text-[var(--color-text-secondary)]">{t("Total Submissions")}</p>
           <p className="mt-1 text-2xl font-semibold text-[var(--color-text-primary)]">{assignment.totalSubmissions}</p>
         </div>
         <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-card)] p-4 text-center">
-          <p className="text-sm text-[var(--color-text-secondary)]">Graded</p>
+          <p className="text-sm text-[var(--color-text-secondary)]">{t("Graded")}</p>
           <p className="mt-1 text-2xl font-semibold text-green-600">{assignment.gradedSubmissions}</p>
         </div>
         <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-card)] p-4 text-center">
-          <p className="text-sm text-[var(--color-text-secondary)]">Pending</p>
+          <p className="text-sm text-[var(--color-text-secondary)]">{t("Pending")}</p>
           <p className="mt-1 text-2xl font-semibold text-amber-600">{assignment.pendingSubmissions}</p>
         </div>
       </div>
 
       <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-card)] p-4">
-        <p className="mb-3 text-sm font-medium text-[var(--color-text-primary)]">Grading</p>
+        <p className="mb-3 text-sm font-medium text-[var(--color-text-primary)]">{t("Grading")}</p>
         {assignment.pendingSubmissions > 0 ? (
           <p className="text-sm text-[var(--color-text-secondary)]">
-            {assignment.pendingSubmissions} submission{assignment.pendingSubmissions !== 1 ? "s" : ""} awaiting your review.
-            Student submissions are managed through the assignment system.
+            {t("{count} submission(s) awaiting your review. Student submissions are managed through the assignment system.", { count: assignment.pendingSubmissions })}
           </p>
         ) : (
           <div className="flex items-center gap-2 text-green-600">
             <Award className="h-5 w-5" />
-            <span className="text-sm font-medium">All submissions have been graded!</span>
+            <span className="text-sm font-medium">{t("All submissions have been graded!")}</span>
           </div>
         )}
       </div>
 
       <Modal
-        title={`Grade: ${currentSubmission?.studentName}`}
+        title={t("Grade: {student}", { student: currentSubmission?.studentName ?? "" })}
         open={modalOpen}
         onOk={handleGrade}
         onCancel={() => setModalOpen(false)}
         confirmLoading={gradeMutation.isPending}
-        okText="Submit Grade"
+        okText={t("Submit Grade")}
       >
         <div className="space-y-4">
           <div>
-            <label className="mb-1 block text-sm font-medium">Grade</label>
+            <label className="mb-1 block text-sm font-medium">{t("Grade")}</label>
             <InputNumber
               className="w-full"
               min={0}
@@ -216,12 +216,12 @@ function GradesDetail({
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium">Feedback (optional)</label>
+            <label className="mb-1 block text-sm font-medium">{t("Feedback (optional)")}</label>
             <Input.TextArea
               rows={3}
               value={feedback}
               onChange={(e) => setFeedback(e.target.value)}
-              placeholder="Add feedback for the student..."
+              placeholder={t("Add feedback for the student...")}
             />
           </div>
         </div>

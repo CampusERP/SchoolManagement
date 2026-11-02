@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import InfoCard from "@/components/molecules/InfoCard";
+import { t } from "@/i18n";
 
 dayjs.extend(relativeTime);
 
@@ -31,20 +32,20 @@ export default function TimelinePanel({
   return (
     <InfoCard className={className}>
       <h3 className="mb-4 text-base font-semibold text-[var(--color-text-primary)]">
-        Activity Timeline
+        {t("Activity Timeline")}
       </h3>
 
       {activities.length === 0 ? (
-        <p className="text-sm text-[var(--color-text-muted)]">No recent activity</p>
+        <p className="text-sm text-[var(--color-text-muted)]">{t("No recent activity")}</p>
       ) : (
         <div className="relative space-y-4">
-          <div className="absolute left-0 top-1 bottom-1 w-px bg-[var(--color-border)]" />
+          <div className="absolute start-0 top-1 bottom-1 w-px bg-[var(--color-border)]" />
 
           {activities.map((activity) => (
-            <div key={activity.id} className="relative flex gap-3 pl-6">
+            <div key={activity.id} className="relative flex gap-3 ps-6">
               <div
                 className={cn(
-                  "absolute left-0 top-1.5 h-2.5 w-2.5 -translate-x-1/2 rounded-full ring-2 ring-[var(--color-surface-card)]",
+                  "absolute start-0 top-1.5 h-2.5 w-2.5 ltr:-translate-x-1/2 rtl:translate-x-1/2 rounded-full ring-2 ring-[var(--color-surface-card)]",
                   typeColors[activity.type] ?? "bg-[var(--color-text-muted)]"
                 )}
               />

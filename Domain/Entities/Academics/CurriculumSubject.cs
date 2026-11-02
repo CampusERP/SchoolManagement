@@ -24,4 +24,6 @@ public class CurriculumSubject : TenantEntity
 
     public static CurriculumSubject Create(Guid schoolId, Guid gradeLevelId, Guid subjectId)
         => new(Guid.NewGuid(), schoolId, gradeLevelId, subjectId);
+
+    public void ChangeSubject(Guid subjectId) => SubjectId = subjectId;
 }

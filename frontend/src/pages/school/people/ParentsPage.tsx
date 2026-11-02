@@ -15,12 +15,13 @@ import { useAuthStore } from "@/store/authStore";
 import { useParents, useCreateParent } from "@/features/parents/hooks";
 import ImportExportButtons from "@/components/importExport/ImportExportButtons";
 import type { ParentListDto } from "@/types/parent.types";
+import { t } from "@/i18n";
 
 const schema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
-  email: z.string().min(1, "Email is required").email("Invalid email"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  firstName: z.string().min(1, t("First name is required")),
+  lastName: z.string().min(1, t("Last name is required")),
+  email: z.string().min(1, t("Email is required")).email(t("Invalid email")),
+  password: z.string().min(6, t("Password must be at least 6 characters")),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -55,16 +56,16 @@ export default function ParentsPage() {
   const onSubmit = async (values: FormData) => {
     try {
       await createParent.mutateAsync({ schoolId, ...values });
-      toast.success("Parent created");
+      toast.success(t("Parent created"));
       setModalOpen(false);
     } catch {
-      toast.error("Failed to create parent");
+      toast.error(t("Failed to create parent"));
     }
   };
 
   const columns: TableProps<ParentListDto>["columns"] = [
     {
-      title: "Name",
+      title: t("Name"),
       key: "name",
       render: (_, record) => (
         <span className="font-medium text-[var(--color-text-primary)]">
@@ -73,13 +74,13 @@ export default function ParentsPage() {
       ),
     },
     {
-      title: "Children",
+      title: t("Children"),
       key: "children",
       align: "center",
       render: (_, record) => record.childrenCount ?? 0,
     },
     {
-      title: "Actions",
+      title: t("Actions"),
       key: "actions",
       align: "center",
       width: 120,
@@ -91,7 +92,7 @@ export default function ParentsPage() {
           className="p-0"
           onClick={() => navigate(`/people/parents/${record.id}`)}
         >
-          View
+          {t("View")}
         </Button>
       ),
     },
@@ -99,8 +100,8 @@ export default function ParentsPage() {
 
   return (
     <DashboardTemplate
-      title="Parents"
-      subtitle="Manage parent records"
+      title={t("Parents")}
+      subtitle={t("Manage parent records")}
       actions={
         <>
           <ImportExportButtons
@@ -117,7 +118,7 @@ export default function ParentsPage() {
             ]}
           />
           <Button variant="primary" icon={<Plus className="h-4 w-4" />} onClick={openCreate}>
-            Add Parent
+            {t("Add Parent")}
           </Button>
         </>
       }
@@ -129,23 +130,23 @@ export default function ParentsPage() {
             setSearch(v);
             setPage(1);
           }}
-          placeholder="Search parents..."
+          placeholder={t("Search parents...")}
           className="max-w-md"
         />
       </div>
 
       {isError ? (
         <div className="flex items-center justify-center py-24">
-          <p className="text-[var(--color-text-secondary)]">Failed to load parents.</p>
+          <p className="text-[var(--color-text-secondary)]">{t("Failed to load parents.")}</p>
         </div>
       ) : !isLoading && (data?.items.length ?? 0) === 0 ? (
         <EmptyState
           icon={<Users className="h-6 w-6" />}
-          title="No parents found"
-          description="Add your first parent to get started."
+          title={t("No parents found")}
+          description={t("Add your first parent to get started.")}
           action={
             <Button variant="primary" icon={<Plus className="h-4 w-4" />} onClick={openCreate}>
-              Add Parent
+              {t("Add Parent")}
             </Button>
           }
         />
@@ -161,45 +162,46 @@ export default function ParentsPage() {
             total: data?.totalCount ?? 0,
             onChange: setPage,
             showSizeChanger: false,
-            showTotal: (total) => `Total ${total} parents`,
+            showTotal: (total) => t("Total {count} parents", { count: total }),
           }}
+          scroll={{ x: "max-content" }}
         />
       )}
 
-      <Modal title="Add Parent" open={modalOpen} onCancel={() => setModalOpen(false)} footer={null} destroyOnHidden>
+      <Modal title={t("Add Parent")} open={modalOpen} onCancel={() => setModalOpen(false)} footer={null} destroyOnHidden>
         <Form layout="vertical" onFinish={handleSubmit(onSubmit)} requiredMark={false}>
           <div className="grid grid-cols-2 gap-4">
             <Form.Item
-              label="First Name"
+              label={t("First Name")}
               validateStatus={errors.firstName ? "error" : ""}
               help={errors.firstName?.message}
             >
-              <Controller name="firstName" control={control} render={({ field }) => <Input {...field} placeholder="First name" />} />
+              <Controller name="firstName" control={control} render={({ field }) => <Input {...field} placeholder={t("First name")} />} />
             </Form.Item>
             <Form.Item
-              label="Last Name"
+              label={t("Last Name")}
               validateStatus={errors.lastName ? "error" : ""}
               help={errors.lastName?.message}
             >
-              <Controller name="lastName" control={control} render={({ field }) => <Input {...field} placeholder="Last name" />} />
+              <Controller name="lastName" control={control} render={({ field }) => <Input {...field} placeholder={t("Last name")} />} />
             </Form.Item>
           </div>
-          <Form.Item label="Email" validateStatus={errors.email ? "error" : ""} help={errors.email?.message}>
-            <Controller name="email" control={control} render={({ field }) => <Input {...field} placeholder="parent@example.com" />} />
+          <Form.Item label={t("Email")} validateStatus={errors.email ? "error" : ""} help={errors.email?.message}>
+            <Controller name="email" control={control} render={({ field }) => <Input {...field} placeholder={t("parent@example.com")} />} />
           </Form.Item>
-          <Form.Item label="Password" validateStatus={errors.password ? "error" : ""} help={errors.password?.message}>
+          <Form.Item label={t("Password")} validateStatus={errors.password ? "error" : ""} help={errors.password?.message}>
             <Controller
               name="password"
               control={control}
-              render={({ field }) => <InputPassword {...field} placeholder="Temporary password" />}
+              render={({ field }) => <InputPassword {...field} placeholder={t("Temporary password")} />}
             />
           </Form.Item>
           <div className="mt-4 flex items-center justify-end gap-3">
             <Button variant="ghost" onClick={() => setModalOpen(false)}>
-              Cancel
+              {t("Cancel")}
             </Button>
             <Button variant="primary" htmlType="submit" loading={createParent.isPending}>
-              Create
+              {t("Create")}
             </Button>
           </div>
         </Form>

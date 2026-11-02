@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import InfoCard from "@/components/molecules/InfoCard";
+import { t } from "@/i18n";
 
 interface LessonItem {
   id?: string;
@@ -28,9 +29,9 @@ export default function UpcomingLessons({
   className,
 }: UpcomingLessonsProps) {
   return (
-    <InfoCard title="Upcoming Lessons" className={className}>
+    <InfoCard title={t("Upcoming Lessons")} className={className}>
       {items.length === 0 ? (
-        <p className="text-sm text-[var(--color-text-muted)]">No lessons scheduled</p>
+        <p className="text-sm text-[var(--color-text-muted)]">{t("No lessons scheduled")}</p>
       ) : (
         <div className="space-y-3">
           {items.map((item) => {

@@ -16,9 +16,10 @@ import {
   useDeleteEducationStage,
 } from "@/features/educationStages/hooks";
 import type { EducationStageDto } from "@/types/academic.types";
+import { t } from "@/i18n";
 
 const schema = z.object({
-  name: z.string().min(1, "Name is required").max(100),
+  name: z.string().min(1, t("Name is required")).max(100),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -61,17 +62,17 @@ export default function EducationStagesPage() {
           id: editing.id,
           data: { name: values.name },
         });
-        toast.success("Education stage updated");
+        toast.success(t("Education stage updated"));
       } else {
         await createStage.mutateAsync({ name: values.name });
-        toast.success("Education stage created");
+        toast.success(t("Education stage created"));
       }
       setModalOpen(false);
     } catch {
       toast.error(
         editing
-          ? "Failed to update education stage"
-          : "Failed to create education stage"
+          ? t("Failed to update education stage")
+          : t("Failed to create education stage")
       );
     }
   };
@@ -79,15 +80,15 @@ export default function EducationStagesPage() {
   const onDelete = async (id: string) => {
     try {
       await deleteStage.mutateAsync(id);
-      toast.success("Education stage deleted");
+      toast.success(t("Education stage deleted"));
     } catch {
-      toast.error("Failed to delete education stage");
+      toast.error(t("Failed to delete education stage"));
     }
   };
 
   const columns: TableProps<EducationStageDto>["columns"] = [
     {
-      title: "Name",
+      title: t("Name"),
       dataIndex: "name",
       key: "name",
       render: (name: string) => (
@@ -97,7 +98,7 @@ export default function EducationStagesPage() {
       ),
     },
     {
-      title: "Actions",
+      title: t("Actions"),
       key: "actions",
       align: "center",
       width: 160,
@@ -110,17 +111,17 @@ export default function EducationStagesPage() {
             className="p-0"
             onClick={() => openEdit(record)}
           >
-            Edit
+            {t("Edit")}
           </Button>
           <Popconfirm
-            title="Delete education stage?"
-            description="Grade levels linked to this stage will keep their existing assignment."
-            okText="Delete"
+            title={t("Delete education stage?")}
+            description={t("Grade levels linked to this stage will keep their existing assignment.")}
+            okText={t("Delete")}
             okButtonProps={{ danger: true }}
             onConfirm={() => onDelete(record.id)}
           >
             <Button variant="ghost" type="link" size="small" className="p-0 text-red-500">
-              Delete
+              {t("Delete")}
             </Button>
           </Popconfirm>
         </div>
@@ -130,8 +131,8 @@ export default function EducationStagesPage() {
 
   return (
     <DashboardTemplate
-      title="Education Stages"
-      subtitle="Define the stages of education (e.g. Primary, Middle, Secondary)"
+      title={t("Education Stages")}
+      subtitle={t("Define the stages of education (e.g. Primary, Middle, Secondary)")}
       loading={isLoading}
       actions={
         <Button
@@ -139,28 +140,28 @@ export default function EducationStagesPage() {
           icon={<Plus className="h-4 w-4" />}
           onClick={openCreate}
         >
-          Add Stage
+          {t("Add Stage")}
         </Button>
       }
     >
       {isError ? (
         <div className="flex items-center justify-center py-24">
           <p className="text-[var(--color-text-secondary)]">
-            Failed to load education stages.
+            {t("Failed to load education stages.")}
           </p>
         </div>
       ) : (data?.length ?? 0) === 0 ? (
         <EmptyState
           icon={<Layers className="h-6 w-6" />}
-          title="No education stages yet"
-          description="Add your first education stage to group grade levels."
+          title={t("No education stages yet")}
+          description={t("Add your first education stage to group grade levels.")}
           action={
             <Button
               variant="primary"
               icon={<Plus className="h-4 w-4" />}
               onClick={openCreate}
             >
-              Add Stage
+              {t("Add Stage")}
             </Button>
           }
         />
@@ -174,7 +175,7 @@ export default function EducationStagesPage() {
       )}
 
       <Modal
-        title={editing ? "Edit Education Stage" : "Add Education Stage"}
+        title={editing ? t("Edit Education Stage") : t("Add Education Stage")}
         open={modalOpen}
         onCancel={() => setModalOpen(false)}
         footer={null}
@@ -182,7 +183,7 @@ export default function EducationStagesPage() {
       >
         <Form layout="vertical" onFinish={handleSubmit(onSubmit)} requiredMark={false}>
           <Form.Item
-            label="Name"
+            label={t("Name")}
             validateStatus={errors.name ? "error" : ""}
             help={errors.name?.message}
           >
@@ -190,13 +191,13 @@ export default function EducationStagesPage() {
               name="name"
               control={control}
               render={({ field }) => (
-                <Input {...field} placeholder="e.g. Primary" />
+                <Input {...field} placeholder={t("e.g. Primary")} />
               )}
             />
           </Form.Item>
           <div className="mt-4 flex items-center justify-end gap-3">
             <Button variant="ghost" onClick={() => setModalOpen(false)}>
-              Cancel
+              {t("Cancel")}
             </Button>
             <Button
               variant="primary"
@@ -206,7 +207,7 @@ export default function EducationStagesPage() {
                 updateStage.isPending
               }
             >
-              {editing ? "Save" : "Create"}
+              {editing ? t("Save") : t("Create")}
             </Button>
           </div>
         </Form>

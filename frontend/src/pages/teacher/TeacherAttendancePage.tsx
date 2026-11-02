@@ -7,12 +7,13 @@ import { useTeacherDashboard } from "@/features/dashboard/hooks";
 import { useAttendanceSheet, useRecordAttendance, useLockAttendance } from "@/features/teacher/hooks";
 import type { ClassAttendanceStudent } from "@/features/teacher/api";
 import { cn } from "@/lib/utils";
+import { t } from "@/i18n";
 
 const STATUS_OPTIONS = [
-  { value: 0, label: "Present", color: "bg-green-100 text-green-700 border-green-300", icon: CheckCircle },
-  { value: 1, label: "Absent", color: "bg-red-100 text-red-700 border-red-300", icon: XCircle },
-  { value: 2, label: "Late", color: "bg-amber-100 text-amber-700 border-amber-300", icon: Clock },
-  { value: 3, label: "Excused", color: "bg-blue-100 text-blue-700 border-blue-300", icon: AlertCircle },
+  { value: 0, label: t("Present"), color: "bg-green-100 text-green-700 border-green-300", icon: CheckCircle },
+  { value: 1, label: t("Absent"), color: "bg-red-100 text-red-700 border-red-300", icon: XCircle },
+  { value: 2, label: t("Late"), color: "bg-amber-100 text-amber-700 border-amber-300", icon: Clock },
+  { value: 3, label: t("Excused"), color: "bg-blue-100 text-blue-700 border-blue-300", icon: AlertCircle },
 ];
 
 const STATUS_LABELS: Record<number, string> = { 0: "Present", 1: "Absent", 2: "Late", 3: "Excused" };
@@ -62,9 +63,9 @@ export default function TeacherAttendancePage() {
         date: today,
         entries,
       });
-      message.success("Attendance saved");
+      message.success(t("Attendance saved"));
     } catch {
-      message.error("Failed to save attendance");
+      message.error(t("Failed to save attendance"));
     }
   };
 
@@ -72,26 +73,26 @@ export default function TeacherAttendancePage() {
     if (!sessionId || sessionId === "00000000-0000-0000-0000-000000000000") return;
     try {
       await lockMutation.mutateAsync({ sessionId, schoolId });
-      message.success("Attendance session locked");
+      message.success(t("Attendance session locked"));
     } catch {
-      message.error("Failed to lock session");
+      message.error(t("Failed to lock session"));
     }
   };
 
   return (
     <DashboardTemplate
-      title="Take Attendance"
+      title={t("Take Attendance")}
       subtitle={today}
       loading={dashLoading}
     >
       <div className="space-y-4">
         <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-card)] p-4">
           <label className="mb-2 block text-sm font-medium text-[var(--color-text-primary)]">
-            Select a class from today's schedule
+            {t("Select a class from today's schedule")}
           </label>
           <Select
             className="w-full max-w-md"
-            placeholder="Choose a class..."
+            placeholder={t("Choose a class...")}
             value={selectedSlotId}
             onChange={(val) => {
               setSelectedSlotId(val);
@@ -107,14 +108,14 @@ export default function TeacherAttendancePage() {
           />
           {todaySlots.length === 0 && (
             <p className="mt-2 text-xs text-[var(--color-text-muted)]">
-              No classes scheduled for today.
+              {t("No classes scheduled for today.")}
             </p>
           )}
         </div>
 
         {selectedSlotId && (
           <DashboardTemplate
-            title={selectedSlot ? `${selectedSlot.subject} — ${selectedSlot.className}` : "Attendance"}
+            title={selectedSlot ? `${selectedSlot.subject} — ${selectedSlot.className}` : t("Attendance")}
             subtitle={selectedSlot ? `${selectedSlot.room} · ${selectedSlot.startTime?.slice(0, 5)} – ${selectedSlot.endTime?.slice(0, 5)}` : ""}
             loading={attLoading}
             actions={
@@ -126,7 +127,7 @@ export default function TeacherAttendancePage() {
                   disabled={isLocked || !hasChanges}
                   loading={recordMutation.isPending}
                 >
-                  Save
+                  {t("Save")}
                 </Button>
                 <Button
                   danger
@@ -135,21 +136,21 @@ export default function TeacherAttendancePage() {
                   disabled={isLocked || records.length === 0}
                   loading={lockMutation.isPending}
                 >
-                  Lock
+                  {t("Lock")}
                 </Button>
               </div>
             }
           >
             {isLocked && (
               <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700">
-                This attendance session is locked and cannot be modified.
+                {t("This attendance session is locked and cannot be modified.")}
               </div>
             )}
 
             {records.length === 0 ? (
               <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-card)] p-8 text-center">
                 <p className="text-sm text-[var(--color-text-secondary)]">
-                  No attendance records found for this class on this date.
+                  {t("No attendance records found for this class on this date.")}
                 </p>
               </div>
             ) : (
@@ -226,7 +227,7 @@ function StudentAttendanceRow({
 
       <input
         type="text"
-        placeholder="Note"
+        placeholder={t("Note")}
         value={note}
         disabled={disabled}
         onChange={(e) => onNoteChange(e.target.value)}

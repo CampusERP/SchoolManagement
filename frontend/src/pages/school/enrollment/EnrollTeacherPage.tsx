@@ -12,12 +12,13 @@ import { useClassrooms, useAcademicYears } from "@/features/academics/hooks";
 import { useEnrollTeacher } from "@/features/enrollment/hooks";
 import { useAuthStore } from "@/store/authStore";
 import type { EnrollTeacherCommand } from "@/types/enrollment.types";
+import { t } from "@/i18n";
 
 const schema = z.object({
-  teacherId: z.string().min(1, "Teacher is required"),
-  academicYearId: z.string().min(1, "Academic year is required"),
-  classRoomId: z.string().min(1, "Classroom is required"),
-  termId: z.string().min(1, "Term is required"),
+  teacherId: z.string().min(1, t("Teacher is required")),
+  academicYearId: z.string().min(1, t("Academic year is required")),
+  classRoomId: z.string().min(1, t("Classroom is required")),
+  termId: z.string().min(1, t("Term is required")),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -59,10 +60,10 @@ export default function EnrollTeacherPage() {
         termId: values.termId,
       };
       await enrollTeacher.mutateAsync(payload);
-      toast.success("Teacher enrolled successfully");
+      toast.success(t("Teacher enrolled successfully"));
       navigate(`/people/teachers/${values.teacherId}`);
     } catch {
-      toast.error("Failed to enroll teacher");
+      toast.error(t("Failed to enroll teacher"));
     }
   };
 
@@ -74,10 +75,10 @@ export default function EnrollTeacherPage() {
   const yearOptions = (years ?? []).map((y) => ({ value: y.id, label: y.name }));
 
   return (
-    <DashboardTemplate title="Enroll Teacher" subtitle="Enroll a teacher in a classroom for a term">
+    <DashboardTemplate title={t("Enroll Teacher")} subtitle={t("Enroll a teacher in a classroom for a term")}>
       <div className="mx-auto max-w-xl rounded-[var(--card-radius)] bg-[var(--color-surface-card)] p-8 shadow-[var(--shadow-card)]">
         <Form layout="vertical" onFinish={handleSubmit(onSubmit)} requiredMark={false}>
-          <Form.Item label="Teacher" validateStatus={errors.teacherId ? "error" : ""} help={errors.teacherId?.message}>
+          <Form.Item label={t("Teacher")} validateStatus={errors.teacherId ? "error" : ""} help={errors.teacherId?.message}>
             <Controller
               name="teacherId"
               control={control}
@@ -85,7 +86,7 @@ export default function EnrollTeacherPage() {
                 <Select
                   {...field}
                   showSearch
-                  placeholder="Search and select a teacher"
+                  placeholder={t("Search and select a teacher")}
                   filterOption={false}
                   onSearch={setTeacherSearch}
                   options={teacherOptions}
@@ -95,45 +96,45 @@ export default function EnrollTeacherPage() {
             />
           </Form.Item>
 
-          <Form.Item label="Academic Year" validateStatus={errors.academicYearId ? "error" : ""} help={errors.academicYearId?.message}>
+          <Form.Item label={t("Academic Year")} validateStatus={errors.academicYearId ? "error" : ""} help={errors.academicYearId?.message}>
             <Controller
               name="academicYearId"
               control={control}
               render={({ field }) => (
-                <Select {...field} placeholder="Select academic year" options={yearOptions} size="large" />
+                <Select {...field} placeholder={t("Select academic year")} options={yearOptions} size="large" />
               )}
             />
           </Form.Item>
 
-          <Form.Item label="Term" validateStatus={errors.termId ? "error" : ""} help={errors.termId?.message}>
+          <Form.Item label={t("Term")} validateStatus={errors.termId ? "error" : ""} help={errors.termId?.message}>
             <Controller
               name="termId"
               control={control}
               render={({ field }) => (
                 <Select
                   {...field}
-                  placeholder="Select term"
+                  placeholder={t("Select term")}
                   options={termOptions}
                   size="large"
                   disabled={!selectedYear}
-                  notFoundContent={selectedYear ? "No terms found" : "Select an academic year first"}
+                  notFoundContent={selectedYear ? t("No terms found") : t("Select an academic year first")}
                 />
               )}
             />
           </Form.Item>
 
-          <Form.Item label="Classroom" validateStatus={errors.classRoomId ? "error" : ""} help={errors.classRoomId?.message}>
+          <Form.Item label={t("Classroom")} validateStatus={errors.classRoomId ? "error" : ""} help={errors.classRoomId?.message}>
             <Controller
               name="classRoomId"
               control={control}
               render={({ field }) => (
                 <Select
                   {...field}
-                  placeholder="Select classroom"
+                  placeholder={t("Select classroom")}
                   options={classroomOptions}
                   size="large"
                   disabled={!selectedYear}
-                  notFoundContent={selectedYear ? "No classrooms found" : "Select an academic year first"}
+                  notFoundContent={selectedYear ? t("No classrooms found") : t("Select an academic year first")}
                 />
               )}
             />
@@ -141,10 +142,10 @@ export default function EnrollTeacherPage() {
 
           <div className="mt-6 flex items-center justify-end gap-3">
             <Button variant="ghost" onClick={() => navigate("/enrollment")}>
-              Cancel
+              {t("Cancel")}
             </Button>
             <Button variant="primary" htmlType="submit" loading={enrollTeacher.isPending}>
-              Enroll
+              {t("Enroll")}
             </Button>
           </div>
         </Form>

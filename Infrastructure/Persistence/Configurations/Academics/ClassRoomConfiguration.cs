@@ -12,6 +12,11 @@ public class ClassRoomConfiguration : IEntityTypeConfiguration<ClassRoom>
 
         builder.Property(c => c.Name).IsRequired().HasMaxLength(100);
 
+        builder.HasOne<Room>()
+            .WithMany()
+            .HasForeignKey(c => c.RoomId)
+            .OnDelete(DeleteBehavior.SetNull);
+
         // ClassRoom identity includes AcademicYearId — rolling
         // into a new year creates a new row instead of mutating history.
         builder.HasIndex(c => new { c.SchoolId, c.GradeLevelId, c.AcademicYearId, c.Name }).IsUnique();

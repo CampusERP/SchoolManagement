@@ -16,10 +16,19 @@ import type {
   RosterStudentDto,
   ClassRoomTeachingAssignmentDto,
   PagedResult,
+  CurriculumSubjectDto,
+  SubjectBookInput,
 } from "@/types/academic.types";
 
 export interface SubjectDto {
   id: string;
+  code: string;
+  name: string;
+  description?: string;
+  isSchoolSpecific?: boolean;
+}
+
+export interface SubjectInput {
   code: string;
   name: string;
   description?: string;
@@ -47,6 +56,9 @@ export const AcademicsApi = {
 
   updateAcademicYear: (id: string, data: UpdateAcademicYearCommand) =>
     api.put(`/academics/academic-years/${id}`, data).then((r) => r.data),
+
+  deleteAcademicYear: (id: string, schoolId: string) =>
+    api.delete(`/academics/academic-years/${id}`, { params: { schoolId } }).then((r) => r.data),
 
   createTerm: (data: CreateTermCommand) =>
     api
@@ -131,10 +143,37 @@ export const AcademicsApi = {
     api.put(`/academics/rooms/${id}`, data).then((r) => r.data),
 
   // ── Subjects ─────────────────────────────────────────────────────
-  getSubjects: (gradeLevelId?: string) =>
+  getSubjects: (schoolId: string, gradeLevelId?: string) =>
     api
       .get<SubjectDto[]>("/subjects", {
-        params: { gradeLevelId: gradeLevelId || undefined },
+        params: { schoolId, gradeLevelId: gradeLevelId || undefined },
       })
       .then((r) => r.data),
+
+  getGradeCurriculum: (schoolId: string, gradeLevelId: string) =>
+    api.get<CurriculumSubjectDto[]>(`/subjects/curriculum/${gradeLevelId}`, { params: { schoolId } }).then((r) => r.data),
+
+  addCurriculumSubject: (schoolId: string, gradeLevelId: string, subjectId: string) =>
+    api.post<{ id: string }>("/subjects/curriculum", { schoolId, gradeLevelId, subjectId }).then((r) => r.data),
+
+  createSchoolSubject: (schoolId: string, gradeLevelId: string, data: SubjectInput) =>
+    api.post<{ id: string }>("/subjects/school-subjects", { schoolId, gradeLevelId, ...data }).then((r) => r.data),
+
+  updateSchoolSubject: (schoolId: string, curriculumSubjectId: string, data: SubjectInput) =>
+    api.put(`/subjects/curriculum/${curriculumSubjectId}/subject`, { schoolId, ...data }).then((r) => r.data),
+
+  deleteSchoolSubject: (schoolId: string, subjectId: string) =>
+    api.delete(`/subjects/school-subjects/${subjectId}`, { params: { schoolId } }).then((r) => r.data),
+
+  removeCurriculumSubject: (schoolId: string, curriculumSubjectId: string) =>
+    api.delete(`/subjects/curriculum/${curriculumSubjectId}`, { params: { schoolId } }).then((r) => r.data),
+
+  createSubjectBook: (schoolId: string, curriculumSubjectId: string, data: SubjectBookInput) =>
+    api.post<{ id: string }>(`/subjects/curriculum/${curriculumSubjectId}/books`, { schoolId, ...data }).then((r) => r.data),
+
+  updateSubjectBook: (schoolId: string, curriculumSubjectId: string, bookId: string, data: SubjectBookInput) =>
+    api.put(`/subjects/curriculum/${curriculumSubjectId}/books/${bookId}`, { schoolId, ...data }).then((r) => r.data),
+
+  deleteSubjectBook: (schoolId: string, curriculumSubjectId: string, bookId: string) =>
+    api.delete(`/subjects/curriculum/${curriculumSubjectId}/books/${bookId}`, { params: { schoolId } }).then((r) => r.data),
 };

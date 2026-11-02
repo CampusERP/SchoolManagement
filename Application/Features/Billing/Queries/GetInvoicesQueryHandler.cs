@@ -14,7 +14,7 @@ public class GetInvoicesQueryHandler
         GetInvoicesQuery request, CancellationToken ct)
     {
         var p = request.Pagination ?? new PaginationParams();
-        var result = await _readService.GetInvoicesAsync(p, request.SchoolId, ct);
+        var result = await _readService.GetInvoicesAsync(p, request.SchoolId, request.Search, request.Status, ct);
         return Result.Success(result);
     }
 }

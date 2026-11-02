@@ -21,23 +21,26 @@ public class Invoice : AuditableEntity
     private Invoice() { }
 
     private Invoice(Guid id, Guid subscriptionId, Guid schoolId,
-        decimal amount, DateTime dueDate) : base(id)
+        decimal amount, DateTime dueDate, string? notes) : base(id)
     {
         SubscriptionId = subscriptionId;
         SchoolId       = schoolId;
         Amount         = amount;
         DueDate        = dueDate;
         Status         = InvoiceStatus.Issued;
+        Notes          = notes;
     }
 
     internal static Invoice Create(Guid subscriptionId, Guid schoolId,
-        decimal amount, DateTime dueDate)
-        => new(Guid.NewGuid(), subscriptionId, schoolId, amount, dueDate);
+        decimal amount, DateTime dueDate, string? notes = null)
+        => new(Guid.NewGuid(), subscriptionId, schoolId, amount, dueDate, notes);
 
     public Payment RecordPayment(decimal amount, PaymentMethod method, string? reference = null)
     {
-        if (Status == InvoiceStatus.Cancelled)
+        if (Status is InvoiceStatus.Cancelled)
             throw new DomainException("Cannot record payment on a cancelled invoice.");
+        if (Status is InvoiceStatus.Paid)
+            throw new DomainException("This invoice has already been paid in full.");
         if (amount <= 0)
             throw new DomainException("Payment amount must be positive.");
         if (amount > BalanceDue)
@@ -46,10 +49,21 @@ public class Invoice : AuditableEntity
         var payment = Payment.Create(Id, amount, method, reference);
         _payments.Add(payment);
 
-        if (BalanceDue == 0) Status = InvoiceStatus.Paid;
+        if (BalanceDue <= 0)
+            Status = InvoiceStatus.Paid;
 
         return payment;
     }
+
+    /// <summary>Flags an unpaid invoice whose due date has passed.</summary>
+    public void MarkOverdue(DateTime utcNow)
+    {
+        if (Status == InvoiceStatus.Issued && DueDate < utcNow)
+            Status = InvoiceStatus.Overdue;
+    }
+
+    public bool IsOverdue(DateTime utcNow) =>
+        (Status is InvoiceStatus.Issued or InvoiceStatus.Overdue) && DueDate < utcNow;
 
     public void Cancel()
     {

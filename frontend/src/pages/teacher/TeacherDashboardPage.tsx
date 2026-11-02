@@ -16,6 +16,7 @@ import UpcomingLessons from "@/components/organisms/UpcomingLessons";
 import AnnouncementsPanel from "@/components/organisms/AnnouncementsPanel";
 import ChartsPlaceholder from "@/components/organisms/ChartsPlaceholder";
 import QuickActionCard from "@/components/molecules/QuickActionCard";
+import { t } from "@/i18n";
 
 export default function TeacherDashboardPage() {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ export default function TeacherDashboardPage() {
 
   if (isLoading) {
     return (
-      <DashboardTemplate title="Teacher Dashboard" loading>
+      <DashboardTemplate title={t("Teacher Dashboard")} loading>
         <div />
       </DashboardTemplate>
     );
@@ -31,44 +32,44 @@ export default function TeacherDashboardPage() {
 
   if (isError || !data) {
     return (
-      <DashboardTemplate title="Teacher Dashboard">
+      <DashboardTemplate title={t("Teacher Dashboard")}>
         <div className="flex items-center justify-center py-24">
-          <p className="text-[var(--color-text-secondary)]">Failed to load dashboard data.</p>
+          <p className="text-[var(--color-text-secondary)]">{t("Failed to load dashboard data.")}</p>
         </div>
       </DashboardTemplate>
     );
   }
 
   const statCards = [
-    { title: "My Classes", value: data.totalClasses, icon: <GraduationCap className="h-5 w-5" /> },
-    { title: "Total Students", value: data.totalStudents, icon: <Users className="h-5 w-5" /> },
-    { title: "Today's Lessons", value: data.todayLessons, icon: <BookOpen className="h-5 w-5" /> },
-    { title: "Pending Attendance", value: data.pendingAttendance, icon: <ClipboardCheck className="h-5 w-5" /> },
+    { title: t("My Classes"), value: data.totalClasses, icon: <GraduationCap className="h-5 w-5" /> },
+    { title: t("Total Students"), value: data.totalStudents, icon: <Users className="h-5 w-5" /> },
+    { title: t("Today's Lessons"), value: data.todayLessons, icon: <BookOpen className="h-5 w-5" /> },
+    { title: t("Pending Attendance"), value: data.pendingAttendance, icon: <ClipboardCheck className="h-5 w-5" /> },
   ];
 
   return (
-    <DashboardTemplate title="Teacher Dashboard" subtitle="Your classes and schedule at a glance">
+    <DashboardTemplate title={t("Teacher Dashboard")} subtitle={t("Your classes and schedule at a glance")}>
       <AnalyticsCardsGrid cards={statCards} />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         <QuickActionCard
           icon={<ClipboardList className="h-6 w-6" />}
-          label="Take Attendance"
+          label={t("Take Attendance")}
           onClick={() => navigate("/teacher/attendance")}
         />
         <QuickActionCard
           icon={<PenLine className="h-6 w-6" />}
-          label="Enter Grades"
+          label={t("Enter Grades")}
           onClick={() => navigate("/teacher/grades")}
         />
         <QuickActionCard
           icon={<CalendarClock className="h-6 w-6" />}
-          label="View Schedule"
+          label={t("View Schedule")}
           onClick={() => navigate("/teacher/classes")}
         />
         <QuickActionCard
           icon={<ClipboardCheck className="h-6 w-6" />}
-          label="Manage Exams"
+          label={t("Manage Exams")}
           onClick={() => navigate("/teacher/exams")}
         />
       </div>
@@ -83,7 +84,7 @@ export default function TeacherDashboardPage() {
         </div>
       </div>
 
-      <ChartsPlaceholder title="Performance Summary" />
+      <ChartsPlaceholder title={t("Performance Summary")} />
     </DashboardTemplate>
   );
 }

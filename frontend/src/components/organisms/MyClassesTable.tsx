@@ -1,4 +1,5 @@
 import { Table, type TableProps } from "antd";
+import { t } from "@/i18n";
 
 interface ClassRecord {
   id?: string;
@@ -20,7 +21,7 @@ export default function MyClassesTable({
 }: MyClassesTableProps) {
   const columns: TableProps<ClassRecord>["columns"] = [
     {
-      title: "Class Name",
+      title: t("Class Name"),
       dataIndex: "name",
       key: "name",
       render: (name: string) => (
@@ -28,17 +29,17 @@ export default function MyClassesTable({
       ),
     },
     {
-      title: "Subject",
+      title: t("Subject"),
       dataIndex: "subject",
       key: "subject",
     },
     {
-      title: "Grade Level",
+      title: t("Grade Level"),
       dataIndex: "gradeLevel",
       key: "gradeLevel",
     },
     {
-      title: "Students",
+      title: t("Students"),
       dataIndex: "studentCount",
       key: "studentCount",
       align: "center",

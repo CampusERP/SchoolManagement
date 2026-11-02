@@ -16,7 +16,10 @@ public class UpdateGradeLevelCommandHandler : IRequestHandler<UpdateGradeLevelCo
     public async Task<Result> Handle(UpdateGradeLevelCommand request, CancellationToken ct)
     {
         var gradeLevel = await _gradeLevels.GetByIdAsync(request.GradeLevelId, ct);
-        if (gradeLevel is null) return Result.Failure("Grade level not found.");
+        if (gradeLevel is null || gradeLevel.SchoolId != request.SchoolId) return Result.Failure("Grade level not found.");
+
+        if (await _gradeLevels.SequenceExistsAsync(request.SchoolId, gradeLevel.EducationStageId, request.Sequence, gradeLevel.Id, ct))
+            return Result.Failure($"Sequence {request.Sequence} is already used in this education stage.");
 
         try
         {

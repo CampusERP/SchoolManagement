@@ -1,6 +1,7 @@
 import type { CreateStudentCommand } from "@/types/student.types";
 import type { CreateTeacherCommand } from "@/types/teacher.types";
 import type { CreateParentCommand } from "@/types/parent.types";
+import { t } from "@/i18n";
 
 export interface ColumnDef {
   name: string;
@@ -76,13 +77,13 @@ export function mapStudentRow(
   const password = get(values, "password");
   const nationalId = get(values, "nationalId");
 
-  if (!studentCode) return { error: "Missing studentCode" };
-  if (!firstName) return { error: "Missing firstName" };
-  if (!lastName) return { error: "Missing lastName" };
-  if (!dateOfBirth) return { error: "Missing dateOfBirth" };
+  if (!studentCode) return { error: t("Missing studentCode") };
+  if (!firstName) return { error: t("Missing firstName") };
+  if (!lastName) return { error: t("Missing lastName") };
+  if (!dateOfBirth) return { error: t("Missing dateOfBirth") };
 
   if (email && password && password.length < 6)
-    return { error: "Password must be at least 6 characters when email is provided" };
+    return { error: t("Password must be at least 6 characters when email is provided") };
 
   return {
     data: {
@@ -107,12 +108,12 @@ export function mapTeacherRow(
   const email = get(values, "email");
   const password = get(values, "password");
 
-  if (!employeeCode) return { error: "Missing employeeCode" };
-  if (!firstName) return { error: "Missing firstName" };
-  if (!lastName) return { error: "Missing lastName" };
-  if (!email) return { error: "Missing email" };
+  if (!employeeCode) return { error: t("Missing employeeCode") };
+  if (!firstName) return { error: t("Missing firstName") };
+  if (!lastName) return { error: t("Missing lastName") };
+  if (!email) return { error: t("Missing email") };
   if (!password || password.length < 6)
-    return { error: "Password must be at least 6 characters" };
+    return { error: t("Password must be at least 6 characters") };
 
   return {
     data: {
@@ -134,11 +135,11 @@ export function mapParentRow(
   const email = get(values, "email");
   const password = get(values, "password");
 
-  if (!firstName) return { error: "Missing firstName" };
-  if (!lastName) return { error: "Missing lastName" };
-  if (!email) return { error: "Missing email" };
+  if (!firstName) return { error: t("Missing firstName") };
+  if (!lastName) return { error: t("Missing lastName") };
+  if (!email) return { error: t("Missing email") };
   if (!password || password.length < 6)
-    return { error: "Password must be at least 6 characters" };
+    return { error: t("Password must be at least 6 characters") };
 
   return {
     data: {

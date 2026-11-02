@@ -8,7 +8,8 @@ public class PermissionProvider : IPermissionProvider
         new()
         {
             "school.create", "school.read", "school.update",
-            "school.manage", "platform.analytics", "subscription.manage"
+            "school.manage", "platform.analytics",
+            "subscription.manage", "billing.read", "billing.manage"
         };
 
     public List<string> GetPermissionsForRole(string role) => role switch
@@ -68,6 +69,8 @@ public class PermissionProvider : IPermissionProvider
 
             "profile.read",
             "myclasses.read",
+
+            "billing.read",
         },
 
         "Teacher" => new()

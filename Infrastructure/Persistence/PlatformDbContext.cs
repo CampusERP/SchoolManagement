@@ -21,6 +21,7 @@ public class PlatformDbContext : IdentityDbContext<ApplicationUser, IdentityRole
     public DbSet<Campus> Campuses => Set<Campus>();
     public DbSet<UserSchoolMembership> UserSchoolMemberships => Set<UserSchoolMembership>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+    public DbSet<SchoolRegistrationRequest> SchoolRegistrationRequests => Set<SchoolRegistrationRequest>();
 
     // ─────────────── Billing ───────────────
 
@@ -42,6 +43,9 @@ public class PlatformDbContext : IdentityDbContext<ApplicationUser, IdentityRole
             t => t.Namespace != null && (
                 t.Namespace.Contains("Configurations.Tenancy") ||
                 t.Namespace.Contains("Configurations.Billing") ||
-                t.Namespace.Contains("Configurations.Outbox")));
+                t.Namespace.Contains("Configurations.OutBoxMessage")));
+
+        // The audit interceptor turns hard deletes into soft deletes, so filter them out.
+        builder.Entity<SchoolRegistrationRequest>().HasQueryFilter(r => !r.IsDeleted);
     }
 }

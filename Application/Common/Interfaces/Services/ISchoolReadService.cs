@@ -8,7 +8,10 @@ namespace Application.Common.Interfaces.Services;
 
 public interface ISchoolReadService
 {
-    Task<PagedResult<SchoolListDto>> GetSchoolsAsync(PaginationParams pagination, CancellationToken ct = default);
+    Task<PagedResult<SchoolListDto>> GetSchoolsAsync(
+        PaginationParams pagination,
+        string? searchTerm = null,
+        CancellationToken ct = default);
     Task<SchoolDetailDto?> GetSchoolByIdAsync(Guid schoolId, CancellationToken ct = default);
     Task<SchoolDashboardDto?> GetSchoolDashboardAsync(Guid schoolId, CancellationToken ct = default);
     Task<PlatformAnalyticsDto> GetPlatformAnalyticsAsync(CancellationToken ct = default);

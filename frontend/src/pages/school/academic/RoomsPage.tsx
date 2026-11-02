@@ -12,13 +12,14 @@ import EmptyState from "@/components/molecules/EmptyState";
 import { useAuthStore } from "@/store/authStore";
 import { useRooms, useCreateRoom, useUpdateRoom } from "@/features/academics/hooks";
 import type { RoomDto } from "@/types/academic.types";
+import { t } from "@/i18n";
 
 const schema = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().min(1, t("Name is required")),
   capacity: z
-    .number({ invalid_type_error: "Capacity is required" })
+    .number({ invalid_type_error: t("Capacity is required") })
     .int()
-    .min(1, "Capacity must be at least 1"),
+    .min(1, t("Capacity must be at least 1")),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -58,35 +59,35 @@ export default function RoomsPage() {
     try {
       if (editing) {
         await updateRoom.mutateAsync({ id: editing.id, data: { schoolId, ...values } });
-        toast.success("Room updated");
+        toast.success(t("Room updated"));
       } else {
         await createRoom.mutateAsync({ schoolId, ...values });
-        toast.success("Room created");
+        toast.success(t("Room created"));
       }
       setModalOpen(false);
     } catch {
-      toast.error(editing ? "Failed to update room" : "Failed to create room");
+      toast.error(editing ? t("Failed to update room") : t("Failed to create room"));
     }
   };
 
   const columns: TableProps<RoomDto>["columns"] = [
     {
-      title: "Name",
+      title: t("Name"),
       dataIndex: "name",
       key: "name",
       render: (name: string) => (
         <span className="font-medium text-[var(--color-text-primary)]">{name}</span>
       ),
     },
-    { title: "Capacity", dataIndex: "capacity", key: "capacity", align: "center" },
+    { title: t("Capacity"), dataIndex: "capacity", key: "capacity", align: "center" },
     {
-      title: "Actions",
+      title: t("Actions"),
       key: "actions",
       align: "center",
       width: 120,
       render: (_, record) => (
         <Button variant="ghost" type="link" size="small" className="p-0" onClick={() => openEdit(record)}>
-          Edit
+          {t("Edit")}
         </Button>
       ),
     },
@@ -94,27 +95,27 @@ export default function RoomsPage() {
 
   return (
     <DashboardTemplate
-      title="Rooms"
-      subtitle="Manage physical rooms and facilities"
+      title={t("Rooms")}
+      subtitle={t("Manage physical rooms and facilities")}
       loading={isLoading}
       actions={
         <Button variant="primary" icon={<Plus className="h-4 w-4" />} onClick={openCreate}>
-          Add Room
+          {t("Add Room")}
         </Button>
       }
     >
       {isError ? (
         <div className="flex items-center justify-center py-24">
-          <p className="text-[var(--color-text-secondary)]">Failed to load rooms.</p>
+          <p className="text-[var(--color-text-secondary)]">{t("Failed to load rooms.")}</p>
         </div>
       ) : (data?.length ?? 0) === 0 ? (
         <EmptyState
           icon={<DoorOpen className="h-6 w-6" />}
-          title="No rooms yet"
-          description="Add your first room."
+          title={t("No rooms yet")}
+          description={t("Add your first room.")}
           action={
             <Button variant="primary" icon={<Plus className="h-4 w-4" />} onClick={openCreate}>
-              Add Room
+              {t("Add Room")}
             </Button>
           }
         />
@@ -123,21 +124,21 @@ export default function RoomsPage() {
       )}
 
       <Modal
-        title={editing ? "Edit Room" : "Add Room"}
+        title={editing ? t("Edit Room") : t("Add Room")}
         open={modalOpen}
         onCancel={() => setModalOpen(false)}
         footer={null}
         destroyOnHidden
       >
         <Form layout="vertical" onFinish={handleSubmit(onSubmit)} requiredMark={false}>
-          <Form.Item label="Name" validateStatus={errors.name ? "error" : ""} help={errors.name?.message}>
+          <Form.Item label={t("Name")} validateStatus={errors.name ? "error" : ""} help={errors.name?.message}>
             <Controller
               name="name"
               control={control}
-              render={({ field }) => <Input {...field} placeholder="e.g. Room 101" />}
+              render={({ field }) => <Input {...field} placeholder={t("e.g. Room 101")} />}
             />
           </Form.Item>
-          <Form.Item label="Capacity" validateStatus={errors.capacity ? "error" : ""} help={errors.capacity?.message}>
+          <Form.Item label={t("Capacity")} validateStatus={errors.capacity ? "error" : ""} help={errors.capacity?.message}>
             <Controller
               name="capacity"
               control={control}
@@ -148,10 +149,10 @@ export default function RoomsPage() {
           </Form.Item>
           <div className="mt-4 flex items-center justify-end gap-3">
             <Button variant="ghost" onClick={() => setModalOpen(false)}>
-              Cancel
+              {t("Cancel")}
             </Button>
             <Button variant="primary" htmlType="submit" loading={createRoom.isPending || updateRoom.isPending}>
-              {editing ? "Save" : "Create"}
+              {editing ? t("Save") : t("Create")}
             </Button>
           </div>
         </Form>

@@ -27,9 +27,8 @@ public sealed class OutboxProcessor(
             {
                 await Task.Delay(PollInterval, stoppingToken);
             }
-            catch (OperationCanceledException ex)
+            catch (OperationCanceledException)
             {
-                { logger.LogError(ex, "Outbox batch processing failed."); }
                 break;
             }
         }

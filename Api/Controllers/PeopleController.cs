@@ -11,6 +11,7 @@ using Application.Features.People.Commands.StudentActivation;
 using Application.Features.People.Commands.TerminateTeacher;
 using Application.Features.People.Commands.DeleteTeacher;
 using Application.Features.People.Commands.DeleteStudent;
+using Application.Features.People.Commands.ResetStudentPassword;
 using Microsoft.AspNetCore.Authorization;
 using Application.Features.People.Queries.GetStudents;
 using Application.Features.People.Queries.StudentDetails;
@@ -67,6 +68,12 @@ public class PeopleController : ApiControllerBase
     public async Task<IActionResult> DeleteStudent(
         Guid studentId, [FromQuery] Guid schoolId, CancellationToken ct) =>
         FromResult(await _mediator.Send(new DeleteStudentCommand(schoolId, studentId), ct));
+
+    [HttpPost("students/{studentId:guid}/reset-password")]
+    [Authorize(Policy = "Student.Update")]
+    public async Task<IActionResult> ResetStudentPassword(
+        Guid studentId, [FromQuery] Guid schoolId, CancellationToken ct) =>
+        FromResult(await _mediator.Send(new ResetStudentPasswordCommand(schoolId, studentId), ct));
 
     // ── Teachers ──────────────────────────────────────────────────────
 

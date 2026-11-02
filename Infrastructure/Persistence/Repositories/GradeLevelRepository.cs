@@ -16,6 +16,10 @@ public class GradeLevelRepository : IGradeLevelRepository
     public async Task<GradeLevel?> GetByIdAsync(Guid id, CancellationToken ct = default) =>
         await _context.GradeLevels.FirstOrDefaultAsync(g => g.Id == id, ct);
 
+    public Task<bool> SequenceExistsAsync(Guid schoolId, Guid educationStageId, int sequence, Guid? excludingId = null, CancellationToken ct = default) =>
+        _context.GradeLevels.AnyAsync(g => g.SchoolId == schoolId && g.EducationStageId == educationStageId &&
+            g.Sequence == sequence && (!excludingId.HasValue || g.Id != excludingId.Value), ct);
+
     public async Task AddAsync(GradeLevel gradeLevel, CancellationToken ct = default) =>
         await _context.GradeLevels.AddAsync(gradeLevel, ct);
 }
