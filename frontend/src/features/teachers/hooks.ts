@@ -61,3 +61,12 @@ export const useDeleteTeacher = () => {
     },
   });
 };
+
+export const useUploadTeacherDocument = () => {
+  const client = useQueryClient();
+  const schoolId = useAuthStore((s) => s.user?.schoolId);
+  return useMutation({
+    mutationFn: ({ teacherId, file }: { teacherId: string; file: File }) => TeachersApi.uploadDocument(teacherId, schoolId!, file),
+    onSuccess: (_data, variables) => client.invalidateQueries({ queryKey: ["teacher", schoolId, variables.teacherId] }),
+  });
+};

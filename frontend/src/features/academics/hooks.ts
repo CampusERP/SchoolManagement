@@ -316,3 +316,13 @@ export const useDeleteSubjectBook = () => {
     onSuccess: () => client.invalidateQueries({ queryKey: ["grade-curriculum"] }),
   });
 };
+
+export const useUploadBookPdf = () => {
+  const client = useQueryClient();
+  const schoolId = useAuthStore((s) => s.user?.schoolId);
+  return useMutation({
+    mutationFn: ({ curriculumSubjectId, bookId, file }: { curriculumSubjectId: string; bookId: string; file: File }) =>
+      AcademicsApi.uploadBookPdf(schoolId!, curriculumSubjectId, bookId, file),
+    onSuccess: () => client.invalidateQueries({ queryKey: ["grade-curriculum"] }),
+  });
+};

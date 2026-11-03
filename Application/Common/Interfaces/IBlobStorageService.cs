@@ -12,4 +12,5 @@ public interface IBlobStorageService
         CancellationToken ct = default);
 
     Task DeleteAsync(string blobUrl, CancellationToken ct = default);
+    Task<Stream?> OpenReadAsync(string blobUrl, CancellationToken ct = default);
 }

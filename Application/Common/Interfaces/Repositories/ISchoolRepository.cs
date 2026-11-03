@@ -11,6 +11,8 @@ public interface ISchoolRepository
     Task AddAsync(School school, CancellationToken ct = default);
     Task<Guid> AddCampusAsync(School school, CancellationToken ct = default);
     Task<Campus?> GetCampusAsync(Guid schoolId, Guid campusId, CancellationToken ct = default);
+    Task<IReadOnlyList<Campus>> GetCampusesAsync(Guid schoolId, CancellationToken ct = default);
+    Task<bool> IsCampusInUseAsync(Guid schoolId, Guid campusId, CancellationToken ct = default);
     Task AddCampusEntityAsync(Campus campus, CancellationToken ct = default);
     Task DeleteCampusAsync(Campus campus, CancellationToken ct = default);
 }

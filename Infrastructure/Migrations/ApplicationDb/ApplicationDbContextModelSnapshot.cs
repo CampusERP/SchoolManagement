@@ -99,6 +99,9 @@ namespace Infrastructure.Migrations.ApplicationDb
                     b.Property<Guid>("AcademicYearId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("CampusId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("datetime2");
 
@@ -114,9 +117,6 @@ namespace Infrastructure.Migrations.ApplicationDb
                     b.Property<Guid>("GradeLevelId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("RoomId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -130,6 +130,9 @@ namespace Infrastructure.Migrations.ApplicationDb
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<Guid?>("RoomId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
@@ -148,8 +151,9 @@ namespace Infrastructure.Migrations.ApplicationDb
 
                     b.HasIndex("SchoolId");
 
-                    b.HasIndex("SchoolId", "GradeLevelId", "AcademicYearId", "Name")
-                        .IsUnique();
+                    b.HasIndex("SchoolId", "CampusId", "GradeLevelId", "AcademicYearId", "Name")
+                        .IsUnique()
+                        .HasFilter("[CampusId] IS NOT NULL");
 
                     b.ToTable("ClassRooms", (string)null);
                 });
@@ -205,81 +209,6 @@ namespace Infrastructure.Migrations.ApplicationDb
                         .HasFilter("[IsDeleted] = 0");
 
                     b.ToTable("CurriculumSubjects", (string)null);
-                });
-
-            modelBuilder.Entity("Domain.Entities.Academics.SubjectBook", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Author")
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<Guid>("CurriculumSubjectId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("CreatedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("DeletedAtUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("DeletedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Edition")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Isbn")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<DateTime?>("ModifiedAtUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid?>("ModifiedBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Notes")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<string>("Publisher")
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
-
-                    b.Property<Guid>("SchoolId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CurriculumSubjectId");
-
-                    b.HasIndex("SchoolId");
-
-                    b.HasIndex("SchoolId", "CurriculumSubjectId");
-
-                    b.ToTable("SubjectBooks", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Academics.EducationStage", b =>
@@ -364,6 +293,9 @@ namespace Infrastructure.Migrations.ApplicationDb
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("CampusId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("Capacity")
                         .HasColumnType("int");
 
@@ -404,8 +336,9 @@ namespace Infrastructure.Migrations.ApplicationDb
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SchoolId", "Name")
-                        .IsUnique();
+                    b.HasIndex("SchoolId", "CampusId", "Name")
+                        .IsUnique()
+                        .HasFilter("[CampusId] IS NOT NULL");
 
                     b.ToTable("Rooms", (string)null);
                 });
@@ -414,9 +347,6 @@ namespace Infrastructure.Migrations.ApplicationDb
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("SchoolId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Code")
@@ -433,6 +363,9 @@ namespace Infrastructure.Migrations.ApplicationDb
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)");
 
+                    b.Property<Guid?>("SchoolId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Code")
@@ -446,21 +379,79 @@ namespace Infrastructure.Migrations.ApplicationDb
                     b.ToTable("Subjects", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Entities.Academics.ClassRoom", b =>
-                {
-                    b.HasOne("Domain.Entities.Academics.Room", null)
-                        .WithMany()
-                        .HasForeignKey("RoomId")
-                        .OnDelete(DeleteBehavior.SetNull);
-                });
-
             modelBuilder.Entity("Domain.Entities.Academics.SubjectBook", b =>
                 {
-                    b.HasOne("Domain.Entities.Academics.CurriculumSubject", null)
-                        .WithMany()
-                        .HasForeignKey("CurriculumSubjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Author")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CurriculumSubjectId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Edition")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Isbn")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime?>("ModifiedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Publisher")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<Guid>("SchoolId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CurriculumSubjectId");
+
+                    b.HasIndex("SchoolId");
+
+                    b.HasIndex("SchoolId", "CurriculumSubjectId");
+
+                    b.ToTable("SubjectBooks", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Academics.Term", b =>
@@ -1143,6 +1134,61 @@ namespace Infrastructure.Migrations.ApplicationDb
                     b.HasIndex("UploadedByUserId");
 
                     b.ToTable("Documents", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.Documents.DocumentAttachment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("DocumentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("OwnerType")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<Guid>("SchoolId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DocumentId")
+                        .IsUnique();
+
+                    b.HasIndex("SchoolId", "OwnerType", "OwnerId");
+
+                    b.ToTable("DocumentAttachments", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Enrollment.ClassSchedule", b =>
@@ -2093,6 +2139,9 @@ namespace Infrastructure.Migrations.ApplicationDb
                     b.Property<Guid?>("ApplicationUserId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("CampusId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("datetime2");
 
@@ -2121,6 +2170,11 @@ namespace Infrastructure.Migrations.ApplicationDb
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<bool>("LoginEnabled")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
                     b.Property<DateTime?>("ModifiedAtUtc")
                         .HasColumnType("datetime2");
 
@@ -2131,6 +2185,14 @@ namespace Infrastructure.Migrations.ApplicationDb
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("NationalityCountry")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ResidenceCountry")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
                         .IsRequired()
@@ -2140,14 +2202,24 @@ namespace Infrastructure.Migrations.ApplicationDb
                     b.Property<Guid>("SchoolId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("SecondName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<string>("StudentCode")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("ThirdName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("SchoolId");
+
+                    b.HasIndex("SchoolId", "CampusId");
 
                     b.HasIndex("SchoolId", "StudentCode")
                         .IsUnique();
@@ -2290,6 +2362,59 @@ namespace Infrastructure.Migrations.ApplicationDb
                         .IsUnique();
 
                     b.ToTable("Teachers", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entities.People.TeacherCampus", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CampusId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<Guid>("SchoolId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TeacherId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TeacherId");
+
+                    b.HasIndex("SchoolId", "TeacherId", "CampusId")
+                        .IsUnique()
+                        .HasFilter("[IsDeleted] = 0");
+
+                    b.ToTable("TeacherCampuses", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entities.Tenancy.Campus", b =>
@@ -2645,6 +2770,23 @@ namespace Infrastructure.Migrations.ApplicationDb
                     b.ToTable("UserSchoolMemberships", (string)null);
                 });
 
+            modelBuilder.Entity("Domain.Entities.Academics.ClassRoom", b =>
+                {
+                    b.HasOne("Domain.Entities.Academics.Room", null)
+                        .WithMany()
+                        .HasForeignKey("RoomId")
+                        .OnDelete(DeleteBehavior.SetNull);
+                });
+
+            modelBuilder.Entity("Domain.Entities.Academics.SubjectBook", b =>
+                {
+                    b.HasOne("Domain.Entities.Academics.CurriculumSubject", null)
+                        .WithMany()
+                        .HasForeignKey("CurriculumSubjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Domain.Entities.Academics.Term", b =>
                 {
                     b.HasOne("Domain.Entities.Academics.AcademicYear", null)
@@ -2708,6 +2850,15 @@ namespace Infrastructure.Migrations.ApplicationDb
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Domain.Entities.Documents.DocumentAttachment", b =>
+                {
+                    b.HasOne("Domain.Entities.Documents.Document", null)
+                        .WithMany()
+                        .HasForeignKey("DocumentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Domain.Entities.Enrollment.ClassSchedule", b =>
                 {
                     b.HasOne("Domain.Entities.Enrollment.TeachingAssignment", null)
@@ -2749,6 +2900,15 @@ namespace Infrastructure.Migrations.ApplicationDb
                     b.HasOne("Domain.Entities.Notifications.NotificationBatch", null)
                         .WithMany("Notifications")
                         .HasForeignKey("NotificationBatchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.Entities.People.TeacherCampus", b =>
+                {
+                    b.HasOne("Domain.Entities.People.Teacher", null)
+                        .WithMany()
+                        .HasForeignKey("TeacherId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

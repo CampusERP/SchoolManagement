@@ -9,4 +9,5 @@ public record CreateTeacherCommand(
     string FirstName,
     string LastName,
     string Email,
-    string Password) : ICommand<Guid>, IBaseCommand, ITenantScopedRequest;
+    string Password,
+    List<Guid>? CampusIds = null) : ICommand<Guid>, IBaseCommand, ITenantScopedRequest;

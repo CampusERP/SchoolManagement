@@ -13,17 +13,23 @@ public class UpdateTeachingAssignmentCommandHandler : IRequestHandler<UpdateTeac
     private readonly ITeacherRepository _teachers;
     private readonly IClassRoomRepository _classRooms;
     private readonly ICurriculumSubjectRepository _curriculumSubjects;
+    private readonly ITeacherCampusRepository _teacherCampuses;
+    private readonly IRoomRepository _rooms;
 
     public UpdateTeachingAssignmentCommandHandler(
         ITeachingAssignmentRepository assignments,
         ITeacherRepository teachers,
         IClassRoomRepository classRooms,
-        ICurriculumSubjectRepository curriculumSubjects)
+        ICurriculumSubjectRepository curriculumSubjects,
+        ITeacherCampusRepository teacherCampuses,
+        IRoomRepository rooms)
     {
         _assignments = assignments;
         _teachers = teachers;
         _classRooms = classRooms;
         _curriculumSubjects = curriculumSubjects;
+        _teacherCampuses = teacherCampuses;
+        _rooms = rooms;
     }
 
     public async Task<Result<Guid>> Handle(UpdateTeachingAssignmentCommand request, CancellationToken ct)
@@ -42,6 +48,9 @@ public class UpdateTeachingAssignmentCommandHandler : IRequestHandler<UpdateTeac
         var classRoom = await _classRooms.GetByIdAsync(request.ClassRoomId, ct);
         if (classRoom is null || classRoom.SchoolId != request.SchoolId)
             return Result.Failure<Guid>($"ClassRoom with ID '{request.ClassRoomId}' was not found in this school.");
+        var teacherCampusIds = await _teacherCampuses.GetCampusIdsAsync(teacher.Id, ct);
+        if (classRoom.CampusId.HasValue && !teacherCampusIds.Contains(classRoom.CampusId.Value))
+            return Result.Failure<Guid>("The teacher must be assigned to the classroom campus.");
 
         if (!await _curriculumSubjects.ExistsAsync(classRoom.GradeLevelId, request.SubjectId, ct))
             return Result.Failure<Guid>("The selected subject is not assigned to this classroom's grade level.");
@@ -65,6 +74,10 @@ public class UpdateTeachingAssignmentCommandHandler : IRequestHandler<UpdateTeac
 
         foreach (var slot in request.ScheduleSlots)
         {
+            var room = await _rooms.GetByIdAsync(slot.RoomId, ct);
+            if (room is null || room.SchoolId != request.SchoolId ||
+                (classRoom.CampusId.HasValue && room.CampusId != classRoom.CampusId))
+                return Result.Failure<Guid>("Each schedule room must belong to the classroom campus.");
             var clash = allOtherSlots.Any(s =>
                 s.DayOfWeek == slot.DayOfWeek &&
                 slot.StartTime < s.EndTime &&

@@ -7,10 +7,12 @@ namespace Application.Features.People.Commands.DeleteTeacher;
 public class DeleteTeacherCommandHandler : IRequestHandler<DeleteTeacherCommand, Result>
 {
     private readonly ITeacherRepository _teachers;
+    private readonly ITeacherCampusRepository _teacherCampuses;
 
-    public DeleteTeacherCommandHandler(ITeacherRepository teachers)
+    public DeleteTeacherCommandHandler(ITeacherRepository teachers, ITeacherCampusRepository teacherCampuses)
     {
         _teachers = teachers;
+        _teacherCampuses = teacherCampuses;
     }
 
     public async Task<Result> Handle(DeleteTeacherCommand request, CancellationToken ct)
@@ -19,6 +21,7 @@ public class DeleteTeacherCommandHandler : IRequestHandler<DeleteTeacherCommand,
         if (teacher is null || teacher.SchoolId != request.SchoolId)
             return Result.Failure("Teacher not found in this school.");
 
+        await _teacherCampuses.SetCampusIdsAsync(request.SchoolId, teacher.Id, [], ct);
         await _teachers.RemoveAsync(teacher, ct);
         return Result.Success();
     }

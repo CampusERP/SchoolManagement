@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, Users, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { Table, Modal, Form, DatePicker, type TableProps } from "antd";
+import { Table, Modal, Form, DatePicker, Select, type TableProps } from "antd";
 import dayjs from "dayjs";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -14,6 +14,9 @@ import SearchInput from "@/components/molecules/SearchInput";
 import EmptyState from "@/components/molecules/EmptyState";
 import { useAuthStore } from "@/store/authStore";
 import { useStudents, useCreateStudent, useDeleteStudent } from "@/features/students/hooks";
+import { useCurrentSchool } from "@/features/schools/hooks";
+import { StudentsApi } from "@/features/students/api";
+import { CountryDatalistInput } from "@/features/students/CountryDatalistInput";
 import ImportExportButtons from "@/components/importExport/ImportExportButtons";
 import type { StudentListDto } from "@/types/student.types";
 import { t } from "@/i18n";
@@ -21,14 +24,39 @@ import { t } from "@/i18n";
 const schema = z
   .object({
     firstName: z.string().min(1, t("First name is required")),
+    secondName: z.string().optional().or(z.literal("")),
+    thirdName: z.string().optional().or(z.literal("")),
     lastName: z.string().min(1, t("Last name is required")),
+    nationalityCountry: z.string().optional().or(z.literal("")),
+    residenceCountry: z.string().optional().or(z.literal("")),
+    campusId: z.string().optional(),
     dateOfBirth: z.string().min(1, t("Date of birth is required")),
     nationalId: z.string().optional().or(z.literal("")),
     email: z.string().email(t("Invalid email")).optional().or(z.literal("")),
     password: z.string().optional().or(z.literal("")),
   })
-  .refine((d) => !d.email || (d.password && d.password.length >= 6), {
-    message: t("Password must be at least 6 characters when email is provided"),
+  .refine((d) => !d.password || !!d.email, {
+    message: t("Email is required when creating a login."),
+    path: ["email"],
+  })
+  .refine((d) => (!d.email && !d.password) || (d.password && d.password.length >= 8), {
+    message: t("Password must be at least 8 characters when email is provided"),
+    path: ["password"],
+  })
+  .refine((d) => (!d.email && !d.password) || /[A-Z]/.test(d.password ?? ""), {
+    message: t("Password must contain an uppercase letter."),
+    path: ["password"],
+  })
+  .refine((d) => (!d.email && !d.password) || /[a-z]/.test(d.password ?? ""), {
+    message: t("Password must contain a lowercase letter."),
+    path: ["password"],
+  })
+  .refine((d) => (!d.email && !d.password) || /[0-9]/.test(d.password ?? ""), {
+    message: t("Password must contain a number."),
+    path: ["password"],
+  })
+  .refine((d) => (!d.email && !d.password) || /[^a-zA-Z0-9]/.test(d.password ?? ""), {
+    message: t("Password must contain a symbol."),
     path: ["password"],
   });
 
@@ -45,6 +73,8 @@ export default function StudentsPage() {
   const { data, isLoading, isError } = useStudents({ searchTerm: search, page, pageSize });
   const createStudent = useCreateStudent();
   const deleteStudent = useDeleteStudent();
+  const school = useCurrentSchool();
+  const campusOptions = (school.data?.campuses ?? []).map((campus) => ({ value: campus.id, label: campus.name }));
 
   const [modalOpen, setModalOpen] = useState(false);
   const {
@@ -56,7 +86,12 @@ export default function StudentsPage() {
     resolver: zodResolver(schema),
     defaultValues: {
       firstName: "",
+      secondName: "",
+      thirdName: "",
       lastName: "",
+      nationalityCountry: "",
+      residenceCountry: "",
+      campusId: "",
       dateOfBirth: "",
       nationalId: "",
       email: "",
@@ -67,7 +102,12 @@ export default function StudentsPage() {
   const openCreate = () => {
     reset({
       firstName: "",
+      secondName: "",
+      thirdName: "",
       lastName: "",
+      nationalityCountry: "",
+      residenceCountry: "",
+      campusId: "",
       dateOfBirth: "",
       nationalId: "",
       email: "",
@@ -77,11 +117,20 @@ export default function StudentsPage() {
   };
 
   const onSubmit = async (values: FormData) => {
+    if (campusOptions.length && !values.campusId) {
+      toast.error(t("Select a campus for this student"));
+      return;
+    }
     try {
       await createStudent.mutateAsync({
         schoolId,
         firstName: values.firstName,
+        secondName: values.secondName || undefined,
+        thirdName: values.thirdName || undefined,
         lastName: values.lastName,
+        nationalityCountry: values.nationalityCountry || undefined,
+        residenceCountry: values.residenceCountry || undefined,
+        campusId: values.campusId || undefined,
         dateOfBirth: values.dateOfBirth,
         nationalId: values.nationalId || undefined,
         email: values.email || undefined,
@@ -108,7 +157,7 @@ export default function StudentsPage() {
       key: "name",
       render: (_, record) => (
         <span className="font-medium text-[var(--color-text-primary)]">
-          {record.firstName} {record.lastName}
+          {[record.firstName, record.secondName, record.thirdName, record.lastName].filter(Boolean).join(" ")}
         </span>
       ),
     },
@@ -121,6 +170,13 @@ export default function StudentsPage() {
           {email || "—"}
         </span>
       ),
+    },
+    {
+      title: t("Campus"),
+      dataIndex: "campusId",
+      key: "campus",
+      responsive: ["md"],
+      render: (campusId?: string) => school.data?.campuses.find((campus) => campus.id === campusId)?.name ?? "—",
     },
     {
       title: t("Date of Birth"),
@@ -202,12 +258,33 @@ export default function StudentsPage() {
             createFn={(d: any) => createStudent.mutateAsync(d)}
             exportFileName="students"
             exportSheetName="students"
+            campuses={school.data?.campuses ?? []}
+            fetchAll={async () => {
+              const all: StudentListDto[] = [];
+              let currentPage = 1;
+              let totalPages = 1;
+              do {
+                const result = await StudentsApi.getStudents({ schoolId, searchTerm: search, page: currentPage, pageSize: 100 });
+                all.push(...result.items);
+                totalPages = result.totalPages;
+                currentPage += 1;
+              } while (currentPage <= totalPages);
+              return all;
+            }}
             exportRecords={data?.items ?? []}
             exportColumns={[
               { header: "studentCode", accessor: (r: StudentListDto) => r.studentCode },
               { header: "firstName", accessor: (r: StudentListDto) => r.firstName },
+              { header: "secondName", accessor: (r: StudentListDto) => r.secondName },
+              { header: "thirdName", accessor: (r: StudentListDto) => r.thirdName },
               { header: "lastName", accessor: (r: StudentListDto) => r.lastName },
-              { header: "dateOfBirth", accessor: (r: StudentListDto) => r.dateOfBirth },
+              { header: "dateOfBirth", accessor: (r: StudentListDto) => r.dateOfBirth ? dayjs(r.dateOfBirth).format("YYYY-MM-DD") : "" },
+              { header: "nationalId", accessor: (r: StudentListDto) => r.nationalId },
+              { header: "nationalityCountry", accessor: (r: StudentListDto) => r.nationalityCountry },
+              { header: "residenceCountry", accessor: (r: StudentListDto) => r.residenceCountry },
+              { header: "campus", accessor: (r: StudentListDto) => school.data?.campuses.find((campus) => campus.id === r.campusId)?.name ?? "" },
+              { header: "hasLogin", accessor: (r: StudentListDto) => r.hasLogin ? "Yes" : "No" },
+              { header: "email", accessor: (r: StudentListDto) => r.email },
             ]}
           />
           <Button variant="primary" icon={<Plus className="h-4 w-4" />} onClick={openCreate}>
@@ -279,16 +356,21 @@ export default function StudentsPage() {
               />
             </Form.Item>
             <Form.Item
-              label={t("Last Name")}
-              validateStatus={errors.lastName ? "error" : ""}
-              help={errors.lastName?.message}
+              label={t("Second Name")}
             >
               <Controller
-                name="lastName"
+                name="secondName"
                 control={control}
-                render={({ field }) => <Input {...field} placeholder={t("Last name")} />}
+                render={({ field }) => <Input {...field} placeholder={t("Second name")} />}
               />
             </Form.Item>
+          </div>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4">
+            <Form.Item label={t("Third Name")}><Controller name="thirdName" control={control} render={({ field }) => <Input {...field} placeholder={t("Third name")} />} /></Form.Item>
+            <Form.Item label={t("Fourth Name")} validateStatus={errors.lastName ? "error" : ""} help={errors.lastName?.message}><Controller name="lastName" control={control} render={({ field }) => <Input {...field} placeholder={t("Fourth name")} />} /></Form.Item>
+            <Form.Item label={t("Nationality Country")}><Controller name="nationalityCountry" control={control} render={({ field }) => <CountryDatalistInput {...field} listId="student-nationality-countries" placeholder={t("Country of nationality")} />} /></Form.Item>
+            <Form.Item label={t("Residence Country")}><Controller name="residenceCountry" control={control} render={({ field }) => <CountryDatalistInput {...field} listId="student-residence-countries" placeholder={t("Country of residence")} />} /></Form.Item>
+            <Form.Item label={t("Campus")}><Controller name="campusId" control={control} render={({ field }) => <Select {...field} allowClear className="w-full" placeholder={t("Select campus")} options={campusOptions} disabled={!campusOptions.length} />} /></Form.Item>
           </div>
           <Form.Item
             label={t("Date of Birth")}

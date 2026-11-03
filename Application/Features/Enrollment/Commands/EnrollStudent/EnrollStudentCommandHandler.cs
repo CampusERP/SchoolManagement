@@ -33,6 +33,8 @@ public class EnrollStudentCommandHandler : IRequestHandler<EnrollStudentCommand,
         var classRoom = await _classRooms.GetByIdAsync(request.ClassRoomId, ct);
         if (classRoom is null)
             return Result.Failure<Guid>($"ClassRoom with ID '{request.ClassRoomId}' was not found.");
+        if (student.CampusId != classRoom.CampusId)
+            return Result.Failure<Guid>("The student and classroom must belong to the same campus.");
 
         var academicYear = await _academicYears.GetByIdAsync(request.AcademicYearId, ct);
         if (academicYear is null)

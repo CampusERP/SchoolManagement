@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { BookMarked, Plus, Pencil, Trash2 } from "lucide-react";
+import { BookMarked, Plus, Pencil, Trash2, Upload, FileText } from "lucide-react";
 import { Form, Input as AntInput, Modal, Select, Table, type TableProps } from "antd";
 import { toast } from "sonner";
 import DashboardTemplate from "@/components/templates/DashboardTemplate";
 import Button from "@/components/atoms/Button";
 import EmptyState from "@/components/molecules/EmptyState";
 import { getApiErrorMessage } from "@/lib/errors";
-import { useGradeLevels, useGradeCurriculum, useCreateSubjectBook, useDeleteSubjectBook, useUpdateSubjectBook } from "@/features/academics/hooks";
+import { useGradeLevels, useGradeCurriculum, useCreateSubjectBook, useDeleteSubjectBook, useUpdateSubjectBook, useUploadBookPdf } from "@/features/academics/hooks";
+import { useDeleteDocument } from "@/features/documents/hooks";
+import { openDocument } from "@/features/documents/api";
+import { useAuthStore } from "@/store/authStore";
 import type { CurriculumBookDto, SubjectBookInput } from "@/types/academic.types";
 import { t } from "@/i18n";
 
@@ -21,6 +24,9 @@ export default function BooksPage() {
   const createBook = useCreateSubjectBook();
   const updateBook = useUpdateSubjectBook();
   const deleteBook = useDeleteSubjectBook();
+  const uploadPdf = useUploadBookPdf();
+  const deleteDocument = useDeleteDocument();
+  const schoolId = useAuthStore((s) => s.user?.schoolId)!;
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editingBook, setEditingBook] = useState<CurriculumBookDto | null>(null);
@@ -86,6 +92,7 @@ export default function BooksPage() {
     { title: t("Publisher"), dataIndex: "publisher", key: "publisher", responsive: ["md"], render: (value?: string) => value || "—" },
     { title: t("ISBN"), dataIndex: "isbn", key: "isbn", responsive: ["lg"], render: (value?: string) => value || "—" },
     { title: t("Edition"), dataIndex: "edition", key: "edition", responsive: ["md"], render: (value?: string) => value || "—" },
+    { title: t("PDF Documents"), key: "documents", render: (_, book) => <div className="flex min-w-48 flex-col gap-2">{(book.documents ?? []).map((doc) => <div key={doc.id} className="flex items-center gap-2"><button className="flex min-w-0 items-center gap-1 text-sm text-[var(--color-primary)] hover:underline" onClick={async () => { try { await openDocument(schoolId, doc.id); } catch { toast.error(t("Failed to open document")); } }}><FileText className="h-4 w-4 shrink-0" /><span className="max-w-40 truncate">{doc.fileName}</span></button><Button variant="ghost" size="small" className="text-[var(--color-danger)]" icon={<Trash2 className="h-3.5 w-3.5" />} aria-label={t("Delete document")} onClick={() => Modal.confirm({ title: t("Delete document?"), content: doc.fileName, okType: "danger", onOk: async () => { try { await deleteDocument.mutateAsync(doc.id); toast.success(t("Document deleted")); } catch { toast.error(t("Failed to delete document")); } } })} /></div>)}<label className="inline-flex w-fit cursor-pointer items-center gap-1 text-xs text-[var(--color-primary)]"><Upload className="h-3.5 w-3.5" />{uploadPdf.isPending ? t("Uploading…") : t("Upload PDF")}<input type="file" accept=".pdf,application/pdf" className="hidden" disabled={uploadPdf.isPending} onChange={async (event) => { const file = event.target.files?.[0]; event.target.value = ""; if (!file || !selectedSubject) return; try { await uploadPdf.mutateAsync({ curriculumSubjectId: selectedSubject.curriculumSubjectId, bookId: book.id, file }); toast.success(t("Book PDF uploaded")); } catch (error) { toast.error(getApiErrorMessage(error, t("Failed to upload PDF"))); } }} /></label></div> },
     { title: t("Actions"), key: "actions", align: "right", render: (_, book) => <div className="flex justify-end gap-2"><Button variant="ghost" size="small" icon={<Pencil className="h-4 w-4" />} onClick={() => openEdit(book)} aria-label={t("Edit book")} /><Button variant="ghost" size="small" className="text-[var(--color-danger)]" icon={<Trash2 className="h-4 w-4" />} onClick={() => removeBook(book)} aria-label={t("Delete book")} /></div> },
   ];
 

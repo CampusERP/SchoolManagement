@@ -11,4 +11,9 @@ public record CreateStudentCommand(
     DateTime DateOfBirth,
     string? NationalId = null,
     string? Email = null,
-    string? Password = null) : ICommand<Guid>, IBaseCommand, ITenantScopedRequest;
+    string? Password = null,
+    string? SecondName = null,
+    string? ThirdName = null,
+    string? NationalityCountry = null,
+    string? ResidenceCountry = null,
+    Guid? CampusId = null) : ICommand<Guid>, IBaseCommand, ITenantScopedRequest;

@@ -14,4 +14,6 @@ public class DocumentRepository : IDocumentRepository
 
     public async Task AddAsync(Document document, CancellationToken ct = default) =>
         await _db.Documents.AddAsync(document, ct);
+
+    public void Remove(Document document) => _db.Documents.Remove(document);
 }

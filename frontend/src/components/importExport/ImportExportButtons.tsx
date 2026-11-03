@@ -9,13 +9,14 @@ import {
   teacherImportTemplate,
   parentImportTemplate,
   type ImportSummary,
+  type CampusImportOption,
 } from "@/features/importExport/importTemplates";
-import { exportToExcel } from "@/lib/excel";
+import { exportImportTemplate, exportToExcel } from "@/lib/excel";
+import { getApiErrorMessage } from "@/lib/errors";
 import type { StudentListDto } from "@/types/student.types";
 import type { TeacherListDto } from "@/types/teacher.types";
 import type { ParentListDto } from "@/types/parent.types";
 import { t } from "@/i18n";
-import { translateApiMessage } from "@/lib/errors";
 
 type Kind = "students" | "teachers" | "parents";
 
@@ -27,6 +28,8 @@ interface Props {
   exportRecords: any[];
   exportFileName: string;
   exportSheetName: string;
+  campuses?: CampusImportOption[];
+  fetchAll?: () => Promise<any[]>;
 }
 
 const templates = {
@@ -43,9 +46,12 @@ export default function ImportExportButtons({
   exportRecords,
   exportFileName,
   exportSheetName,
+  campuses = [],
+  fetchAll,
 }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [importing, setImporting] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [summary, setSummary] = useState<ImportSummary | null>(null);
 
   const onFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,33 +61,46 @@ export default function ImportExportButtons({
 
     setImporting(true);
     try {
-      const result = await importPeopleFromExcel(file, kind, schoolId, createFn);
+      const result = await importPeopleFromExcel(file, kind, schoolId, createFn, campuses);
       setSummary(result);
       if (result.failed === 0) toast.success(t("Imported {count} records.", { count: result.succeeded }));
       else toast.warning(t("Imported {count} records, {failed} failed.", { count: result.succeeded, failed: result.failed }));
     } catch (err) {
-      toast.error(translateApiMessage(err instanceof Error ? err.message : t("Failed to import file.")));
+      toast.error(getApiErrorMessage(err, t("Failed to import file.")));
     } finally {
       setImporting(false);
     }
   };
 
-  const onExport = () => {
-    if (!exportRecords.length) {
-      toast.error(t("No rows to export."));
-      return;
+  const onExport = async () => {
+    setExporting(true);
+    try {
+      const records = fetchAll ? await fetchAll() : exportRecords;
+      if (!records.length) {
+        toast.error(t("No rows to export."));
+        return;
+      }
+      exportToExcel(exportFileName, exportSheetName, exportColumns, records);
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, t("Failed to export records.")));
+    } finally {
+      setExporting(false);
     }
-    exportToExcel(exportFileName, exportSheetName, exportColumns, exportRecords);
   };
 
   const onTemplate = () => {
     const tpl = templates[kind];
-    exportToExcel(
-      `${kind}-template`,
-      kind,
-      tpl.columns.map((c) => ({ header: c.name, accessor: () => c.example })),
-      [{}]
-    );
+    const columns = tpl.columns.map((column) => {
+      if (column.name !== "campus" && column.name !== "campuses") return column;
+      const names = campuses.map((campus) => campus.name);
+      return {
+        ...column,
+        required: names.length > 0,
+        description: names.length ? `${column.description}. ${t("Available campuses")}: ${names.join(", ")}` : column.description,
+        example: names.length ? (kind === "teachers" ? names.slice(0, 2).join("; ") : names[0]) : column.example,
+      };
+    });
+    exportImportTemplate(`${kind}-template`, columns);
   };
 
   const resultColumns: TableProps<ImportSummary["results"][number]>["columns"] = [
@@ -111,7 +130,7 @@ export default function ImportExportButtons({
       <Button variant="secondary" icon={<Upload className="h-4 w-4" />} loading={importing} onClick={() => inputRef.current?.click()}>
         {t("Import")}
       </Button>
-      <Button variant="secondary" icon={<Download className="h-4 w-4" />} onClick={onExport}>
+      <Button variant="secondary" icon={<Download className="h-4 w-4" />} loading={exporting} onClick={onExport}>
         {t("Export")}
       </Button>
       <Button variant="ghost" icon={<FileSpreadsheet className="h-4 w-4" />} onClick={onTemplate}>

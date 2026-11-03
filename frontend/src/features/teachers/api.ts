@@ -42,4 +42,10 @@ export const TeachersApi = {
 
   deleteTeacher: (teacherId: string, schoolId: string) =>
     api.delete(`/people/teachers/${teacherId}`, { params: { schoolId } }).then((r) => r.data),
+
+  uploadDocument: (teacherId: string, schoolId: string, file: File) => {
+    const form = new FormData();
+    form.append("file", file);
+    return api.post<{ id: string }>(`/people/teachers/${teacherId}/documents`, form, { params: { schoolId }, headers: { "Content-Type": "multipart/form-data" } }).then((r) => r.data);
+  },
 };

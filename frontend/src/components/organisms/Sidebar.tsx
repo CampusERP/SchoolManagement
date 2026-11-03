@@ -59,6 +59,7 @@ function getNavigationForRole(
         {
           items: [
             { label: t("Dashboard"), path: "/school", icon: <LayoutDashboard className="h-5 w-5" />, permission: "school.dashboard" },
+            { label: t("School Settings"), path: "/school/settings", icon: <Building2 className="h-5 w-5" />, permission: "school.update" },
             { label: t("Billing"), path: "/billing", icon: <CreditCard className="h-5 w-5" />, permission: "billing.read" },
           ],
         },

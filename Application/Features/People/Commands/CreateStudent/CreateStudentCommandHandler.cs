@@ -34,6 +34,11 @@ public class CreateStudentCommandHandler : IRequestHandler<CreateStudentCommand,
 
     public async Task<Result<Guid>> Handle(CreateStudentCommand request, CancellationToken ct)
     {
+        var campuses = await _schools.GetCampusesAsync(request.SchoolId, ct);
+        if (campuses.Count > 0 && !request.CampusId.HasValue)
+            return Result.Failure<Guid>("Select a campus for this student.");
+        if (request.CampusId.HasValue && await _schools.GetCampusAsync(request.SchoolId, request.CampusId.Value, ct) is null)
+            return Result.Failure<Guid>("The selected campus was not found in this school.");
         var studentCode = request.StudentCode;
         if (string.IsNullOrWhiteSpace(studentCode))
         {
@@ -47,7 +52,9 @@ public class CreateStudentCommandHandler : IRequestHandler<CreateStudentCommand,
             return Result.Failure<Guid>($"A student with code '{studentCode}' already exists in this school.");
         }
 
-        var student = Student.Create(request.SchoolId, studentCode, request.FirstName, request.LastName, request.DateOfBirth, request.NationalId);
+        var student = Student.Create(request.SchoolId, studentCode, request.FirstName, request.LastName,
+            request.DateOfBirth, request.NationalId, request.SecondName, request.ThirdName,
+            request.NationalityCountry, request.ResidenceCountry, request.CampusId);
 
         if (!string.IsNullOrWhiteSpace(request.Email) && !string.IsNullOrWhiteSpace(request.Password))
         {

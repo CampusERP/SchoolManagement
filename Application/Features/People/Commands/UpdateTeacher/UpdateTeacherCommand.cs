@@ -10,4 +10,5 @@ public record UpdateTeacherCommand(
     string EmployeeCode,
     string FirstName,
     string LastName,
-    EmploymentStatus EmploymentStatus) : ICommand, IBaseCommand, ITenantScopedRequest;
+    EmploymentStatus EmploymentStatus,
+    List<Guid>? CampusIds = null) : ICommand, IBaseCommand, ITenantScopedRequest;

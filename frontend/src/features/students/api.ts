@@ -50,6 +50,15 @@ export const StudentsApi = {
   resetStudentPassword: (studentId: string, schoolId: string) =>
     api.post(`/people/students/${studentId}/reset-password`, null, { params: { schoolId } }).then((r) => r.data),
 
+  setStudentLogin: (studentId: string, schoolId: string, data: { enabled: boolean; email?: string; password?: string }) =>
+    api.put(`/people/students/${studentId}/login`, data, { params: { schoolId } }).then((r) => r.data),
+
+  uploadDocument: (studentId: string, schoolId: string, file: File) => {
+    const form = new FormData();
+    form.append("file", file);
+    return api.post<{ id: string }>(`/people/students/${studentId}/documents`, form, { params: { schoolId }, headers: { "Content-Type": "multipart/form-data" } }).then((r) => r.data);
+  },
+
   linkGuardian: (data: { studentId: string; parentId: string; relationshipType: string; isPrimaryContact: boolean; canViewGrades: boolean; canViewBilling: boolean; schoolId: string }) =>
     api.post(`/people/students/${data.studentId}/guardians`, data).then((r) => r.data),
 };

@@ -74,6 +74,28 @@ export const useResetStudentPassword = () => {
   });
 };
 
+export const useSetStudentLogin = () => {
+  const client = useQueryClient();
+  const schoolId = useAuthStore((s) => s.user?.schoolId);
+  return useMutation({
+    mutationFn: ({ studentId, enabled, email, password }: { studentId: string; enabled: boolean; email?: string; password?: string }) =>
+      StudentsApi.setStudentLogin(studentId, schoolId!, { enabled, email, password }),
+    onSuccess: (_data, variables) => {
+      client.invalidateQueries({ queryKey: ["student", schoolId, variables.studentId] });
+      client.invalidateQueries({ queryKey: ["students"] });
+    },
+  });
+};
+
+export const useUploadStudentDocument = () => {
+  const client = useQueryClient();
+  const schoolId = useAuthStore((s) => s.user?.schoolId);
+  return useMutation({
+    mutationFn: ({ studentId, file }: { studentId: string; file: File }) => StudentsApi.uploadDocument(studentId, schoolId!, file),
+    onSuccess: (_data, variables) => client.invalidateQueries({ queryKey: ["student", schoolId, variables.studentId] }),
+  });
+};
+
 export const useLinkStudentGuardian = () => {
   const queryClient = useQueryClient();
   const schoolId = useAuthStore((s) => s.user?.schoolId);

@@ -11,15 +11,18 @@ public class EnrollTeacherCommandHandler : IRequestHandler<EnrollTeacherCommand,
     private readonly ITeacherEnrollmentRepository _enrollments;
     private readonly ITeacherRepository _teachers;
     private readonly IClassRoomRepository _classRooms;
+    private readonly ITeacherCampusRepository _teacherCampuses;
 
     public EnrollTeacherCommandHandler(
         ITeacherEnrollmentRepository enrollments,
         ITeacherRepository teachers,
-        IClassRoomRepository classRooms)
+        IClassRoomRepository classRooms,
+        ITeacherCampusRepository teacherCampuses)
     {
         _enrollments = enrollments;
         _teachers = teachers;
         _classRooms = classRooms;
+        _teacherCampuses = teacherCampuses;
     }
 
     public async Task<Result<Guid>> Handle(EnrollTeacherCommand request, CancellationToken ct)
@@ -31,6 +34,9 @@ public class EnrollTeacherCommandHandler : IRequestHandler<EnrollTeacherCommand,
         var classRoom = await _classRooms.GetByIdAsync(request.ClassRoomId, ct);
         if (classRoom is null || classRoom.SchoolId != request.SchoolId)
             return Result.Failure<Guid>($"Classroom with ID '{request.ClassRoomId}' was not found in this school.");
+        var teacherCampusIds = await _teacherCampuses.GetCampusIdsAsync(teacher.Id, ct);
+        if (classRoom.CampusId.HasValue && !teacherCampusIds.Contains(classRoom.CampusId.Value))
+            return Result.Failure<Guid>("The teacher must be assigned to the classroom campus.");
 
         var alreadyEnrolled = await _enrollments.ExistsAsync(request.SchoolId, request.TeacherId, request.TermId, ct);
         if (alreadyEnrolled)

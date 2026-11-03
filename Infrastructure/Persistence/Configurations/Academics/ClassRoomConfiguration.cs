@@ -19,7 +19,7 @@ public class ClassRoomConfiguration : IEntityTypeConfiguration<ClassRoom>
 
         // ClassRoom identity includes AcademicYearId — rolling
         // into a new year creates a new row instead of mutating history.
-        builder.HasIndex(c => new { c.SchoolId, c.GradeLevelId, c.AcademicYearId, c.Name }).IsUnique();
+        builder.HasIndex(c => new { c.SchoolId, c.CampusId, c.GradeLevelId, c.AcademicYearId, c.Name }).IsUnique();
         builder.HasIndex(c => c.SchoolId);
         builder.HasIndex(c => c.AcademicYearId);
 

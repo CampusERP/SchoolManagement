@@ -50,4 +50,18 @@ public class LocalBlobStorageService : IBlobStorageService
 
         return Task.CompletedTask;
     }
+
+    public Task<Stream?> OpenReadAsync(string blobUrl, CancellationToken ct = default)
+    {
+        var relativePath = blobUrl.Replace(_baseUrl, "", StringComparison.OrdinalIgnoreCase)
+            .TrimStart('/', '\\')
+            .Replace('/', Path.DirectorySeparatorChar);
+        var fullPath = Path.GetFullPath(Path.Combine(_basePath, relativePath));
+        var rootPath = Path.GetFullPath(_basePath) + Path.DirectorySeparatorChar;
+        if (!fullPath.StartsWith(rootPath, StringComparison.OrdinalIgnoreCase) || !File.Exists(fullPath))
+            return Task.FromResult<Stream?>(null);
+
+        Stream stream = File.OpenRead(fullPath);
+        return Task.FromResult<Stream?>(stream);
+    }
 }

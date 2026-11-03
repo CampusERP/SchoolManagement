@@ -1,12 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using Domain.Common;
 using Application.Common.Interfaces.Services;
 
 namespace Infrastructure.Persistence.Interceptors;
 
 /// <summary>
-/// An interceptor that automatically updates audit fields (CreatedAt, CreatedBy, ModifiedAt, ModifiedBy, DeletedAt, DeletedBy) for entities that implement the AuditableEntity base class.
+/// Automatically updates audit and soft-delete fields on every tracked entity that exposes them.
 /// </summary>
 public class AuditSaveChangesInterceptor : SaveChangesInterceptor
 {
@@ -39,28 +38,47 @@ public class AuditSaveChangesInterceptor : SaveChangesInterceptor
         var now = DateTime.UtcNow;
         var userId = _currentUserService.UserId;
 
-        foreach (var entry in context.ChangeTracker.Entries<AuditableEntity>())
+        foreach (var entry in context.ChangeTracker.Entries())
         {
+            var hasCreatedAt = HasProperty(entry, "CreatedAtUtc");
+            var hasCreatedBy = HasProperty(entry, "CreatedBy");
+            var hasModifiedAt = HasProperty(entry, "ModifiedAtUtc");
+            var hasModifiedBy = HasProperty(entry, "ModifiedBy");
+            var hasIsDeleted = HasProperty(entry, "IsDeleted");
+            var hasDeletedAt = HasProperty(entry, "DeletedAtUtc");
+            var hasDeletedBy = HasProperty(entry, "DeletedBy");
+
             switch (entry.State)
             {
                 case EntityState.Added:
-                    entry.Entity.CreatedAtUtc = now;
-                    entry.Entity.CreatedBy = userId;
+                    if (hasCreatedAt) SetProperty(entry, "CreatedAtUtc", now);
+                    if (hasCreatedBy) SetProperty(entry, "CreatedBy", userId);
                     break;
 
                 case EntityState.Modified:
-                    entry.Entity.ModifiedAtUtc = now;
-                    entry.Entity.ModifiedBy = userId;
+                    if (hasModifiedAt) SetProperty(entry, "ModifiedAtUtc", now);
+                    if (hasModifiedBy) SetProperty(entry, "ModifiedBy", userId);
                     break;
 
                 case EntityState.Deleted:
-                    // Convert hard delete -> soft delete.
-                    entry.State = EntityState.Modified;
-                    entry.Entity.IsDeleted = true;
-                    entry.Entity.DeletedAtUtc = now;
-                    entry.Entity.DeletedBy = userId;
+                    if (hasIsDeleted)
+                    {
+                        // Convert hard delete -> soft delete when the entity supports it.
+                        entry.State = EntityState.Modified;
+                        SetProperty(entry, "IsDeleted", true);
+                        if (hasDeletedAt) SetProperty(entry, "DeletedAtUtc", now);
+                        if (hasDeletedBy) SetProperty(entry, "DeletedBy", userId);
+                        if (hasModifiedAt) SetProperty(entry, "ModifiedAtUtc", now);
+                        if (hasModifiedBy) SetProperty(entry, "ModifiedBy", userId);
+                    }
                     break;
             }
         }
     }
+
+    private static bool HasProperty(Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry entry, string name)
+        => entry.Metadata.FindProperty(name) is not null;
+
+    private static void SetProperty(Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry entry, string name, object? value)
+        => entry.Property(name).CurrentValue = value;
 }

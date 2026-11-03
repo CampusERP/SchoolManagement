@@ -1,3 +1,5 @@
+import type { DocumentDto } from "@/features/documents/api";
+
 export interface TeacherListDto {
   id: string;
   employeeCode: string;
@@ -7,6 +9,7 @@ export interface TeacherListDto {
   employmentStatus: string;
   // Additional field returned by the backend
   assignedClassesCount?: number;
+  campusIds?: string[];
 }
 
 export interface TeacherDetailDto {
@@ -17,6 +20,8 @@ export interface TeacherDetailDto {
   email?: string | null;
   employmentStatus: string;
   assignments: TeachingAssignment[];
+  documents?: DocumentDto[];
+  campusIds?: string[];
 }
 
 export interface TeachingAssignment {
@@ -48,6 +53,7 @@ export interface CreateTeacherCommand {
   lastName: string;
   email: string;
   password: string;
+  campusIds?: string[];
 }
 
 export interface UpdateTeacherCommand {
@@ -56,4 +62,5 @@ export interface UpdateTeacherCommand {
   firstName: string;
   lastName: string;
   employmentStatus: "Active" | "OnLeave" | "Terminated";
+  campusIds?: string[];
 }

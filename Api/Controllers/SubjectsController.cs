@@ -7,6 +7,8 @@ using Application.Features.Subjects.Queries.GetGradeCurriculum;
 using Application.Features.Subjects.Commands.RemoveCurriculumSubject;
 using Application.Features.Subjects.Commands.ManageSubjectBooks;
 using Application.Features.Subjects.Commands.ManageSchoolSubjects;
+using Application.Features.Documents.Commands;
+using Domain.Enums;
 
 namespace Api.Controllers;
 
@@ -83,4 +85,12 @@ public class SubjectsController : ApiControllerBase
     public async Task<IActionResult> DeleteSubjectBook(
         Guid curriculumSubjectId, Guid bookId, [FromQuery] Guid schoolId, CancellationToken ct) =>
         FromResult(await _mediator.Send(new DeleteSubjectBookCommand(schoolId, curriculumSubjectId, bookId), ct));
+
+    [HttpPost("curriculum/{curriculumSubjectId:guid}/books/{bookId:guid}/documents")]
+    [Authorize(Policy = "AcademicYear.Update")]
+    [RequestSizeLimit(26 * 1024 * 1024)]
+    public async Task<IActionResult> UploadBookPdf(Guid curriculumSubjectId, Guid bookId,
+        [FromQuery] Guid schoolId, [FromForm] IFormFile file, CancellationToken ct) =>
+        Created(await _mediator.Send(new UploadDocumentCommand(schoolId, bookId,
+            DocumentOwnerType.SubjectBook, file.FileName, file.ContentType, file.Length, file.OpenReadStream()), ct));
 }

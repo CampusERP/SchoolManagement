@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Plus, DoorOpen } from "lucide-react";
 import { toast } from "sonner";
-import { Table, Modal, Form, InputNumber, type TableProps } from "antd";
+import { Table, Modal, Form, InputNumber, Select, type TableProps } from "antd";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -12,10 +12,12 @@ import EmptyState from "@/components/molecules/EmptyState";
 import { useAuthStore } from "@/store/authStore";
 import { useRooms, useCreateRoom, useUpdateRoom } from "@/features/academics/hooks";
 import type { RoomDto } from "@/types/academic.types";
+import { useCurrentSchool } from "@/features/schools/hooks";
 import { t } from "@/i18n";
 
 const schema = z.object({
   name: z.string().min(1, t("Name is required")),
+  campusId: z.string().optional(),
   capacity: z
     .number({ invalid_type_error: t("Capacity is required") })
     .int()
@@ -27,6 +29,8 @@ type FormData = z.infer<typeof schema>;
 export default function RoomsPage() {
   const schoolId = useAuthStore((s) => s.user?.schoolId)!;
   const { data, isLoading, isError } = useRooms();
+  const school = useCurrentSchool();
+  const campusOptions = (school.data?.campuses ?? []).map((campus) => ({ value: campus.id, label: campus.name }));
   const createRoom = useCreateRoom();
   const updateRoom = useUpdateRoom();
 
@@ -40,22 +44,26 @@ export default function RoomsPage() {
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { name: "", capacity: 30 },
+    defaultValues: { name: "", capacity: 30, campusId: "" },
   });
 
   const openCreate = () => {
     setEditing(null);
-    reset({ name: "", capacity: 30 });
+    reset({ name: "", capacity: 30, campusId: "" });
     setModalOpen(true);
   };
 
   const openEdit = (record: RoomDto) => {
     setEditing(record);
-    reset({ name: record.name, capacity: record.capacity });
+    reset({ name: record.name, capacity: record.capacity, campusId: record.campusId ?? "" });
     setModalOpen(true);
   };
 
   const onSubmit = async (values: FormData) => {
+    if (campusOptions.length && !values.campusId) {
+      toast.error(t("Select a campus for this room"));
+      return;
+    }
     try {
       if (editing) {
         await updateRoom.mutateAsync({ id: editing.id, data: { schoolId, ...values } });
@@ -80,6 +88,7 @@ export default function RoomsPage() {
       ),
     },
     { title: t("Capacity"), dataIndex: "capacity", key: "capacity", align: "center" },
+    { title: t("Campus"), key: "campus", render: (_, record) => school.data?.campuses.find((campus) => campus.id === record.campusId)?.name ?? "—" },
     {
       title: t("Actions"),
       key: "actions",
@@ -137,6 +146,9 @@ export default function RoomsPage() {
               control={control}
               render={({ field }) => <Input {...field} placeholder={t("e.g. Room 101")} />}
             />
+          </Form.Item>
+          <Form.Item label={t("Campus")}>
+            <Controller name="campusId" control={control} render={({ field }) => <Select {...field} allowClear className="w-full" placeholder={t("Select campus")} options={campusOptions} disabled={!campusOptions.length} />} />
           </Form.Item>
           <Form.Item label={t("Capacity")} validateStatus={errors.capacity ? "error" : ""} help={errors.capacity?.message}>
             <Controller

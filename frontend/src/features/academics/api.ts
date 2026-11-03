@@ -176,4 +176,10 @@ export const AcademicsApi = {
 
   deleteSubjectBook: (schoolId: string, curriculumSubjectId: string, bookId: string) =>
     api.delete(`/subjects/curriculum/${curriculumSubjectId}/books/${bookId}`, { params: { schoolId } }).then((r) => r.data),
+
+  uploadBookPdf: (schoolId: string, curriculumSubjectId: string, bookId: string, file: File) => {
+    const form = new FormData();
+    form.append("file", file);
+    return api.post(`/subjects/curriculum/${curriculumSubjectId}/books/${bookId}/documents`, form, { params: { schoolId }, headers: { "Content-Type": "multipart/form-data" } }).then((r) => r.data);
+  },
 };

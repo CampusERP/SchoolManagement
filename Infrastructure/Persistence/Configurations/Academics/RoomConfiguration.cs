@@ -12,7 +12,7 @@ public class RoomConfiguration : IEntityTypeConfiguration<Room>
 
         builder.Property(r => r.Name).IsRequired().HasMaxLength(100);
 
-        builder.HasIndex(r => new { r.SchoolId, r.Name }).IsUnique();
+        builder.HasIndex(r => new { r.SchoolId, r.CampusId, r.Name }).IsUnique();
 
         builder.Property(r => r.RowVersion).IsRowVersion();
     }

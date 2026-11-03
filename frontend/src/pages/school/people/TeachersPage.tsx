@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, GraduationCap, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { Table, Modal, Form, type TableProps } from "antd";
+import { Table, Modal, Form, Select, type TableProps } from "antd";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -14,6 +14,8 @@ import EmptyState from "@/components/molecules/EmptyState";
 import StatusBadge from "@/components/molecules/StatusBadge";
 import { useAuthStore } from "@/store/authStore";
 import { useTeachers, useCreateTeacher, useDeleteTeacher } from "@/features/teachers/hooks";
+import { useCurrentSchool } from "@/features/schools/hooks";
+import { TeachersApi } from "@/features/teachers/api";
 import ImportExportButtons from "@/components/importExport/ImportExportButtons";
 import type { TeacherListDto } from "@/types/teacher.types";
 import { t } from "@/i18n";
@@ -23,7 +25,12 @@ const schema = z.object({
   firstName: z.string().min(1, t("First name is required")),
   lastName: z.string().min(1, t("Last name is required")),
   email: z.string().min(1, t("Email is required")).email(t("Invalid email")),
-  password: z.string().min(8, t("Password must be at least 8 characters")),
+  password: z.string().min(8, t("Password must be at least 8 characters"))
+    .regex(/[A-Z]/, t("Password must contain an uppercase letter."))
+    .regex(/[a-z]/, t("Password must contain a lowercase letter."))
+    .regex(/[0-9]/, t("Password must contain a number."))
+    .regex(/[^a-zA-Z0-9]/, t("Password must contain a symbol.")),
+  campusIds: z.array(z.string()).optional(),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -39,6 +46,8 @@ export default function TeachersPage() {
   const { data, isLoading, isError } = useTeachers({ searchTerm: search, page, pageSize });
   const createTeacher = useCreateTeacher();
   const deleteTeacher = useDeleteTeacher();
+  const school = useCurrentSchool();
+  const campusOptions = (school.data?.campuses ?? []).map((campus) => ({ value: campus.id, label: campus.name }));
 
   const [modalOpen, setModalOpen] = useState(false);
   const {
@@ -48,17 +57,21 @@ export default function TeachersPage() {
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { employeeCode: "", firstName: "", lastName: "", email: "", password: "" },
+    defaultValues: { employeeCode: "", firstName: "", lastName: "", email: "", password: "", campusIds: [] },
   });
 
   const openCreate = () => {
-    reset({ employeeCode: "", firstName: "", lastName: "", email: "", password: "" });
+    reset({ employeeCode: "", firstName: "", lastName: "", email: "", password: "", campusIds: [] });
     setModalOpen(true);
   };
 
   const onSubmit = async (values: FormData) => {
+    if (campusOptions.length && !values.campusIds?.length) {
+      toast.error(t("Select at least one campus for this teacher"));
+      return;
+    }
     try {
-      await createTeacher.mutateAsync({ schoolId, ...values });
+      await createTeacher.mutateAsync({ schoolId, ...values, campusIds: values.campusIds ?? [] });
       toast.success(t("Teacher created"));
       setModalOpen(false);
     } catch {
@@ -168,12 +181,29 @@ export default function TeachersPage() {
             createFn={(d: any) => createTeacher.mutateAsync(d)}
             exportFileName="teachers"
             exportSheetName="teachers"
+            campuses={school.data?.campuses ?? []}
+            fetchAll={async () => {
+              const all: TeacherListDto[] = [];
+              let currentPage = 1;
+              let totalPages = 1;
+              do {
+                const result = await TeachersApi.getTeachers({ schoolId, searchTerm: search, page: currentPage, pageSize: 100 });
+                all.push(...result.items);
+                totalPages = result.totalPages;
+                currentPage += 1;
+              } while (currentPage <= totalPages);
+              return all;
+            }}
             exportRecords={data?.items ?? []}
             exportColumns={[
               { header: "employeeCode", accessor: (r: TeacherListDto) => r.employeeCode },
               { header: "firstName", accessor: (r: TeacherListDto) => r.firstName },
               { header: "lastName", accessor: (r: TeacherListDto) => r.lastName },
+              { header: "email", accessor: (r: TeacherListDto) => r.email },
+              { header: "campuses", accessor: (r: TeacherListDto) => (r.campusIds ?? []).map((id) => school.data?.campuses.find((campus) => campus.id === id)?.name).filter(Boolean).join("; ") },
+              { header: "hasLogin", accessor: (r: TeacherListDto) => r.email ? "Yes" : "No" },
               { header: "employmentStatus", accessor: (r: TeacherListDto) => r.employmentStatus },
+              { header: "assignedClassesCount", accessor: (r: TeacherListDto) => r.assignedClassesCount ?? 0 },
             ]}
           />
           <Button variant="primary" icon={<Plus className="h-4 w-4" />} onClick={openCreate}>
@@ -256,6 +286,9 @@ export default function TeachersPage() {
               <Controller name="lastName" control={control} render={({ field }) => <Input {...field} placeholder={t("Last name")} />} />
             </Form.Item>
           </div>
+          <Form.Item label={t("Campuses")}>
+            <Controller name="campusIds" control={control} render={({ field }) => <Select {...field} mode="multiple" allowClear className="w-full" placeholder={t("Select the campuses where this teacher works")} options={campusOptions} disabled={!campusOptions.length} />} />
+          </Form.Item>
           <Form.Item label={t("Email")} validateStatus={errors.email ? "error" : ""} help={errors.email?.message}>
             <Controller name="email" control={control} render={({ field }) => <Input {...field} placeholder={t("teacher@school.com")} />} />
           </Form.Item>

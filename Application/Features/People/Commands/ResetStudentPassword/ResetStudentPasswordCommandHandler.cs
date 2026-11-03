@@ -21,7 +21,7 @@ public sealed class ResetStudentPasswordCommandHandler : IRequestHandler<ResetSt
     public async Task<Result> Handle(ResetStudentPasswordCommand request, CancellationToken ct)
     {
         var student = await _students.GetByIdAsync(request.StudentId, ct);
-        if (student is null || student.SchoolId != request.SchoolId || student.ApplicationUserId is not Guid userId)
+        if (student is null || student.SchoolId != request.SchoolId || !student.HasLogin || student.ApplicationUserId is not Guid userId)
             return Result.Failure("Student login was not found.");
 
         var user = await _identity.GetByIdAsync(userId, ct);
@@ -32,7 +32,8 @@ public sealed class ResetStudentPasswordCommandHandler : IRequestHandler<ResetSt
         await _email.SendToEmailAsync(user.Email, EmailTemplate.PasswordReset,
             new Dictionary<string, string?>
             {
-                ["Name"] = $"{student.FirstName} {student.LastName}".Trim(),
+                ["Name"] = string.Join(" ", new[] { student.FirstName, student.SecondName, student.ThirdName, student.LastName }
+                    .Where(name => !string.IsNullOrWhiteSpace(name))),
                 ["Email"] = user.Email,
                 ["ResetLink"] = resetLink,
                 ["ExpiryHours"] = "24"

@@ -13,6 +13,8 @@ public sealed class DeleteCampusCommandHandler : IRequestHandler<DeleteCampusCom
     {
         var campus = await _schools.GetCampusAsync(request.SchoolId, request.CampusId, ct);
         if (campus is null) return Result.Failure("Campus not found.");
+        if (await _schools.IsCampusInUseAsync(request.SchoolId, request.CampusId, ct))
+            return Result.Failure("This campus is still assigned to students, teachers, rooms, or classrooms.");
         await _schools.DeleteCampusAsync(campus, ct);
         return Result.Success();
     }

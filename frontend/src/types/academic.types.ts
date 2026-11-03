@@ -1,3 +1,5 @@
+import type { DocumentDto } from "@/features/documents/api";
+
 export interface AcademicYearDto {
   id: string;
   name: string;
@@ -53,6 +55,7 @@ export interface ClassRoomDetailDto {
   teachingAssignmentCount?: number;
   roomId?: string | null;
   roomName?: string | null;
+  campusId?: string | null;
 }
 
 export interface CreateClassRoomCommand {
@@ -61,12 +64,14 @@ export interface CreateClassRoomCommand {
   academicYearId: string;
   name: string;
   roomId?: string | null;
+  campusId?: string | null;
 }
 
 export interface UpdateClassRoomCommand {
   schoolId: string;
   name: string;
   roomId?: string | null;
+  campusId?: string | null;
 }
 
 export interface GradeLevelDto {
@@ -99,6 +104,7 @@ export interface CurriculumBookDto {
   isbn?: string | null;
   edition?: string | null;
   notes?: string | null;
+  documents?: DocumentDto[];
 }
 
 export interface CurriculumSubjectDto {
@@ -137,18 +143,21 @@ export interface RoomDto {
   id: string;
   name: string;
   capacity: number;
+  campusId?: string | null;
 }
 
 export interface CreateRoomCommand {
   schoolId: string;
   name: string;
   capacity: number;
+  campusId?: string | null;
 }
 
 export interface UpdateRoomCommand {
   schoolId: string;
   name: string;
   capacity: number;
+  campusId?: string | null;
 }
 
 export interface RosterStudentDto {

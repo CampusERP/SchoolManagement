@@ -12,6 +12,7 @@ using Application.Features.People.Commands.TerminateTeacher;
 using Application.Features.People.Commands.DeleteTeacher;
 using Application.Features.People.Commands.DeleteStudent;
 using Application.Features.People.Commands.ResetStudentPassword;
+using Application.Features.People.Commands.SetStudentLogin;
 using Microsoft.AspNetCore.Authorization;
 using Application.Features.People.Queries.GetStudents;
 using Application.Features.People.Queries.StudentDetails;
@@ -21,6 +22,8 @@ using Application.Features.People.Queries.GetParents;
 using Application.Features.People.Queries.GetParentById;
 using Application.Features.People.Queries.GetMyChildren;
 using Application.Features.People.Queries.GetMyClasses;
+using Application.Features.Documents.Commands;
+using Domain.Enums;
 
 namespace Api.Controllers;
 
@@ -75,6 +78,20 @@ public class PeopleController : ApiControllerBase
         Guid studentId, [FromQuery] Guid schoolId, CancellationToken ct) =>
         FromResult(await _mediator.Send(new ResetStudentPasswordCommand(schoolId, studentId), ct));
 
+    [HttpPut("students/{studentId:guid}/login")]
+    [Authorize(Policy = "Student.Update")]
+    public async Task<IActionResult> SetStudentLogin(
+        Guid studentId, [FromQuery] Guid schoolId, [FromBody] SetStudentLoginCommand command, CancellationToken ct) =>
+        FromResult(await _mediator.Send(command with { SchoolId = schoolId, StudentId = studentId }, ct));
+
+    [HttpPost("students/{studentId:guid}/documents")]
+    [Authorize(Policy = "Student.Update")]
+    [RequestSizeLimit(26 * 1024 * 1024)]
+    public async Task<IActionResult> UploadStudentDocument(Guid studentId, [FromQuery] Guid schoolId,
+        [FromForm] IFormFile file, CancellationToken ct) =>
+        Created(await _mediator.Send(new UploadDocumentCommand(schoolId, studentId,
+            DocumentOwnerType.StudentProfile, file.FileName, file.ContentType, file.Length, file.OpenReadStream()), ct));
+
     // ── Teachers ──────────────────────────────────────────────────────
 
     [HttpPost("teachers")]
@@ -112,6 +129,14 @@ public class PeopleController : ApiControllerBase
     public async Task<IActionResult> DeleteTeacher(
         Guid teacherId, [FromQuery] Guid schoolId, CancellationToken ct) =>
         FromResult(await _mediator.Send(new DeleteTeacherCommand(schoolId, teacherId), ct));
+
+    [HttpPost("teachers/{teacherId:guid}/documents")]
+    [Authorize(Policy = "Teacher.Update")]
+    [RequestSizeLimit(26 * 1024 * 1024)]
+    public async Task<IActionResult> UploadTeacherDocument(Guid teacherId, [FromQuery] Guid schoolId,
+        [FromForm] IFormFile file, CancellationToken ct) =>
+        Created(await _mediator.Send(new UploadDocumentCommand(schoolId, teacherId,
+            DocumentOwnerType.TeacherProfile, file.FileName, file.ContentType, file.Length, file.OpenReadStream()), ct));
 
     // ── Parents ───────────────────────────────────────────────────────
 

@@ -7,4 +7,5 @@ public record UpdateClassRoomCommand(
     Guid SchoolId,
     Guid ClassRoomId,
     string Name,
-    Guid? RoomId = null) : ICommand, IBaseCommand, ITenantScopedRequest;
+    Guid? RoomId = null,
+    Guid? CampusId = null) : ICommand, IBaseCommand, ITenantScopedRequest;

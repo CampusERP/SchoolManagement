@@ -147,6 +147,8 @@ public static class DependencyInjection
         services.AddScoped<ISubjectBookRepository, SubjectBookRepository>();
         services.AddScoped<IExamResultRepository, ExamResultRepository>();
         services.AddScoped<IDocumentRepository, DocumentRepository>();
+        services.AddScoped<IDocumentAttachmentRepository, DocumentAttachmentRepository>();
+        services.AddScoped<ITeacherCampusRepository, TeacherCampusRepository>();
 
         // ───────────── Read Services ─────────────
 

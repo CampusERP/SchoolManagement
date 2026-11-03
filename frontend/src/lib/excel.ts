@@ -35,7 +35,7 @@ export function parseExcelFile(file: File): Promise<ParseResult> {
         if (workbook.SheetNames.length === 0)
           throw new Error(t("The workbook contains no sheets."));
 
-        const sheetName = workbook.SheetNames[0];
+        const sheetName = workbook.SheetNames.find((name) => name.trim().toLowerCase() === "data") ?? workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
 
         // Header row mapped to existing column headers (trimmed).
@@ -55,7 +55,10 @@ export function parseExcelFile(file: File): Promise<ParseResult> {
             values[key.trim()] = normalize(raw[key]);
           }
           return { rowNumber: i + 2, values };
-        });
+        }).filter((row) => Object.values(row.values).some(Boolean));
+
+        if (rows.length === 0)
+          throw new Error(t("No data rows were found in the Data sheet."));
 
         resolve({ headers, rows, sheetName });
       } catch (err) {
@@ -90,6 +93,10 @@ export function exportToExcel<T>(
   const worksheet = XLSX.utils.json_to_sheet(data, {
     header: columns.map((c) => c.header),
   });
+  worksheet["!cols"] = columns.map((column) => ({ wch: Math.max(14, Math.min(36, column.header.length + 4)) }));
+  worksheet["!freeze"] = { xSplit: 0, ySplit: 1, topLeftCell: "A2", activePane: "bottomLeft", state: "frozen" };
+  if (columns.length > 0 && records.length > 0)
+    worksheet["!autofilter"] = { ref: XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: records.length, c: columns.length - 1 } }) };
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, sheetName.slice(0, 31));
 
@@ -100,4 +107,44 @@ export function exportToExcel<T>(
     }),
     fileName.endsWith(".xlsx") ? fileName : `${fileName}.xlsx`
   );
+}
+
+export interface ImportTemplateColumn {
+  name: string;
+  required: boolean;
+  description: string;
+  example: string;
+}
+
+export function exportImportTemplate(fileName: string, columns: ImportTemplateColumn[]): void {
+  const workbook = XLSX.utils.book_new();
+  const isStudentTemplate = columns.some((column) => column.name === "studentCode");
+  const hasLoginField = columns.some((column) => column.name === "hasLogin");
+  const dataSheet = XLSX.utils.aoa_to_sheet([columns.map((column) => column.name), []]);
+  dataSheet["!cols"] = columns.map((column) => ({ wch: Math.max(16, Math.min(34, column.name.length + 6)) }));
+  dataSheet["!freeze"] = { xSplit: 0, ySplit: 1, topLeftCell: "A2", activePane: "bottomLeft", state: "frozen" };
+  dataSheet["!autofilter"] = { ref: XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: 1, c: columns.length - 1 } }) };
+  XLSX.utils.book_append_sheet(workbook, dataSheet, "Data");
+
+  const instructions = [
+    [t("Import instructions")],
+    [t("Enter one person per row on the Data sheet. Do not rename the column headers.")],
+    [t("Required fields are marked Yes. Keep optional fields blank when they do not apply.")],
+    ...(isStudentTemplate ? [[t("Student codes are generated automatically when studentCode is blank.")]] : []),
+    ...(isStudentTemplate ? [[t("For dateOfBirth, use YYYY-MM-DD.")]] : []),
+    ...(hasLoginField ? [[t("Use Yes/No for hasLogin.")]] : []),
+    [t("Imports create new records; they do not update existing people.")],
+    [t("Passwords are never exported. To create a login, provide a new temporary password.")],
+    [],
+    [t("Column"), t("Required"), t("Description"), t("Example")],
+    ...columns.map((column) => [column.name, column.required ? t("Yes") : t("No"), t(column.description), column.example]),
+  ];
+  const instructionSheet = XLSX.utils.aoa_to_sheet(instructions);
+  instructionSheet["!cols"] = [{ wch: 28 }, { wch: 14 }, { wch: 70 }, { wch: 34 }];
+  instructionSheet["!freeze"] = { xSplit: 0, ySplit: 7, topLeftCell: "A8", activePane: "bottomLeft", state: "frozen" };
+  XLSX.utils.book_append_sheet(workbook, instructionSheet, "Instructions");
+
+  const out = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+  saveAs(new Blob([out], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }),
+    fileName.endsWith(".xlsx") ? fileName : `${fileName}.xlsx`);
 }

@@ -3,6 +3,7 @@ using Application.Common.Models;
 using Application.Features.People.Queries.GetMyClasses;
 using Application.Features.People.Queries.GetTeacherById;
 using Application.Features.People.Queries.GetTeachers;
+using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Services;
@@ -61,11 +62,21 @@ public class TeacherReadService : ITeacherReadService
                 .ToDictionaryAsync(u => u.Id, u => u.Email, ct)
             : new Dictionary<Guid, string?>();
 
+        var teacherIds = items.Select(item => item.Id).ToList();
+        var campusAssignments = await _db.TeacherCampuses.AsNoTracking()
+            .Where(assignment => teacherIds.Contains(assignment.TeacherId))
+            .Select(assignment => new { assignment.TeacherId, assignment.CampusId })
+            .ToListAsync(ct);
+        var campusIdsByTeacher = campusAssignments
+            .GroupBy(assignment => assignment.TeacherId)
+            .ToDictionary(group => group.Key, group => group.Select(assignment => assignment.CampusId).ToList());
+
         var result = items.Select(x => new TeacherListDto(
             x.Id, x.EmployeeCode, x.FirstName, x.LastName,
             emails.GetValueOrDefault(x.ApplicationUserId),
             x.EmploymentStatus,
-            x.AssignedClassesCount)).ToList();
+            x.AssignedClassesCount,
+            campusIdsByTeacher.GetValueOrDefault(x.Id, new List<Guid>()))).ToList();
 
         return new PagedResult<TeacherListDto>(result, total, pagination.Page, pagination.PageSize);
     }
@@ -88,9 +99,21 @@ public class TeacherReadService : ITeacherReadService
                 .FirstOrDefaultAsync(ct);
         }
 
+        var documents = await (from attachment in _db.DocumentAttachments.AsNoTracking()
+                               where attachment.OwnerId == teacherId && attachment.OwnerType == DocumentOwnerType.TeacherProfile
+                               join document in _db.Documents.AsNoTracking() on attachment.DocumentId equals document.Id
+                               orderby document.CreatedAtUtc descending
+                               select new Application.Features.Documents.DocumentDto(
+                                   document.Id, document.FileName, document.ContentType, document.FileSizeBytes, document.CreatedAtUtc))
+            .ToListAsync(ct);
+        var campusIds = await _db.TeacherCampuses.AsNoTracking()
+            .Where(x => x.TeacherId == teacherId)
+            .Select(x => x.CampusId)
+            .ToListAsync(ct);
+
         var teacher = new TeacherDetailDto(
             t.Id, t.EmployeeCode, t.FirstName, t.LastName, email,
-            t.EmploymentStatus, new List<TeachingAssignmentDetailDto>());
+            t.EmploymentStatus, new List<TeachingAssignmentDetailDto>(), documents, campusIds);
 
         var assignments = await _db.TeachingAssignments.AsNoTracking()
             .Where(a => a.TeacherId == teacherId)

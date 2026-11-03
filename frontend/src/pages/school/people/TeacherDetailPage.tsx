@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Pencil, Plus, Trash2, Hash, User, BadgeCheck, Mail } from "lucide-react";
+import { ArrowLeft, Pencil, Plus, Trash2, Hash, User, BadgeCheck, Mail, Upload, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { Table, Modal, Form, Select, TimePicker, type TableProps, Space } from "antd";
 import dayjs from "dayjs";
@@ -13,7 +13,10 @@ import Button from "@/components/atoms/Button";
 import { Input } from "@/components/atoms/Input";
 import StatusBadge from "@/components/molecules/StatusBadge";
 import { useAuthStore } from "@/store/authStore";
-import { useTeacher, useUpdateTeacher } from "@/features/teachers/hooks";
+import { useCurrentSchool } from "@/features/schools/hooks";
+import { useTeacher, useUpdateTeacher, useUploadTeacherDocument } from "@/features/teachers/hooks";
+import { useDeleteDocument } from "@/features/documents/hooks";
+import { openDocument } from "@/features/documents/api";
 import { useAssignTeacher, useUpdateTeachingAssignment, useDeleteTeachingAssignment } from "@/features/enrollment/hooks";
 import { useSubjects, useClassrooms, useAcademicYears, useRooms } from "@/features/academics/hooks";
 import type { TeachingAssignment } from "@/types/teacher.types";
@@ -42,6 +45,7 @@ const teacherSchema = z.object({
   employmentStatus: z.enum(["Active", "OnLeave", "Terminated"], {
     errorMap: () => ({ message: t("Employment status is required") }),
   }),
+  campusIds: z.array(z.string()).optional(),
 });
 
 type TeacherFormData = z.infer<typeof teacherSchema>;
@@ -71,7 +75,11 @@ export default function TeacherDetailPage() {
   const schoolId = useAuthStore((s) => s.user?.schoolId)!;
 
   const { data: teacher, isLoading, isError, refetch } = useTeacher(id);
+  const school = useCurrentSchool();
+  const campusOptions = (school.data?.campuses ?? []).map((campus) => ({ value: campus.id, label: campus.name }));
   const updateTeacher = useUpdateTeacher();
+  const uploadDocument = useUploadTeacherDocument();
+  const deleteDocument = useDeleteDocument();
   const assignTeacher = useAssignTeacher();
   const updateAssignment = useUpdateTeachingAssignment();
   const deleteAssignment = useDeleteTeachingAssignment();
@@ -111,6 +119,7 @@ export default function TeacherDetailPage() {
       firstName: teacher.firstName,
       lastName: teacher.lastName,
       employmentStatus: teacher.employmentStatus as "Active" | "OnLeave" | "Terminated",
+      campusIds: teacher.campusIds ?? [],
     });
     setTeacherModalOpen(true);
   };
@@ -147,6 +156,10 @@ export default function TeacherDetailPage() {
 
   const onTeacherSubmit = async (values: TeacherFormData) => {
     if (!id) return;
+    if (campusOptions.length && !values.campusIds?.length) {
+      toast.error(t("Select at least one campus for this teacher"));
+      return;
+    }
     try {
       await updateTeacher.mutateAsync({ teacherId: id, data: { schoolId, ...values } });
       toast.success(t("Teacher updated"));
@@ -231,7 +244,9 @@ export default function TeacherDetailPage() {
 
   const subjectOptions = (subjects ?? []).map((s) => ({ value: s.id, label: `${s.code} — ${s.name}` }));
   const classroomOptions = (classrooms ?? []).map((c) => ({ value: c.id, label: c.name }));
-  const roomOptions = (rooms ?? []).map((r) => ({ value: r.id, label: r.name }));
+  const roomOptions = (rooms ?? [])
+    .filter((room) => !selectedClassRoom?.campusId || room.campusId === selectedClassRoom.campusId)
+    .map((r) => ({ value: r.id, label: r.name }));
 
   const assignmentColumns: TableProps<TeachingAssignment>["columns"] = [
     {
@@ -328,7 +343,19 @@ export default function TeacherDetailPage() {
                 <StatusBadge status={teacher.employmentStatus} />
               </dd>
             </div>
+            <div className="flex items-center gap-3"><dt className="w-32 text-sm text-[var(--color-text-secondary)]">{t("Campuses")}</dt><dd className="text-sm text-[var(--color-text-primary)]">{(teacher.campusIds ?? []).map((campusId) => school.data?.campuses.find((campus) => campus.id === campusId)?.name).filter(Boolean).join(", ") || "—"}</dd></div>
           </dl>
+        </InfoCard>
+
+        <InfoCard title={t("Teacher Documents")}>
+          <div className="space-y-3">
+            <label className="inline-flex cursor-pointer items-center gap-2 rounded-md bg-[var(--color-primary)] px-3 py-2 text-sm font-medium text-white">
+              <Upload className="h-4 w-4" /> {uploadDocument.isPending ? t("Uploading…") : t("Upload document")}
+              <input type="file" className="hidden" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" disabled={uploadDocument.isPending} onChange={async (event) => { const file = event.target.files?.[0]; event.target.value = ""; if (!file || !id) return; try { await uploadDocument.mutateAsync({ teacherId: id, file }); toast.success(t("Document uploaded")); } catch { toast.error(t("Failed to upload document")); } }} />
+            </label>
+            <p className="text-xs text-[var(--color-text-muted)]">{t("PDF, Word, or JPG/PNG files up to 25 MB")}</p>
+            {(teacher.documents ?? []).length ? <ul className="divide-y divide-[var(--color-border)]">{teacher.documents!.map((document) => <li key={document.id} className="flex flex-wrap items-center justify-between gap-2 py-2"><button className="flex min-w-0 items-center gap-2 text-left text-sm text-[var(--color-primary)] hover:underline" onClick={async () => { try { await openDocument(schoolId, document.id); } catch { toast.error(t("Failed to open document")); } }}><FileText className="h-4 w-4 shrink-0" /><span className="truncate">{document.fileName}</span></button><div className="flex items-center gap-3 text-xs text-[var(--color-text-muted)]"><span>{Math.ceil(document.fileSizeBytes / 1024)} KB</span><Button variant="ghost" size="small" className="text-[var(--color-danger)]" icon={<Trash2 className="h-4 w-4" />} aria-label={t("Delete document")} onClick={() => Modal.confirm({ title: t("Delete document?"), content: document.fileName, okType: "danger", onOk: async () => { try { await deleteDocument.mutateAsync(document.id); toast.success(t("Document deleted")); } catch { toast.error(t("Failed to delete document")); } } })} /></div></li>)}</ul> : <p className="text-sm text-[var(--color-text-muted)]">{t("No documents uploaded yet.")}</p>}
+          </div>
         </InfoCard>
 
         <InfoCard
@@ -362,6 +389,9 @@ export default function TeacherDetailPage() {
             help={teacherForm.formState.errors.employeeCode?.message}
           >
             <Controller name="employeeCode" control={teacherForm.control} render={({ field }) => <Input {...field} />} />
+          </Form.Item>
+          <Form.Item label={t("Campuses")}>
+            <Controller name="campusIds" control={teacherForm.control} render={({ field }) => <Select {...field} mode="multiple" allowClear className="w-full" placeholder={t("Select the campuses where this teacher works")} options={campusOptions} disabled={!campusOptions.length} />} />
           </Form.Item>
           <div className="grid grid-cols-2 gap-4">
             <Form.Item

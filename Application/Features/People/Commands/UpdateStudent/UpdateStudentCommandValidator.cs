@@ -11,6 +11,10 @@ public class UpdateStudentCommandValidator : AbstractValidator<UpdateStudentComm
         RuleFor(x => x.StudentCode).NotEmpty().MaximumLength(50);
         RuleFor(x => x.FirstName).NotEmpty().MaximumLength(100);
         RuleFor(x => x.LastName).NotEmpty().MaximumLength(100);
+        RuleFor(x => x.SecondName).MaximumLength(100);
+        RuleFor(x => x.ThirdName).MaximumLength(100);
+        RuleFor(x => x.NationalityCountry).MaximumLength(100);
+        RuleFor(x => x.ResidenceCountry).MaximumLength(100);
         RuleFor(x => x.DateOfBirth).NotEmpty().LessThan(DateTime.Today)
             .WithMessage("Date of birth must be in the past.");
         When(x => x.NationalId != null, () => RuleFor(x => x.NationalId).MaximumLength(50));

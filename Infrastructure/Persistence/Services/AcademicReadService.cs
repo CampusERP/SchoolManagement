@@ -59,7 +59,7 @@ public class AcademicReadService : IAcademicReadService
                           c.Id, c.Name, g.Id, g.Name, y.Name,
                           _db.StudentEnrollments.Count(e => e.ClassRoomId == c.Id && e.Status == Domain.Enums.EnrollmentStatus.Active),
                           _db.TeachingAssignments.Count(a => a.ClassRoomId == c.Id),
-                          c.RoomId, r == null ? null : r.Name))
+                          c.RoomId, r == null ? null : r.Name, c.CampusId))
                      .ToListAsync(ct);
     }
 
@@ -81,7 +81,7 @@ public class AcademicReadService : IAcademicReadService
     {
         return await _db.Rooms.AsNoTracking()
             .OrderBy(r => r.Name)
-            .Select(r => new RoomDto(r.Id, r.Name, r.Capacity))
+            .Select(r => new RoomDto(r.Id, r.Name, r.Capacity, r.CampusId))
             .ToListAsync(ct);
     }
 }

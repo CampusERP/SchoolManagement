@@ -26,6 +26,7 @@ const SchoolBillingPage = lazy(() => import("@/pages/school/BillingPage"));
 const SubscriptionExpiredPage = lazy(() => import("@/pages/public/SubscriptionExpiredPage"));
 const SchoolSuspendedPage = lazy(() => import("@/pages/public/SchoolSuspendedPage"));
 const SchoolDashboardPage = lazy(() => import("@/pages/school/SchoolDashboardPage"));
+const SchoolSettingsPage = lazy(() => import("@/pages/school/SchoolSettingsPage"));
 const TeacherDashboardPage = lazy(() => import("@/pages/teacher/TeacherDashboardPage"));
 const TeacherClassesPage = lazy(() => import("@/pages/teacher/TeacherClassesPage"));
 const TeacherAttendancePage = lazy(() => import("@/pages/teacher/TeacherAttendancePage"));
@@ -104,6 +105,11 @@ export const routes: RouteObject[] = [
         ],
       },
     ],
+  },
+  {
+    path: "/school/settings",
+    element: <RequirePermission permission="school.update" requiredRole="school_admin" />,
+    children: [{ element: <AppLayout />, children: [{ index: true, element: <SchoolSettingsPage /> }] }],
   },
   {
     path: "/academics",

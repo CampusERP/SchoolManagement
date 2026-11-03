@@ -1,6 +1,8 @@
 using Application.Common.Interfaces.Services;
 using Application.Common.Models;
+using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Identity;
 
@@ -8,13 +10,16 @@ public class IdentityService : IIdentityService
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly PlatformDbContext _platformDb;
 
     public IdentityService(
         UserManager<ApplicationUser> userManager,
-        SignInManager<ApplicationUser> signInManager)
+        SignInManager<ApplicationUser> signInManager,
+        PlatformDbContext platformDb)
     {
         _userManager = userManager;
         _signInManager = signInManager;
+        _platformDb = platformDb;
     }
 
     // ── Validate password + lockout ────────────────────────────────────
@@ -67,6 +72,32 @@ public class IdentityService : IIdentityService
         var result = await _userManager.AddToRoleAsync(user, role);
         if (!result.Succeeded)
             return Result.Failure(string.Join("; ", result.Errors.Select(e => e.Description)));
+
+        return Result.Success();
+    }
+
+    public async Task<Result> SetLoginEnabledAsync(Guid userId, bool enabled, CancellationToken ct)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user is null) return Result.Failure("User not found.");
+
+        var lockoutEnabled = await _userManager.SetLockoutEnabledAsync(user, true);
+        if (!lockoutEnabled.Succeeded)
+            return Result.Failure(string.Join("; ", lockoutEnabled.Errors.Select(error => error.Description)));
+
+        var lockoutEnd = enabled ? null : (DateTimeOffset?)DateTimeOffset.MaxValue;
+        var lockout = await _userManager.SetLockoutEndDateAsync(user, lockoutEnd);
+        if (!lockout.Succeeded)
+            return Result.Failure(string.Join("; ", lockout.Errors.Select(error => error.Description)));
+
+        if (!enabled)
+        {
+            var activeRefreshTokens = await _platformDb.RefreshTokens
+                .Where(token => token.ApplicationUserId == userId && token.RevokedAtUtc == null)
+                .ToListAsync(ct);
+            foreach (var token in activeRefreshTokens) token.Revoke();
+            if (activeRefreshTokens.Count > 0) await _platformDb.SaveChangesAsync(ct);
+        }
 
         return Result.Success();
     }

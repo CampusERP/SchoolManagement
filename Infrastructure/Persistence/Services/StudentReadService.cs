@@ -81,7 +81,14 @@ public class StudentReadService : IStudentReadService
             null,
             x.Student.DateOfBirth,
             x.Enrollment?.Name,
-            x.Enrollment?.Status.ToString()
+            x.Enrollment?.Status.ToString(),
+                x.Student.SecondName,
+                x.Student.ThirdName,
+                x.Student.CampusId,
+                x.Student.HasLogin,
+                x.Student.NationalId,
+                x.Student.NationalityCountry,
+                x.Student.ResidenceCountry
         )).ToList();
 
         var studentUserIds = students
@@ -107,7 +114,9 @@ public class StudentReadService : IStudentReadService
         var finalStudents = students.Select(s => {
             var appUserId = studentApplicationUserIds.FirstOrDefault(x => x.Id == s.Id)?.ApplicationUserId;
             var email = appUserId.HasValue ? emails.GetValueOrDefault(appUserId.Value) : null;
-            return new StudentListDto(s.Id, s.StudentCode, s.FirstName, s.LastName, email, s.DateOfBirth, s.CurrentClass, s.EnrollmentStatus);
+            return new StudentListDto(s.Id, s.StudentCode, s.FirstName, s.LastName, email, s.DateOfBirth,
+                s.CurrentClass, s.EnrollmentStatus, s.SecondName, s.ThirdName, s.CampusId, s.HasLogin,
+                s.NationalId, s.NationalityCountry, s.ResidenceCountry);
         }).ToList();
 
         return new PagedResult<StudentListDto>(
@@ -140,6 +149,11 @@ public class StudentReadService : IStudentReadService
 
         if (student == null) return null;
 
+        var documents = await GetStudentDocumentsAsync(student.Student.Id, cancellationToken);
+        var email = student.Student.ApplicationUserId is Guid userId
+            ? await _platformDb.Users.Where(user => user.Id == userId).Select(user => user.Email).FirstOrDefaultAsync(cancellationToken)
+            : null;
+
         return new StudentDetailDto(
             student.Student.Id,
             student.Student.StudentCode,
@@ -147,9 +161,16 @@ public class StudentReadService : IStudentReadService
             student.Student.LastName,
             student.Student.DateOfBirth,
             student.Student.NationalId,
-            student.Student.ApplicationUserId != null,
+            student.Student.HasLogin,
             student.Enrollments,
-            student.Guardians
+            student.Guardians,
+            student.Student.SecondName,
+            student.Student.ThirdName,
+            student.Student.NationalityCountry,
+            student.Student.ResidenceCountry,
+            documents,
+            email,
+            student.Student.CampusId
         );
     }
 
@@ -176,6 +197,11 @@ public class StudentReadService : IStudentReadService
 
         if (student == null) return null;
 
+        var documents = await GetStudentDocumentsAsync(student.Student.Id, cancellationToken);
+        var email = student.Student.ApplicationUserId is Guid profileUserId
+            ? await _platformDb.Users.Where(user => user.Id == profileUserId).Select(user => user.Email).FirstOrDefaultAsync(cancellationToken)
+            : null;
+
         return new StudentDetailDto(
             student.Student.Id,
             student.Student.StudentCode,
@@ -183,9 +209,25 @@ public class StudentReadService : IStudentReadService
             student.Student.LastName,
             student.Student.DateOfBirth,
             student.Student.NationalId,
-            student.Student.ApplicationUserId != null,
+            student.Student.HasLogin,
             student.Enrollments,
-            student.Guardians
+            student.Guardians,
+            student.Student.SecondName,
+            student.Student.ThirdName,
+            student.Student.NationalityCountry,
+            student.Student.ResidenceCountry,
+            documents,
+            email,
+            student.Student.CampusId
         );
     }
+
+    private async Task<List<Application.Features.Documents.DocumentDto>> GetStudentDocumentsAsync(Guid studentId, CancellationToken ct) =>
+        await (from attachment in _db.DocumentAttachments.AsNoTracking()
+               where attachment.OwnerId == studentId && attachment.OwnerType == DocumentOwnerType.StudentProfile
+               join document in _db.Documents.AsNoTracking() on attachment.DocumentId equals document.Id
+               orderby document.CreatedAtUtc descending
+               select new Application.Features.Documents.DocumentDto(
+                   document.Id, document.FileName, document.ContentType, document.FileSizeBytes, document.CreatedAtUtc))
+            .ToListAsync(ct);
 }

@@ -1,12 +1,14 @@
 import { parseExcelFile } from "@/lib/excel";
 import type { ParsedRow } from "@/lib/excel";
 import { t } from "@/i18n";
+import { getApiErrorMessage } from "@/lib/errors";
 import {
   mapStudentRow,
   mapTeacherRow,
   mapParentRow,
   type ImportSummary,
   type ImportRowResult,
+  type CampusImportOption,
 } from "./importTemplates";
 
 type EntityKind = "students" | "teachers" | "parents";
@@ -23,7 +25,8 @@ interface Mapper {
 function buildMapper(
   kind: EntityKind,
   schoolId: string,
-  create: (data: any) => Promise<unknown>
+  create: (data: any) => Promise<unknown>,
+  campuses: CampusImportOption[]
 ): Mapper {
   const withSchool = (data?: unknown) =>
     data ? ({ ...(data as Record<string, unknown>), schoolId } as Record<string, unknown>) : undefined;
@@ -33,7 +36,7 @@ function buildMapper(
       label: "Student",
       create,
       map: (values) => {
-        const r = mapStudentRow(values);
+        const r = mapStudentRow(values, campuses);
         return { data: withSchool(r.data), error: r.error };
       },
     };
@@ -43,7 +46,7 @@ function buildMapper(
       label: "Teacher",
       create,
       map: (values) => {
-        const r = mapTeacherRow(values);
+        const r = mapTeacherRow(values, campuses);
         return { data: withSchool(r.data), error: r.error };
       },
     };
@@ -62,10 +65,11 @@ export async function importPeopleFromExcel(
   file: File,
   kind: EntityKind,
   schoolId: string,
-  create: (data: any) => Promise<unknown>
+  create: (data: any) => Promise<unknown>,
+  campuses: CampusImportOption[] = []
 ): Promise<ImportSummary> {
   const parsed = await parseExcelFile(file);
-  const mapper = buildMapper(kind, schoolId, create);
+  const mapper = buildMapper(kind, schoolId, create, campuses);
 
   const results: ImportRowResult[] = [];
   let succeeded = 0;
@@ -82,11 +86,11 @@ export async function importPeopleFromExcel(
       await mapper.create(data);
       succeeded += 1;
       results.push({ rowNumber: row.rowNumber, ok: true });
-    } catch {
+    } catch (error) {
       results.push({
         rowNumber: row.rowNumber,
         ok: false,
-        error: t("Failed to create {entity}", { entity: t(mapper.label) }),
+        error: getApiErrorMessage(error, t("Failed to create {entity}", { entity: t(mapper.label) })),
       });
     }
   }

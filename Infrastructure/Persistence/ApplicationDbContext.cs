@@ -28,6 +28,7 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<Student> Students => Set<Student>();
     public DbSet<Teacher> Teachers => Set<Teacher>();
+    public DbSet<TeacherCampus> TeacherCampuses => Set<TeacherCampus>();
     public DbSet<Parent> Parents => Set<Parent>();
     public DbSet<SchoolAdminProfile> SchoolAdminProfiles => Set<SchoolAdminProfile>();
     public DbSet<StudentGuardian> StudentGuardians => Set<StudentGuardian>();
@@ -65,6 +66,7 @@ public class ApplicationDbContext : DbContext
     // ───────────────────── Documents ──────────────────
 
     public DbSet<Document> Documents => Set<Document>();
+    public DbSet<DocumentAttachment> DocumentAttachments => Set<DocumentAttachment>();
 
     // ─────────────────────── Exams ────────────────────
 
@@ -87,6 +89,7 @@ public class ApplicationDbContext : DbContext
 
         ApplyTenantFilter<Student>(builder);
         ApplyTenantFilter<Teacher>(builder);
+        ApplyTenantFilter<TeacherCampus>(builder);
         ApplyTenantFilter<Parent>(builder);
         ApplyTenantFilter<SchoolAdminProfile>(builder);
         ApplyTenantFilter<StudentGuardian>(builder);
@@ -109,6 +112,7 @@ public class ApplicationDbContext : DbContext
         ApplyTenantFilter<AssignmentSubmission>(builder);
 
         ApplyTenantFilter<Document>(builder);
+        ApplyTenantFilter<DocumentAttachment>(builder);
 
         ApplyTenantFilter<Exam>(builder);
         ApplyTenantFilter<ExamResult>(builder);

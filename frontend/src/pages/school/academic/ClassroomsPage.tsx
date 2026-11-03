@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Plus, LayoutGrid, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { Table, Modal, Form, Select, type TableProps } from "antd";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import DashboardTemplate from "@/components/templates/DashboardTemplate";
@@ -20,6 +20,7 @@ import {
   useRooms,
 } from "@/features/academics/hooks";
 import type { ClassRoomDetailDto } from "@/types/academic.types";
+import { useCurrentSchool } from "@/features/schools/hooks";
 import { t } from "@/i18n";
 
 const schema = z.object({
@@ -27,6 +28,7 @@ const schema = z.object({
   gradeLevelId: z.string().optional(),
   academicYearId: z.string().optional(),
   roomId: z.string().optional(),
+  campusId: z.string().optional(),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -42,6 +44,8 @@ export default function ClassroomsPage() {
   const { data: years } = useAcademicYears();
   const { data: grades } = useGradeLevels();
   const { data: rooms } = useRooms();
+  const school = useCurrentSchool();
+  const campusOptions = (school.data?.campuses ?? []).map((campus) => ({ value: campus.id, label: campus.name }));
   const createClassroom = useCreateClassroom();
   const updateClassroom = useUpdateClassroom();
 
@@ -52,30 +56,36 @@ export default function ClassroomsPage() {
     control,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: { name: "", gradeLevelId: "", academicYearId: "", roomId: "" },
+    defaultValues: { name: "", gradeLevelId: "", academicYearId: "", roomId: "", campusId: "" },
   });
+  const selectedCampusId = useWatch({ control, name: "campusId" });
 
   const openCreate = () => {
     setEditing(null);
-    reset({ name: "", gradeLevelId: "", academicYearId: academicYearId ?? "", roomId: "" });
+    reset({ name: "", gradeLevelId: "", academicYearId: academicYearId ?? "", roomId: "", campusId: "" });
     setModalOpen(true);
   };
 
   const openEdit = (record: ClassRoomDetailDto) => {
     setEditing(record);
-    reset({ name: record.name, gradeLevelId: "", academicYearId: "", roomId: record.roomId ?? "" });
+    reset({ name: record.name, gradeLevelId: "", academicYearId: "", roomId: record.roomId ?? "", campusId: record.campusId ?? "" });
     setModalOpen(true);
   };
 
   const onSubmit = async (values: FormData) => {
+    if (campusOptions.length && !values.campusId) {
+      toast.error(t("Select a campus for this classroom"));
+      return;
+    }
     try {
       if (editing) {
         await updateClassroom.mutateAsync({
           id: editing.id,
-          data: { schoolId, name: values.name, roomId: values.roomId || undefined },
+          data: { schoolId, name: values.name, roomId: values.roomId || undefined, campusId: values.campusId || undefined },
         });
         toast.success(t("Classroom updated"));
       } else {
@@ -83,7 +93,7 @@ export default function ClassroomsPage() {
           toast.error(t("Please select a grade level and academic year"));
           return;
         }
-        await createClassroom.mutateAsync({ schoolId, gradeLevelId: values.gradeLevelId, academicYearId: values.academicYearId, name: values.name, roomId: values.roomId || undefined });
+        await createClassroom.mutateAsync({ schoolId, gradeLevelId: values.gradeLevelId, academicYearId: values.academicYearId, name: values.name, roomId: values.roomId || undefined, campusId: values.campusId || undefined });
         toast.success(t("Classroom created"));
       }
       setModalOpen(false);
@@ -97,7 +107,7 @@ export default function ClassroomsPage() {
     value: g.id,
     label: g.educationStage ? `${g.name} - ${g.educationStage}` : g.name,
   }));
-  const roomOptions = (rooms ?? []).map((room) => ({ value: room.id, label: `${room.name} (${room.capacity})` }));
+  const roomOptions = (rooms ?? []).filter((room) => !selectedCampusId || room.campusId === selectedCampusId).map((room) => ({ value: room.id, label: `${room.name} (${room.capacity})` }));
 
   const columns: TableProps<ClassRoomDetailDto>["columns"] = [
     {
@@ -132,6 +142,7 @@ export default function ClassroomsPage() {
       key: "room",
       render: (roomName?: string | null) => roomName || "—",
     },
+    { title: t("Campus"), key: "campus", responsive: ["md"], render: (_, record) => school.data?.campuses.find((campus) => campus.id === record.campusId)?.name ?? "—" },
     {
       title: t("Student Count"),
       key: "studentCount",
@@ -232,6 +243,9 @@ export default function ClassroomsPage() {
               control={control}
               render={({ field }) => <Input {...field} placeholder={t("e.g. Grade 10-A")} />}
             />
+          </Form.Item>
+          <Form.Item label={t("Campus")}>
+            <Controller name="campusId" control={control} render={({ field }) => <Select {...field} allowClear className="w-full" placeholder={t("Select campus")} options={campusOptions} disabled={!campusOptions.length} onChange={(value) => { field.onChange(value); setValue("roomId", ""); }} />} />
           </Form.Item>
           {!editing && (
             <>

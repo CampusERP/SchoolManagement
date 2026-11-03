@@ -11,6 +11,7 @@ namespace Application.Features.People.Commands.CreateTeacher;
 public class CreateTeacherCommandHandler : IRequestHandler<CreateTeacherCommand, Result<Guid>>
 {
     private readonly ITeacherRepository _teachers;
+    private readonly ITeacherCampusRepository _teacherCampuses;
     private readonly ISchoolRepository _schools;
     private readonly IIdentityService _identityService;
     private readonly IOutboxService _outbox;
@@ -18,12 +19,14 @@ public class CreateTeacherCommandHandler : IRequestHandler<CreateTeacherCommand,
 
     public CreateTeacherCommandHandler(
         ITeacherRepository teachers,
+        ITeacherCampusRepository teacherCampuses,
         ISchoolRepository schools,
         IIdentityService identityService,
         IOutboxService outbox,
         IEmailNotifier emailNotifier)
     {
         _teachers = teachers;
+        _teacherCampuses = teacherCampuses;
         _schools = schools;
         _identityService = identityService;
         _outbox = outbox;
@@ -35,6 +38,13 @@ public class CreateTeacherCommandHandler : IRequestHandler<CreateTeacherCommand,
         var exists = await _teachers.ExistsAsync(request.SchoolId, request.EmployeeCode, ct: ct);
         if (exists)
             return Result.Failure<Guid>($"A teacher with employee code '{request.EmployeeCode}' already exists in this school.");
+
+        var campuses = await _schools.GetCampusesAsync(request.SchoolId, ct);
+        if (campuses.Count > 0 && (request.CampusIds is null || request.CampusIds.Count == 0))
+            return Result.Failure<Guid>("Select at least one campus for this teacher.");
+        foreach (var campusId in request.CampusIds?.Distinct() ?? Enumerable.Empty<Guid>())
+            if (await _schools.GetCampusAsync(request.SchoolId, campusId, ct) is null)
+                return Result.Failure<Guid>("One or more selected campuses were not found in this school.");
 
         var userResult = await _identityService.CreateUserAsync(request.Email, request.Password, ct);
         if (userResult.IsFailure)
@@ -51,6 +61,7 @@ public class CreateTeacherCommandHandler : IRequestHandler<CreateTeacherCommand,
                 request.FirstName, request.LastName);
 
             await _teachers.AddAsync(teacher, ct);
+            await _teacherCampuses.SetCampusIdsAsync(request.SchoolId, teacher.Id, request.CampusIds ?? [], ct);
 
             _outbox.Publish(new LinkTeacherLoginMessage(teacher.Id, userId));
 

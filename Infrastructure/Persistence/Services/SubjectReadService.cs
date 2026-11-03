@@ -1,5 +1,6 @@
 using Application.Common.Interfaces.Services;
 using Application.Features.Subjects.Queries.GetGradeCurriculum;
+using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Services;
@@ -26,6 +27,15 @@ public sealed class SubjectReadService : ISubjectReadService
             .Select(book => new { book.Id, book.CurriculumSubjectId, book.Title, book.Author, book.Publisher, book.Isbn, book.Edition, book.Notes })
             .ToListAsync(ct);
 
+        var bookIds = books.Select(book => book.Id).ToArray();
+        var bookDocuments = await (from attachment in _db.DocumentAttachments.AsNoTracking()
+                                   where attachment.OwnerType == DocumentOwnerType.SubjectBook && bookIds.Contains(attachment.OwnerId)
+                                   join document in _db.Documents.AsNoTracking() on attachment.DocumentId equals document.Id
+                                   orderby document.CreatedAtUtc descending
+                                   select new { attachment.OwnerId, Dto = new Application.Features.Documents.DocumentDto(
+                                       document.Id, document.FileName, document.ContentType, document.FileSizeBytes, document.CreatedAtUtc) })
+            .ToListAsync(ct);
+
         return subjects.Select(subject => new CurriculumSubjectDto(
             subject.Id,
             subject.SubjectId,
@@ -34,7 +44,8 @@ public sealed class SubjectReadService : ISubjectReadService
             subject.Description,
             subject.SchoolId == schoolId,
             books.Where(book => book.CurriculumSubjectId == subject.Id)
-                .Select(book => new CurriculumBookDto(book.Id, book.Title, book.Author, book.Publisher, book.Isbn, book.Edition, book.Notes))
+                .Select(book => new CurriculumBookDto(book.Id, book.Title, book.Author, book.Publisher, book.Isbn, book.Edition, book.Notes,
+                    bookDocuments.Where(document => document.OwnerId == book.Id).Select(document => document.Dto).ToList()))
                 .ToList())).ToList();
     }
 }
